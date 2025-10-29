@@ -1,0 +1,83 @@
+========================================
+   PACZKA MATERIAŁÓW KSEF PDF GENERATOR
+========================================
+
+📦 Plik: KSeF-Materials.zip
+
+✅ ZAWARTOŚĆ PACZKI:
+
+1. README.md - Główna dokumentacja z instrukcjami
+2. KSeF-PDF-Generator-Potrzebne-Elementy.md - Szczegółowa analiza elementów
+3. INSTRUKCJA-POBIERANIA.md - Linki i instrukcje pobierania z GitHub
+4. download-files.sh - Skrypt automatycznego pobierania (Linux/Mac)
+5. download-files.ps1 - Skrypt automatycznego pobierania (Windows)
+6. Struktura katalogów do pobrania plików
+
+🚀 JAK ZACZĄĆ:
+
+KROK 1: Rozpakuj plik KSeF-Materials.zip
+
+KROK 2: Otwórz i przeczytaj README.md
+
+KROK 3: Pobierz pliki z GitHuba używając jednej z metod:
+   
+   LINUX/MAC/WSL:
+   $ cd ksef-materials
+   $ ./download-files.sh
+   
+   WINDOWS PowerShell:
+   PS> cd ksef-materials
+   PS> .\download-files.ps1
+   
+   RĘCZNIE:
+   Otwórz INSTRUKCJA-POBIERANIA.md i pobierz pliki według listy
+
+KROK 4: Studiuj materiały według priorytetów w README.md
+
+📋 NAJWAŻNIEJSZE PLIKI DO POBRANIA:
+
+🔴 KRYTYCZNE (pobierz najpierw):
+   1. QrCodeOfflineE2ETests.cs ⭐ - implementacja podpisów
+   2. CryptographyService.cs ⭐ - kryptografia
+   3. invoice-template-fa-3.xml ⭐ - przykład faktury
+   4. schemat-FA(3)-v1-0E.xsd ⭐ - schemat XML
+
+🟡 WAŻNE (pobierz potem):
+   5. VerificationLinkService.cs
+   6. QrCodeService.cs
+   7. KsefNumberValidator.cs
+
+🟢 PRZYDATNE (opcjonalnie):
+   8. Pozostałe pliki według listy
+
+⚠️ UWAGI TECHNICZNE:
+
+• Używaj TYLKO certyfikatu typu "Offline" dla KODU II
+• Namespace FA(3): http://crd.gov.pl/wzor/2025/06/25/13775/
+• Podpis KODU II jest WYMAGANY
+• RSA-PSS: SHA-256, MGF1, salt 32 bajty, min 2048 bitów
+• ECDSA P-256: krzywa secp256r1, format IEEE P1363
+
+🔗 REPOZYTORIA:
+
+• ksef-client-csharp: https://github.com/CIRFMF/ksef-client-csharp
+• ksef-docs: https://github.com/CIRFMF/ksef-docs
+
+📅 HARMONOGRAM: 8-11 dni roboczych
+
+Faza 1-2: Fundament, modele (1-2 dni)
+Faza 3: Parsowanie XML (1 dzień)
+Faza 4: Walidacja (1 dzień)
+Faza 5: Kryptografia (1-2 dni)
+Faza 6: Kody QR (1 dzień)
+Faza 7: PDF (2-3 dni)
+Faza 8: Testy (1-2 dni)
+
+========================================
+   POWODZENIA W REALIZACJI PROJEKTU! 🚀
+========================================
+
+Data: 2025-10-24
+Wersja: 1.0
+Projekt: KSeF PDF Generator
+Schemat: FA(3) v1-0E

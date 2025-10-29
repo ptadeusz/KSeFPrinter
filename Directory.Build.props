@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>5</WarningLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>KSeF Team</Authors>
+    <Company>KSeF</Company>
+    <Product>KSeF Printer</Product>
+    <Description>Generator wydruków PDF dla faktur elektronicznych w formacie KSeF FA(3)</Description>
+    <Copyright>Copyright © 2025</Copyright>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+</Project>

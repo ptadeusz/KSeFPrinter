@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	 <!-- Strong naming the assembly -->
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>KSeF.Client.Core.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Invoices\Query\" />
+  </ItemGroup>
+
+</Project>
