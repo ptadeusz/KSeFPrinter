@@ -11,10 +11,12 @@ var examples = new[]
 {
     (XmlPath: Path.Combine("..", "KSeFPrinter.Tests", "TestData", "FakturaTEST017.xml"),
      PdfPath: Path.Combine("..", "PRZYKLAD_FAKTURA_OFFLINE.pdf"),
-     Type: "OFFLINE"),
+     Type: "OFFLINE",
+     KSeFNumber: (string?)null),
     (XmlPath: Path.Combine("..", "KSeFPrinter.Tests", "TestData", "6511153259-20251015-010020140418-0D.xml"),
      PdfPath: Path.Combine("..", "PRZYKLAD_FAKTURA_Z_NUMEREM_KSEF.pdf"),
-     Type: "Z NUMEREM KSeF")
+     Type: "Z NUMEREM KSeF",
+     KSeFNumber: "6511153259-20251015-010020140418-0D")
 };
 
 // Inicjalizacja serwisów (raz dla wszystkich)
@@ -41,7 +43,7 @@ foreach (var example in examples)
     }
 
     Console.WriteLine($"Parsowanie XML: {Path.GetFileName(xmlPath)}");
-    var context = await service.ParseInvoiceFromFileAsync(xmlPath);
+    var context = await service.ParseInvoiceFromFileAsync(xmlPath, example.KSeFNumber);
 
     Console.WriteLine($"  Faktura: {context.Faktura.Fa.P_2}");
     Console.WriteLine($"  Data: {context.Faktura.Fa.P_1:yyyy-MM-dd}");
@@ -53,7 +55,7 @@ foreach (var example in examples)
     Console.WriteLine($"  Kwota brutto: {context.Faktura.Fa.P_15:N2} {context.Faktura.Fa.KodWaluty}");
 
     Console.WriteLine($"\nGenerowanie PDF...");
-    await service.GeneratePdfFromFileAsync(xmlPath, pdfOutputPath, validateInvoice: false);
+    await service.GeneratePdfFromFileAsync(xmlPath, pdfOutputPath, options: null, numerKSeF: example.KSeFNumber, validateInvoice: false);
 
     var fileInfo = new FileInfo(pdfOutputPath);
     Console.WriteLine($"✓ PDF wygenerowany pomyślnie!");

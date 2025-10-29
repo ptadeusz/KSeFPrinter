@@ -4,7 +4,8 @@
       "Bash(dotnet:*)",
       "Bash(mkdir:*)",
       "Bash(rm:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
