@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSeFPrinter", "KSeFPrinter\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSeFPrinter.Tests", "KSeFPrinter.Tests\KSeFPrinter.Tests.csproj", "{4821E239-9DCB-428D-ACB8-A94C1C7DFEDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSeFPrinter.CLI", "KSeFPrinter.CLI\KSeFPrinter.CLI.csproj", "{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{4821E239-9DCB-428D-ACB8-A94C1C7DFEDD}.Release|x64.Build.0 = Release|Any CPU
 		{4821E239-9DCB-428D-ACB8-A94C1C7DFEDD}.Release|x86.ActiveCfg = Release|Any CPU
 		{4821E239-9DCB-428D-ACB8-A94C1C7DFEDD}.Release|x86.Build.0 = Release|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Debug|x64.Build.0 = Debug|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Debug|x86.Build.0 = Debug|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Release|x64.ActiveCfg = Release|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Release|x64.Build.0 = Release|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEC30C7D-CEF5-4D69-A8D3-EA89FD162DD6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

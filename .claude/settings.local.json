@@ -5,7 +5,8 @@
       "Bash(mkdir:*)",
       "Bash(rm:*)",
       "Bash(find:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(.ksef-pdf.exe --help)"
     ],
     "deny": [],
     "ask": []

@@ -29,23 +29,65 @@ Generator wydruków PDF dla faktur elektronicznych w formacie KSeF FA(3).
 - Schemat XML: FA(3) v1-0E
 - Namespace: `http://crd.gov.pl/wzor/2025/06/25/13775/`
 
+## Sposób użycia
+
+### Opcja 1: Aplikacja CLI (wiersz poleceń)
+
+Najszybszy sposób - konwertuj XML na PDF z linii poleceń:
+
+```bash
+# Pojedynczy plik
+ksef-pdf faktura.xml
+
+# Przetwarzanie wsadowe
+ksef-pdf *.xml
+
+# Watch mode (automatyczne przetwarzanie)
+ksef-pdf --watch faktury/
+
+# Z certyfikatem dla KODU QR II
+ksef-pdf faktura.xml --cert certyfikat.pfx --cert-password "haslo"
+```
+
+**Zobacz:** [KSeFPrinter.CLI/README.md](KSeFPrinter.CLI/README.md) - pełna dokumentacja CLI
+
+### Opcja 2: Biblioteka .NET
+
+Zintegruj z własną aplikacją:
+
+```csharp
+using KSeFPrinter;
+
+var service = new InvoicePrinterService(parser, validator, pdfGenerator, logger);
+
+// Generuj PDF z pliku XML
+await service.GeneratePdfFromFileAsync("faktura.xml", "faktura.pdf");
+```
+
+**Zobacz:** [INSTRUKCJA.md](INSTRUKCJA.md) - pełna dokumentacja API
+
 ## Struktura projektu
 
 ```
-KSeFPrinter/
-├── Models/           # Modele danych FA(3)
-│   ├── FA3/         # Modele specyficzne dla FA(3)
-│   └── Common/      # Wspólne typy
-├── Services/         # Serwisy biznesowe
-│   ├── Cryptography/ # Kryptografia (SHA-256, RSA-PSS, ECDSA)
-│   ├── QrCode/      # Generowanie kodów QR
-│   ├── Pdf/         # Generowanie PDF
-│   └── Parsers/     # Parsowanie XML
-├── Validators/       # Walidatory
-├── Interfaces/       # Interfejsy
-└── Exceptions/       # Wyjątki
+KSeFPrinter/              # Biblioteka główna
+├── Models/               # Modele danych FA(3)
+│   ├── FA3/             # Modele specyficzne dla FA(3)
+│   └── Common/          # Wspólne typy
+├── Services/             # Serwisy biznesowe
+│   ├── Cryptography/    # Kryptografia (SHA-256, RSA-PSS, ECDSA)
+│   ├── QrCode/          # Generowanie kodów QR
+│   ├── Pdf/             # Generowanie PDF
+│   └── Parsers/         # Parsowanie XML
+├── Validators/           # Walidatory
+├── Interfaces/           # Interfejsy
+└── Exceptions/           # Wyjątki
 
-KSeFPrinter.Tests/   # Projekt testowy
+KSeFPrinter.CLI/          # Aplikacja wiersza poleceń
+├── Program.cs           # Obsługa CLI (pojedynczy, wsadowy, watch mode)
+└── README.md            # Dokumentacja CLI
+
+KSeFPrinter.Tests/       # Projekt testowy (130 testów)
+ExampleGenerator/        # Generator przykładowych PDF
 ```
 
 ## Zależności
