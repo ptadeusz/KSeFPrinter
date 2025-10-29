@@ -29,6 +29,9 @@ public class InvoicePdfGenerator : IPdfGeneratorService
 
         // Konfiguracja licencji QuestPDF (Community License)
         QuestPDF.Settings.License = LicenseType.Community;
+
+        // Włącz tryb debugowania dla lepszych komunikatów błędów
+        QuestPDF.Settings.EnableDebugging = true;
     }
 
     /// <inheritdoc />
@@ -148,7 +151,7 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             });
 
             // Separator
-            column.Item().PaddingTop(10).PaddingBottom(5).LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+            column.Item().PaddingTop(10).PaddingBottom(5);
 
             // Informacje o fakturze
             column.Item().PaddingTop(10).Row(row =>
@@ -368,7 +371,7 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 {
                     row.RelativeItem().Column(column =>
                     {
-                        column.Item().AlignCenter().Image(qrCode1).FitWidth();
+                        column.Item().AlignCenter().Width(150).Image(qrCode1);
                     });
                 }
 
@@ -381,7 +384,7 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 {
                     row.RelativeItem().Column(column =>
                     {
-                        column.Item().AlignCenter().Image(qrCode2).FitWidth();
+                        column.Item().AlignCenter().Width(150).Image(qrCode2);
                     });
                 }
             });
@@ -420,8 +423,7 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             }
 
             // Data generowania
-            column.Item().PaddingTop(5).LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
-            column.Item().PaddingTop(5).AlignCenter().Text($"Dokument wygenerowany: {DateTime.Now:dd.MM.yyyy HH:mm}")
+            column.Item().PaddingTop(10).AlignCenter().Text($"Dokument wygenerowany: {DateTime.Now:dd.MM.yyyy HH:mm}")
                 .FontSize(7).FontColor(Colors.Grey.Medium);
         });
     }
