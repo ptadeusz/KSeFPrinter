@@ -92,7 +92,7 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 page.Size(PageSizes.A4);
                 page.Margin(2, Unit.Centimetre);
                 page.PageColor(Colors.White);
-                page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Arial"));
+                page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Calibri"));
 
                 page.Header().Element(c => ComposeHeader(c, faktura, context.Metadata));
                 page.Content().Element(c => ComposeContent(c, faktura, context, options));
