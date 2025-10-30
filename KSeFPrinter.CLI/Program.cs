@@ -84,6 +84,11 @@ var ksefNumberOption = new Option<string?>(
     IsRequired = false
 };
 
+var ksefFromFilenameOption = new Option<bool>(
+    aliases: new[] { "--ksef-from-filename" },
+    description: "Automatycznie wykryj numer KSeF z nazwy pliku (format: nazwa_NUMER.xml)",
+    getDefaultValue: () => false);
+
 var verboseOption = new Option<bool>(
     aliases: new[] { "-v", "--verbose" },
     description: "Szczegółowe logowanie",
@@ -106,6 +111,7 @@ rootCommand.AddOption(certStoreLocationOption);
 rootCommand.AddOption(productionOption);
 rootCommand.AddOption(noValidateOption);
 rootCommand.AddOption(ksefNumberOption);
+rootCommand.AddOption(ksefFromFilenameOption);
 rootCommand.AddOption(verboseOption);
 rootCommand.AddOption(watchOption);
 
@@ -125,6 +131,7 @@ rootCommand.SetHandler(async (InvocationContext context) =>
     var production = context.ParseResult.GetValueForOption(productionOption);
     var noValidate = context.ParseResult.GetValueForOption(noValidateOption);
     var ksefNumber = context.ParseResult.GetValueForOption(ksefNumberOption);
+    var ksefFromFilename = context.ParseResult.GetValueForOption(ksefFromFilenameOption);
     var verbose = context.ParseResult.GetValueForOption(verboseOption);
     var watch = context.ParseResult.GetValueForOption(watchOption);
 
@@ -213,17 +220,17 @@ rootCommand.SetHandler(async (InvocationContext context) =>
         if (watch)
         {
             // === TRYB WATCH ===
-            await RunWatchMode(xmlFiles, service, options, !noValidate, ksefNumber, logger);
+            await RunWatchMode(xmlFiles, service, options, !noValidate, ksefNumber, ksefFromFilename, logger);
         }
         else if (xmlFiles.Count == 1 && !string.IsNullOrEmpty(output))
         {
             // === TRYB POJEDYNCZEGO PLIKU Z WŁASNĄ ŚCIEŻKĄ ===
-            await ProcessSingleFile(xmlFiles[0], output, service, options, !noValidate, ksefNumber, logger);
+            await ProcessSingleFile(xmlFiles[0], output, service, options, !noValidate, ksefNumber, ksefFromFilename, logger);
         }
         else
         {
             // === TRYB WSADOWY ===
-            await ProcessBatch(xmlFiles, service, options, !noValidate, ksefNumber, logger);
+            await ProcessBatch(xmlFiles, service, options, !noValidate, ksefNumber, ksefFromFilename, logger);
         }
     }
     catch (Exception ex)
@@ -272,11 +279,19 @@ static async Task ProcessSingleFile(
     PdfGenerationOptions options,
     bool validate,
     string? ksefNumber,
+    bool ksefFromFilename,
     ILogger logger)
 {
     logger.LogInformation("=== Przetwarzanie pojedynczego pliku ===");
     logger.LogInformation("XML: {XmlPath}", xmlPath);
     logger.LogInformation("PDF: {PdfPath}", pdfPath);
+
+    // Parsuj numer KSeF z nazwy pliku jeśli włączona opcja
+    var effectiveKsefNumber = ksefNumber;
+    if (ksefFromFilename && string.IsNullOrEmpty(ksefNumber))
+    {
+        effectiveKsefNumber = ParseKSeFFromFileName(xmlPath, logger);
+    }
 
     try
     {
@@ -284,7 +299,7 @@ static async Task ProcessSingleFile(
             xmlFilePath: xmlPath,
             pdfOutputPath: pdfPath,
             options: options,
-            numerKSeF: ksefNumber,
+            numerKSeF: effectiveKsefNumber,
             validateInvoice: validate
         );
 
@@ -304,6 +319,7 @@ static async Task ProcessBatch(
     PdfGenerationOptions options,
     bool validate,
     string? ksefNumber,
+    bool ksefFromFilename,
     ILogger logger)
 {
     logger.LogInformation("=== Przetwarzanie wsadowe ===");
@@ -316,6 +332,13 @@ static async Task ProcessBatch(
     {
         var pdfPath = Path.ChangeExtension(xmlPath, ".pdf");
 
+        // Parsuj numer KSeF z nazwy pliku jeśli włączona opcja
+        var effectiveKsefNumber = ksefNumber;
+        if (ksefFromFilename && string.IsNullOrEmpty(ksefNumber))
+        {
+            effectiveKsefNumber = ParseKSeFFromFileName(xmlPath, logger);
+        }
+
         try
         {
             logger.LogInformation("Przetwarzanie: {FileName}...", Path.GetFileName(xmlPath));
@@ -324,7 +347,7 @@ static async Task ProcessBatch(
                 xmlFilePath: xmlPath,
                 pdfOutputPath: pdfPath,
                 options: options,
-                numerKSeF: ksefNumber,
+                numerKSeF: effectiveKsefNumber,
                 validateInvoice: validate
             );
 
@@ -354,6 +377,7 @@ static async Task RunWatchMode(
     PdfGenerationOptions options,
     bool validate,
     string? ksefNumber,
+    bool ksefFromFilename,
     ILogger logger)
 {
     // Określ katalogi do obserwowania
@@ -378,7 +402,7 @@ static async Task RunWatchMode(
     logger.LogInformation("");
 
     // Przetworz istniejące pliki najpierw
-    await ProcessBatch(initialFiles, service, options, validate, ksefNumber, logger);
+    await ProcessBatch(initialFiles, service, options, validate, ksefNumber, ksefFromFilename, logger);
 
     // Przechowuj przetworzone pliki
     var processedFiles = new HashSet<string>(initialFiles.Select(f => Path.GetFullPath(f)));
@@ -414,13 +438,20 @@ static async Task RunWatchMode(
 
             var pdfPath = Path.ChangeExtension(e.FullPath, ".pdf");
 
+            // Parsuj numer KSeF z nazwy pliku jeśli włączona opcja
+            var effectiveKsefNumber = ksefNumber;
+            if (ksefFromFilename && string.IsNullOrEmpty(ksefNumber))
+            {
+                effectiveKsefNumber = ParseKSeFFromFileName(e.FullPath, logger);
+            }
+
             try
             {
                 await service.GeneratePdfFromFileAsync(
                     xmlFilePath: e.FullPath,
                     pdfOutputPath: pdfPath,
                     options: options,
-                    numerKSeF: ksefNumber,
+                    numerKSeF: effectiveKsefNumber,
                     validateInvoice: validate
                 );
 
@@ -544,5 +575,49 @@ static X509Certificate2? LoadCertificateFromStore(
     finally
     {
         store?.Close();
+    }
+}
+
+/// <summary>
+/// Parsuje numer KSeF z nazwy pliku
+/// Format: {dowolna_nazwa}_{NUMER_KSEF}.xml
+/// Przykład: faktura_6511153259-20251015-010020140418-0D.xml
+/// </summary>
+static string? ParseKSeFFromFileName(string filePath, ILogger logger)
+{
+    try
+    {
+        var fileName = Path.GetFileName(filePath);
+
+        // Regex: opcjonalny underscore + numer KSeF + .xml na końcu
+        var match = System.Text.RegularExpressions.Regex.Match(
+            fileName,
+            @"_?(\d{10}-\d{8}-[0-9A-Fa-f]{12}-[0-9A-Fa-f]{2})\.xml$",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        if (!match.Success)
+        {
+            logger.LogWarning("Nie znaleziono numeru KSeF w nazwie pliku: {FileName}", fileName);
+            return null;
+        }
+
+        var potentialKSeF = match.Groups[1].Value.ToUpper();
+
+        // Walidacja przez istniejący walidator
+        if (!KSeFPrinter.Validators.KsefNumberValidator.IsValid(potentialKSeF, out var error))
+        {
+            logger.LogWarning(
+                "Niepoprawny format numeru KSeF w nazwie pliku: {FileName}. Błąd: {Error}",
+                fileName, error);
+            return null;
+        }
+
+        logger.LogInformation("✓ Wykryto numer KSeF z nazwy pliku: {KSeFNumber}", potentialKSeF);
+        return potentialKSeF;
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning(ex, "Błąd podczas parsowania numeru KSeF z nazwy pliku");
+        return null;
     }
 }

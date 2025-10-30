@@ -1,3 +1,9 @@
+#folders with examples
+KSeFConnectorINFO/
+ksef-client-csharp/
+ksef-docs/
+nul
+
 # .NET
 bin/
 obj/

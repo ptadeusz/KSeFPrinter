@@ -45,6 +45,9 @@ ksef-pdf faktura.xml -o wydruk.pdf
 
 # Z numerem KSeF (jeśli nie jest w XML):
 ksef-pdf faktura.xml --ksef-number "6511153259-20251015-010020140418-0D"
+
+# Automatyczne wykrywanie numeru KSeF z nazwy pliku:
+ksef-pdf faktura_6511153259-20251015-010020140418-0D.xml --ksef-from-filename
 ```
 
 **Wynik:** Tworzy `faktura.pdf` (lub podaną nazwę) w tym samym katalogu.
@@ -62,6 +65,9 @@ ksef-pdf faktura1.xml faktura2.xml faktura3.xml
 
 # Wszystkie XMLe w katalogu:
 ksef-pdf faktury/
+
+# Z automatycznym wykrywaniem numeru KSeF z nazw plików:
+ksef-pdf faktury/*.xml --ksef-from-filename
 ```
 
 **Wynik:** Dla każdego `nazwa.xml` tworzy `nazwa.pdf`.
@@ -79,6 +85,9 @@ ksef-pdf --watch faktury/
 
 # Obserwuj kilka katalogów:
 ksef-pdf --watch katalog1/ katalog2/
+
+# Z automatycznym wykrywaniem numeru KSeF (np. dla integracji z KSeFConnector):
+ksef-pdf --watch faktury/processed/ --ksef-from-filename --no-validate
 ```
 
 **Działanie:**
@@ -167,6 +176,50 @@ ksef-pdf faktura.xml --no-validate
 **Przydatne gdy:**
 - Przykładowe dane mają nieprawidłowe NIPy
 - Chcesz szybko wygenerować PDF bez sprawdzania poprawności
+
+### Automatyczne wykrywanie numeru KSeF z nazwy pliku
+
+Aplikacja może automatycznie wykryć numer KSeF z nazwy pliku XML. Jest to przydatne szczególnie przy integracji z **KSeFConnector**, który zapisuje pliki w formacie `faktura_{NUMER_KSEF}.xml`.
+
+```bash
+ksef-pdf faktura_6511153259-20251015-010020140418-0D.xml --ksef-from-filename
+```
+
+**Format nazwy pliku:**
+- Numer KSeF musi znajdować się na końcu nazwy pliku przed rozszerzeniem `.xml`
+- Opcjonalnie oddzielony podkreślnikiem: `nazwa_NUMER.xml` lub `nazwaNUMER.xml`
+- Format numeru: `XXXXXXXXXX-YYYYMMDD-XXXXXXXXXXXX-XX` (cyfry i hex)
+
+**Przykłady poprawnych nazw:**
+- `faktura_6511153259-20251015-010020140418-0D.xml`
+- `FA123_6511153259-20251015-010020140418-0D.xml`
+- `2025-01-156511153259-20251015-010020140418-0D.xml`
+
+**Działanie:**
+1. Aplikacja próbuje wyodrębnić numer KSeF z nazwy pliku
+2. Waliduje format za pomocą `KsefNumberValidator`
+3. Jeśli sukces → generuje PDF w trybie **Online** z linkiem weryfikacyjnym
+4. Jeśli błąd → wyświetla ostrzeżenie i generuje PDF w trybie **Offline**
+
+**Priorytet źródeł numeru KSeF:**
+1. Parametr `--ksef-number` (najwyższy)
+2. Zawartość XML (jeśli numer jest w strukturze)
+3. Nazwa pliku z `--ksef-from-filename`
+4. Brak numeru → tryb Offline
+
+**Użycie z innymi opcjami:**
+```bash
+# Tryb wsadowy dla plików z KSeFConnector:
+ksef-pdf processed/*.xml --ksef-from-filename --no-validate
+
+# Watch mode dla automatycznego przetwarzania:
+ksef-pdf --watch processed/ --ksef-from-filename --production
+
+# Z certyfikatem dla drugiego kodu QR:
+ksef-pdf faktura_6511153259-20251015-010020140418-0D.xml \
+  --ksef-from-filename \
+  --cert-thumbprint "A1B2C3..."
+```
 
 ### Szczegółowe logowanie
 
@@ -260,6 +313,39 @@ ksef-pdf faktury/FA_2025_01_*.xml --no-validate
 
 # Konkretny prefiks:
 ksef-pdf faktury/SPRZEDAZ_*.xml --no-validate
+```
+
+### Przykład 7: Integracja z KSeFConnector
+
+KSeFConnector zapisuje przetworzone faktury w formacie `faktura_{NUMER_KSEF}.xml`. Aby automatycznie generować PDFy:
+
+```bash
+# Jednorazowe przetworzenie wszystkich faktur z folderu processed:
+ksef-pdf C:\KSeFConnector\processed\*.xml \
+  --ksef-from-filename \
+  --production \
+  --no-validate
+
+# Watch mode - automatyczne generowanie PDF dla nowych faktur:
+ksef-pdf --watch C:\KSeFConnector\processed\ \
+  --ksef-from-filename \
+  --production \
+  --no-validate
+```
+
+**Wynik:**
+- Każda faktura `faktura_6511153259-20251015-010020140418-0D.xml` → PDF w trybie Online
+- Link weryfikacyjny prowadzi do produkcyjnego portalu KSeF
+- PDFy generowane automatycznie przy każdej nowej fakturze
+
+**Logowanie:**
+```
+info: Program[0]
+      ✓ Wykryto numer KSeF z nazwy pliku: 6511153259-20251015-010020140418-0D
+info: KSeFPrinter.Services.Parsers.XmlInvoiceParser[0]
+      Tryb wystawienia: Online
+info: Program[0]
+      ✓ PDF wygenerowany pomyślnie!
 ```
 
 ## Kod wyjścia
