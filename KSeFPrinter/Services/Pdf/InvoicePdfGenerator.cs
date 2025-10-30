@@ -170,6 +170,12 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 });
             });
 
+            // Podmiot3 (jeśli występuje)
+            if (faktura.Podmiot3 != null)
+            {
+                column.Item().PaddingTop(10).Element(c => ComposeInnyPodmiot(c, faktura.Podmiot3, 1));
+            }
+
             // Separator
             column.Item().PaddingTop(10).PaddingBottom(5);
 
@@ -601,5 +607,96 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             column.Item().PaddingTop(10).AlignCenter().Text($"Dokument wygenerowany: {DateTime.Now:dd.MM.yyyy HH:mm}")
                 .FontSize(7).FontColor(Colors.Grey.Medium);
         });
+    }
+
+    /// <summary>
+    /// Komponuje sekcję podmiotu trzeciego (Podmiot3) - według oficjalnego szablonu styl.xsl
+    /// </summary>
+    private void ComposeInnyPodmiot(IContainer container, Models.FA3.Podmiot podmiot, int numerPodmiotu = 1)
+    {
+        container.Border(1).BorderColor(Colors.Grey.Lighten2)
+            .Background(Colors.Grey.Lighten5).Padding(10).Column(column =>
+        {
+            // Nagłówek - taki sam styl jak SPRZEDAWCA/NABYWCA
+            column.Item().Text($"PODMIOT TRZECI ({numerPodmiotu})").FontSize(8).Bold();
+
+            column.Item().PaddingTop(5).Row(row =>
+            {
+                // Dane identyfikacyjne i adres
+                row.RelativeItem().Column(col =>
+                {
+                    col.Item().Text($"NIP: {podmiot.DaneIdentyfikacyjne.NIP}").FontSize(9);
+
+                    if (!string.IsNullOrEmpty(podmiot.DaneIdentyfikacyjne.PESEL))
+                        col.Item().Text($"PESEL: {podmiot.DaneIdentyfikacyjne.PESEL}").FontSize(9);
+
+                    col.Item().Text($"Imię i nazwisko lub nazwa: {podmiot.DaneIdentyfikacyjne.Nazwa}").FontSize(9);
+
+                    col.Item().Text(podmiot.Adres.AdresL1).FontSize(9);
+
+                    var adresL2 = podmiot.Adres.AdresL2;
+                    if (!string.IsNullOrEmpty(podmiot.Adres.KodKraju) && podmiot.Adres.KodKraju != "PL")
+                        adresL2 += $", {podmiot.Adres.KodKraju}";
+                    col.Item().Text(adresL2).FontSize(9);
+                });
+
+                // Dane kontaktowe
+                row.RelativeItem().Column(col =>
+                {
+                    if (podmiot.DaneKontaktowe != null)
+                    {
+                        if (!string.IsNullOrEmpty(podmiot.DaneKontaktowe.Email))
+                            col.Item().Text($"Email: {podmiot.DaneKontaktowe.Email}").FontSize(8);
+                        if (!string.IsNullOrEmpty(podmiot.DaneKontaktowe.Telefon))
+                            col.Item().Text($"Tel: {podmiot.DaneKontaktowe.Telefon}").FontSize(8);
+                    }
+
+                    if (!string.IsNullOrEmpty(podmiot.NrKlienta))
+                        col.Item().PaddingTop(3).Text($"Nr klienta: {podmiot.NrKlienta}").FontSize(8);
+                });
+            });
+
+            // Rola (jako osobna sekcja pod danymi kontaktowymi)
+            if (!string.IsNullOrEmpty(podmiot.Rola))
+            {
+                column.Item().PaddingTop(5).Column(col =>
+                {
+                    col.Item().Text("Rola").FontSize(9).Bold();
+                    col.Item().Text(GetRolaDescription(podmiot.Rola)).FontSize(9);
+                });
+            }
+
+            // Udział procentowy (jeśli występuje)
+            if (podmiot.UdzialProcentowy.HasValue)
+            {
+                column.Item().PaddingTop(3).Column(col =>
+                {
+                    col.Item().Text("Udział procentowy").FontSize(9).Bold();
+                    col.Item().Text($"{podmiot.UdzialProcentowy.Value:F2}%").FontSize(9);
+                });
+            }
+        });
+    }
+
+    /// <summary>
+    /// Mapuje kod roli na pełny opis słowny (według oficjalnego szablonu styl.xsl)
+    /// </summary>
+    private string GetRolaDescription(string rola)
+    {
+        return rola switch
+        {
+            "1" => "Faktor",
+            "2" => "Odbiorca (np. inny niż nabywca)",
+            "3" => "Podmiot, który został przejęty lub przekształcony",
+            "4" => "Dodatkowy nabywca (współnabywca)",
+            "5" => "Podmiot wystawiający fakturę w imieniu i na rzecz podatnika",
+            "6" => "Podmiot, na rzecz którego dokonywana jest płatność",
+            "7" => "Jednostka samorządu terytorialnego - wystawca",
+            "8" => "Jednostka samorządu terytorialnego - odbiorca",
+            "9" => "Członek grupy VAT - wystawca",
+            "10" => "Członek grupy VAT - odbiorca",
+            "11" => "Pracownik (osoba fizyczna wykonująca pracę na podstawie stosunku pracy)",
+            _ => $"Rola {rola}"
+        };
     }
 }

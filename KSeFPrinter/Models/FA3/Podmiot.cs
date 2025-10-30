@@ -42,6 +42,18 @@ public class Podmiot
     /// </summary>
     [XmlElement("GV")]
     public string? GV { get; set; }
+
+    /// <summary>
+    /// Rola podmiotu trzeciego (1-11, tylko dla Podmiot3)
+    /// </summary>
+    [XmlElement("Rola")]
+    public string? Rola { get; set; }
+
+    /// <summary>
+    /// Udział procentowy (tylko dla Podmiot3)
+    /// </summary>
+    [XmlElement("UdzialProcentowy")]
+    public decimal? UdzialProcentowy { get; set; }
 }
 
 /// <summary>
