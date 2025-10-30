@@ -174,6 +174,16 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                                 col.Item().Text($"Tel: {kontakt.Telefon}").FontSize(8);
                         }
                     }
+
+                    // Pola specjalne Podmiot2
+                    if (!string.IsNullOrEmpty(faktura.Podmiot2.NrKlienta))
+                        col.Item().PaddingTop(3).Text($"Nr klienta: {faktura.Podmiot2.NrKlienta}").FontSize(8);
+
+                    if (faktura.Podmiot2.JST == "1")
+                        col.Item().PaddingTop(2).Text("Jednostka samorządu terytorialnego").FontSize(8).Italic();
+
+                    if (faktura.Podmiot2.GV == "1")
+                        col.Item().PaddingTop(2).Text("Gospodarka wodno-ściekowa").FontSize(8).Italic();
                 });
             });
 
@@ -287,8 +297,13 @@ public class InvoicePdfGenerator : IPdfGeneratorService
         var hasReverseCharge = !string.IsNullOrEmpty(adnotacje.P_18) && adnotacje.P_18 == "1";
         var hasMarginProcedure = adnotacje.PMarzy != null && adnotacje.PMarzy.P_PMarzyN != "1";
         var hasReceiptInvoice = !string.IsNullOrEmpty(adnotacje.P_23) && adnotacje.P_23 == "1";
+        var hasExemption = !string.IsNullOrEmpty(adnotacje.P_16) && adnotacje.P_16 == "1";
+        var hasSpecialProcedure = !string.IsNullOrEmpty(adnotacje.P_17) && adnotacje.P_17 == "1";
+        var hasExemptionDetails = adnotacje.Zwolnienie != null && adnotacje.Zwolnienie.P_19N != "1";
+        var hasNewVehicles = adnotacje.NoweSrodkiTransportu != null && adnotacje.NoweSrodkiTransportu.P_22N != "1";
 
-        var hasAnyAnnotation = hasSplitPayment || hasReverseCharge || hasMarginProcedure || hasReceiptInvoice;
+        var hasAnyAnnotation = hasSplitPayment || hasReverseCharge || hasMarginProcedure || hasReceiptInvoice
+            || hasExemption || hasSpecialProcedure || hasExemptionDetails || hasNewVehicles;
 
         // Jeśli nie ma żadnych aktywnych adnotacji, nie renderuj sekcji wcale
         if (!hasAnyAnnotation)
@@ -328,6 +343,34 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             if (hasReceiptInvoice)
             {
                 column.Item().PaddingTop(3).Text("• Faktura wystawiona do paragonu")
+                    .FontSize(9);
+            }
+
+            // Zwolnienie - P_16
+            if (hasExemption)
+            {
+                column.Item().PaddingTop(3).Text("• Zwolnienie z VAT")
+                    .FontSize(9);
+            }
+
+            // Procedura szczególna - P_17
+            if (hasSpecialProcedure)
+            {
+                column.Item().PaddingTop(3).Text("• Procedura szczególna")
+                    .FontSize(9);
+            }
+
+            // Szczegóły zwolnienia - Zwolnienie.P_19N != "1"
+            if (hasExemptionDetails)
+            {
+                column.Item().PaddingTop(3).Text("• Dotyczy zwolnienia (szczegóły w podstawie prawnej)")
+                    .FontSize(9);
+            }
+
+            // Nowe środki transportu - NoweSrodkiTransportu.P_22N != "1"
+            if (hasNewVehicles)
+            {
+                column.Item().PaddingTop(3).Text("• Dotyczy nowych środków transportu")
                     .FontSize(9);
             }
         });
@@ -826,6 +869,13 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                         column.Item().PaddingTop(5).Text(string.Join(" | ", rejestry)).FontSize(8);
                     }
                 }
+            }
+
+            // SystemInfo (jeśli wypełniony)
+            if (!string.IsNullOrEmpty(faktura.Naglowek?.SystemInfo))
+            {
+                column.Item().PaddingTop(5).AlignCenter().Text($"System: {faktura.Naglowek.SystemInfo}")
+                    .FontSize(7).FontColor(Colors.Grey.Medium);
             }
 
             // Data generowania
