@@ -140,6 +140,20 @@ app.MapControllers();
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("=== KSeF Printer API ===");
 logger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
-logger.LogInformation("Swagger UI: {Url}", app.Environment.IsDevelopment() ? "https://localhost:7000" : "włączony w konfiguracji");
+
+// Wyświetl skonfigurowane URL-e
+var addresses = app.Urls;
+if (addresses.Any())
+{
+    foreach (var address in addresses)
+    {
+        logger.LogInformation("Listening on: {Address}", address);
+        logger.LogInformation("Swagger UI: {Url}", address);
+    }
+}
+else
+{
+    logger.LogInformation("Swagger UI: włączony w konfiguracji");
+}
 
 app.Run();
