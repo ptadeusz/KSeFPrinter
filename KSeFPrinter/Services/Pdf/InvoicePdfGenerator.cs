@@ -452,14 +452,82 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 row.ConstantItem(100).AlignRight().Text($"{faktura.Fa.P_15:N2} {faktura.Fa.KodWaluty}").FontSize(12).Bold();
             });
 
-            if (faktura.Fa.Rozliczenie != null && faktura.Fa.Rozliczenie.DoZaplaty != faktura.Fa.P_15)
+            // Rozliczenie - szczegółowe obciążenia i odliczenia
+            if (faktura.Fa.Rozliczenie != null)
             {
-                column.Item().PaddingTop(5).Row(row =>
+                var rozliczenie = faktura.Fa.Rozliczenie;
+                bool hasObciazenia = rozliczenie.Obciazenia != null && rozliczenie.Obciazenia.Any(o => o.Kwota > 0);
+                bool hasOdliczenia = rozliczenie.Odliczenia != null && rozliczenie.Odliczenia.Any(o => o.Kwota > 0);
+
+                if (hasObciazenia || hasOdliczenia)
                 {
-                    row.ConstantItem(150).Text("DO ZAPŁATY:").FontSize(12).Bold().FontColor(Colors.Green.Darken2);
-                    row.ConstantItem(100).AlignRight().Text($"{faktura.Fa.Rozliczenie.DoZaplaty:N2} {faktura.Fa.KodWaluty}")
-                        .FontSize(12).Bold().FontColor(Colors.Green.Darken2);
-                });
+                    column.Item().PaddingTop(10).PaddingBottom(5);
+
+                    // Obciążenia
+                    if (hasObciazenia)
+                    {
+                        column.Item().Text("Obciążenia:").FontSize(9).Bold();
+                        foreach (var obciazenie in rozliczenie.Obciazenia!.Where(o => o.Kwota > 0))
+                        {
+                            column.Item().Row(row =>
+                            {
+                                row.ConstantItem(150).PaddingLeft(10).Text($"• {obciazenie.Powod}").FontSize(9);
+                                row.ConstantItem(100).AlignRight().Text($"{obciazenie.Kwota:N2} {faktura.Fa.KodWaluty}")
+                                    .FontSize(9).FontColor(Colors.Red.Darken1);
+                            });
+                        }
+
+                        if (rozliczenie.SumaObciazen > 0)
+                        {
+                            column.Item().Row(row =>
+                            {
+                                row.ConstantItem(150).Text("Suma obciążeń:").FontSize(9).Bold();
+                                row.ConstantItem(100).AlignRight().Text($"{rozliczenie.SumaObciazen:N2} {faktura.Fa.KodWaluty}")
+                                    .FontSize(9).Bold().FontColor(Colors.Red.Darken1);
+                            });
+                        }
+
+                        column.Item().PaddingTop(5);
+                    }
+
+                    // Odliczenia
+                    if (hasOdliczenia)
+                    {
+                        column.Item().Text("Odliczenia:").FontSize(9).Bold();
+                        foreach (var odliczenie in rozliczenie.Odliczenia!.Where(o => o.Kwota > 0))
+                        {
+                            column.Item().Row(row =>
+                            {
+                                row.ConstantItem(150).PaddingLeft(10).Text($"• {odliczenie.Powod}").FontSize(9);
+                                row.ConstantItem(100).AlignRight().Text($"-{odliczenie.Kwota:N2} {faktura.Fa.KodWaluty}")
+                                    .FontSize(9).FontColor(Colors.Green.Darken1);
+                            });
+                        }
+
+                        if (rozliczenie.SumaOdliczen > 0)
+                        {
+                            column.Item().Row(row =>
+                            {
+                                row.ConstantItem(150).Text("Suma odliczeń:").FontSize(9).Bold();
+                                row.ConstantItem(100).AlignRight().Text($"-{rozliczenie.SumaOdliczen:N2} {faktura.Fa.KodWaluty}")
+                                    .FontSize(9).Bold().FontColor(Colors.Green.Darken1);
+                            });
+                        }
+
+                        column.Item().PaddingTop(5);
+                    }
+                }
+
+                // DO ZAPŁATY (zawsze jeśli jest Rozliczenie)
+                if (rozliczenie.DoZaplaty != faktura.Fa.P_15)
+                {
+                    column.Item().PaddingTop(5).Row(row =>
+                    {
+                        row.ConstantItem(150).Text("DO ZAPŁATY:").FontSize(12).Bold().FontColor(Colors.Blue.Darken2);
+                        row.ConstantItem(100).AlignRight().Text($"{rozliczenie.DoZaplaty:N2} {faktura.Fa.KodWaluty}")
+                            .FontSize(12).Bold().FontColor(Colors.Blue.Darken2);
+                    });
+                }
             }
         });
     }
@@ -482,12 +550,73 @@ public class InvoicePdfGenerator : IPdfGeneratorService
 
             column.Item().Text($"Forma płatności: {Models.Common.FormaPlatnosci.GetOpis(platnosc.FormaPlatnosci)}").FontSize(9);
 
-            if (platnosc.RachunekBankowy != null)
+            // Kwota zapłacona (dla faktur częściowo/całkowicie opłaconych)
+            if (platnosc.KwotaZaplacona.HasValue && platnosc.KwotaZaplacona.Value > 0)
             {
-                column.Item().PaddingTop(5).Text("Dane do przelewu:").FontSize(9).Bold();
-                column.Item().Text($"Nr rachunku: {platnosc.RachunekBankowy.NrRB}").FontSize(9);
-                if (!string.IsNullOrEmpty(platnosc.RachunekBankowy.NazwaBanku))
-                    column.Item().Text($"Bank: {platnosc.RachunekBankowy.NazwaBanku}").FontSize(8);
+                column.Item().PaddingTop(3).Text($"Kwota zapłacona: {platnosc.KwotaZaplacona.Value:N2} {faktura.Fa.KodWaluty}")
+                    .FontSize(9).FontColor(Colors.Green.Darken2).Bold();
+            }
+
+            // Rachunki bankowe (do 100)
+            if (platnosc.RachunekBankowy != null && platnosc.RachunekBankowy.Any())
+            {
+                column.Item().PaddingTop(5).Text(platnosc.RachunekBankowy.Count > 1
+                    ? $"Dane do przelewu ({platnosc.RachunekBankowy.Count} rachunków):"
+                    : "Dane do przelewu:").FontSize(9).Bold();
+
+                for (int i = 0; i < platnosc.RachunekBankowy.Count; i++)
+                {
+                    var rachunek = platnosc.RachunekBankowy[i];
+
+                    if (i > 0)
+                        column.Item().PaddingTop(5);
+
+                    if (platnosc.RachunekBankowy.Count > 1)
+                        column.Item().Text($"Rachunek {i + 1}:").FontSize(8).Bold();
+
+                    column.Item().Text($"Nr rachunku: {rachunek.NrRB}").FontSize(9);
+
+                    if (!string.IsNullOrEmpty(rachunek.NazwaBanku))
+                        column.Item().Text($"Bank: {rachunek.NazwaBanku}").FontSize(8);
+
+                    // SWIFT (dla rachunków zagranicznych)
+                    if (!string.IsNullOrEmpty(rachunek.SWIFT))
+                        column.Item().Text($"SWIFT/BIC: {rachunek.SWIFT}").FontSize(8);
+
+                    // Opis rachunku (np. "PLN", "EUR", "Rachunek dewizowy")
+                    if (!string.IsNullOrEmpty(rachunek.OpisRachunku))
+                        column.Item().Text($"Opis: {rachunek.OpisRachunku}").FontSize(8).FontColor(Colors.Grey.Darken1);
+                }
+            }
+
+            // Rachunki faktora (do 20)
+            if (platnosc.RachunekBankowyFaktora != null && platnosc.RachunekBankowyFaktora.Any())
+            {
+                column.Item().PaddingTop(5).Text(platnosc.RachunekBankowyFaktora.Count > 1
+                    ? $"Rachunki faktora ({platnosc.RachunekBankowyFaktora.Count}):"
+                    : "Rachunek faktora:").FontSize(9).Bold().FontColor(Colors.Orange.Darken2);
+
+                for (int i = 0; i < platnosc.RachunekBankowyFaktora.Count; i++)
+                {
+                    var rachunek = platnosc.RachunekBankowyFaktora[i];
+
+                    if (i > 0)
+                        column.Item().PaddingTop(5);
+
+                    if (platnosc.RachunekBankowyFaktora.Count > 1)
+                        column.Item().Text($"Rachunek faktora {i + 1}:").FontSize(8).Bold();
+
+                    column.Item().Text($"Nr rachunku: {rachunek.NrRB}").FontSize(9);
+
+                    if (!string.IsNullOrEmpty(rachunek.NazwaBanku))
+                        column.Item().Text($"Bank: {rachunek.NazwaBanku}").FontSize(8);
+
+                    if (!string.IsNullOrEmpty(rachunek.SWIFT))
+                        column.Item().Text($"SWIFT/BIC: {rachunek.SWIFT}").FontSize(8);
+
+                    if (!string.IsNullOrEmpty(rachunek.OpisRachunku))
+                        column.Item().Text($"Opis: {rachunek.OpisRachunku}").FontSize(8).FontColor(Colors.Grey.Darken1);
+                }
             }
         });
     }

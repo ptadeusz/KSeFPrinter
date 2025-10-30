@@ -20,10 +20,16 @@ public class Platnosc
     public string FormaPlatnosci { get; set; } = null!;
 
     /// <summary>
-    /// Rachunek bankowy
+    /// Rachunki bankowe (do 100 rachunków)
     /// </summary>
     [XmlElement("RachunekBankowy")]
-    public RachunekBankowy? RachunekBankowy { get; set; }
+    public List<RachunekBankowy>? RachunekBankowy { get; set; }
+
+    /// <summary>
+    /// Rachunki bankowe faktora (do 20 rachunków)
+    /// </summary>
+    [XmlElement("RachunekBankowyFaktora")]
+    public List<RachunekBankowy>? RachunekBankowyFaktora { get; set; }
 
     /// <summary>
     /// Kwota zapłacona (dla faktur częściowo lub całkowicie opłaconych)

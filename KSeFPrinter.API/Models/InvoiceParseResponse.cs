@@ -91,5 +91,6 @@ public class PaymentInfo
 {
     public DateTime? DueDate { get; set; }
     public string? PaymentMethod { get; set; }
-    public string? BankAccount { get; set; }
+    public List<string>? BankAccounts { get; set; }
+    public List<string>? FactorBankAccounts { get; set; }
 }

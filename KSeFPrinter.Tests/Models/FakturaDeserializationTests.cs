@@ -155,7 +155,8 @@ public class FakturaDeserializationTests
         platnosc.Should().NotBeNull();
         platnosc!.FormaPlatnosci.Should().Be("6"); // Przelew
         platnosc.RachunekBankowy.Should().NotBeNull();
-        platnosc.RachunekBankowy!.NrRB.Should().Be("73111111111111111111111111");
+        platnosc.RachunekBankowy.Should().HaveCountGreaterThan(0);
+        platnosc.RachunekBankowy![0].NrRB.Should().Be("73111111111111111111111111");
     }
 
     [Fact]

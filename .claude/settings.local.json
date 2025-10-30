@@ -17,7 +17,14 @@
       "Bash(powershell -ExecutionPolicy Bypass -File test-api-generate.ps1:*)",
       "Bash(powershell -ExecutionPolicy Bypass -File test-api-simple.ps1:*)",
       "Bash(move examplesxmlFakturaTEST017.pdf examplesoutputFakturaTEST017_Faza2_Simple.pdf)",
-      "Bash(move:*)"
+      "Bash(move:*)",
+      "Bash(.ksef-pdf.exe:*)",
+      "Bash(./ksef-pdf.exe:*)",
+      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_Rozliczenie.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_Rozliczenie_Final.pdf\")",
+      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" --help)",
+      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_Rozliczenie.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_Rozliczenie_Final.pdf\" --no-validate)",
+      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\":*)",
+      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_WieleRachunkow.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_WieleRachunkow.pdf\" --no-validate)"
     ],
     "deny": [],
     "ask": []

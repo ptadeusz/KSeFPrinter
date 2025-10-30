@@ -148,7 +148,8 @@ public class InvoiceController : ControllerBase
                 {
                     DueDate = faktura.Fa.Platnosc.TerminPlatnosci?.Termin,
                     PaymentMethod = faktura.Fa.Platnosc.FormaPlatnosci,
-                    BankAccount = faktura.Fa.Platnosc.RachunekBankowy?.NrRB
+                    BankAccounts = faktura.Fa.Platnosc.RachunekBankowy?.Select(r => r.NrRB).ToList(),
+                    FactorBankAccounts = faktura.Fa.Platnosc.RachunekBankowyFaktora?.Select(r => r.NrRB).ToList()
                 } : null
             };
 
