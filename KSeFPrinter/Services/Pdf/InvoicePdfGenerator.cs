@@ -238,27 +238,45 @@ public class InvoicePdfGenerator : IPdfGeneratorService
 
             if (isCorrectionInvoice && faktura.Fa.FaKorygowana != null)
             {
-                column.Item().PaddingTop(10).BorderTop(1).BorderColor(Colors.Red.Darken2).PaddingTop(10)
-                    .Background(Colors.Red.Lighten4).Padding(10).Column(col =>
+                column.Item().PaddingTop(10).BorderTop(1).BorderColor(Colors.Grey.Darken1).PaddingTop(10)
+                    .Background(Colors.Grey.Lighten4).Padding(10).Column(col =>
                 {
-                    col.Item().Text("FAKTURA KORYGUJĄCA").FontSize(12).Bold().FontColor(Colors.Red.Darken3);
+                    col.Item().Text("Faktura korygująca").FontSize(11).Bold();
 
                     var fk = faktura.Fa.FaKorygowana;
 
                     if (!string.IsNullOrEmpty(fk.NrFaKorygowanej))
-                        col.Item().PaddingTop(3).Text($"Koryguje fakturę: {fk.NrFaKorygowanej}").FontSize(9);
+                    {
+                        col.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.ConstantItem(130).Text("Do faktury nr:").FontSize(9);
+                            row.RelativeItem().Text(fk.NrFaKorygowanej).FontSize(9);
+                        });
+                    }
 
                     if (fk.DataWystFaKorygowanej.HasValue)
-                        col.Item().Text($"z dnia: {fk.DataWystFaKorygowanej.Value:dd.MM.yyyy}").FontSize(9);
+                    {
+                        col.Item().Row(row =>
+                        {
+                            row.ConstantItem(130).Text("z dnia:").FontSize(9);
+                            row.RelativeItem().Text(fk.DataWystFaKorygowanej.Value.ToString("dd.MM.yyyy")).FontSize(9);
+                        });
+                    }
 
                     if (!string.IsNullOrEmpty(fk.NrKSeFFaKorygowanej))
-                        col.Item().Text($"Nr KSeF faktury korygowanej: {fk.NrKSeFFaKorygowanej}").FontSize(8).FontColor(Colors.Grey.Darken2);
+                    {
+                        col.Item().Row(row =>
+                        {
+                            row.ConstantItem(130).Text("Nr KSeF:").FontSize(8);
+                            row.RelativeItem().Text(fk.NrKSeFFaKorygowanej).FontSize(8);
+                        });
+                    }
 
                     // PrzyczynaKorekty jest w Fa, nie w FaKorygowana
                     if (!string.IsNullOrEmpty(faktura.Fa.PrzyczynaKorekty))
                     {
-                        col.Item().PaddingTop(5).Text("Przyczyna korekty:").FontSize(9).Bold();
-                        col.Item().PaddingTop(2).Text(faktura.Fa.PrzyczynaKorekty).FontSize(9).Italic();
+                        col.Item().PaddingTop(8).Text("Przyczyna korekty:").FontSize(9).Bold();
+                        col.Item().PaddingTop(3).Text(faktura.Fa.PrzyczynaKorekty).FontSize(9);
                     }
                 });
             }
@@ -438,6 +456,17 @@ public class InvoicePdfGenerator : IPdfGeneratorService
     /// </summary>
     private void ComposeItemsTable(IContainer container, Models.FA3.Faktura faktura)
     {
+        // Sprawdź czy to faktura korygująca z wierszami StanPrzed
+        var rodzajFaktury = faktura.Fa.RodzajFaktury?.ToUpper();
+        bool isCorrectionInvoice = rodzajFaktury == "KOR" || rodzajFaktury == "KOR_ZAL" || rodzajFaktury == "KOR_ROZ";
+        bool hasBeforeAfterLines = faktura.Fa.FaWiersz.Any(w => w.StanPrzed == "1");
+
+        if (isCorrectionInvoice && hasBeforeAfterLines)
+        {
+            ComposeItemsTableWithCorrection(container, faktura);
+            return;
+        }
+
         container.Table(table =>
         {
             table.ColumnsDefinition(columns =>
@@ -527,28 +556,239 @@ public class InvoicePdfGenerator : IPdfGeneratorService
     }
 
     /// <summary>
+    /// Komponuje 3 osobne tabele dla faktury korygującej: PRZED / RÓŻNICA / PO
+    /// </summary>
+    private void ComposeItemsTableWithCorrection(IContainer container, Models.FA3.Faktura faktura)
+    {
+        // Grupowanie wierszy przed/po
+        var wiersze = faktura.Fa.FaWiersz;
+        var grupy = new List<(Models.FA3.FaWiersz? przed, Models.FA3.FaWiersz? po)>();
+
+        for (int i = 0; i < wiersze.Count; i++)
+        {
+            var wiersz = wiersze[i];
+
+            if (wiersz.StanPrzed == "1")
+            {
+                var wierszPo = i + 1 < wiersze.Count && wiersze[i + 1].StanPrzed != "1" ? wiersze[i + 1] : null;
+                grupy.Add((wiersz, wierszPo));
+                if (wierszPo != null) i++;
+            }
+            else
+            {
+                grupy.Add((null, wiersz));
+            }
+        }
+
+        container.Column(column =>
+        {
+            // 1. TABELA: Stan PRZED korektą
+            column.Item().Text("Stan przed korektą").FontSize(10).Bold();
+            column.Item().PaddingTop(5).Table(table =>
+            {
+                DefineStandardColumns(table);
+                RenderStandardTableHeader(table);
+
+                int lp = 1;
+                foreach (var (przed, _) in grupy)
+                {
+                    if (przed != null)
+                    {
+                        RenderStandardRow(table, lp++, przed);
+                    }
+                }
+            });
+
+            // 2. TABELA: Różnice (korekta)
+            column.Item().PaddingTop(15).Text("Wartość korekty").FontSize(10).Bold();
+            column.Item().PaddingTop(5).Table(table =>
+            {
+                DefineStandardColumns(table);
+                RenderStandardTableHeader(table);
+
+                int lp = 1;
+                foreach (var (przed, po) in grupy)
+                {
+                    if (przed != null && po != null)
+                    {
+                        RenderDifferenceRow(table, lp++, przed, po);
+                    }
+                }
+            });
+
+            // 3. TABELA: Stan PO korekcie (wszystkie pozycje - zmienione i niezmienione)
+            column.Item().PaddingTop(15).Text("Stan po korekcie").FontSize(10).Bold();
+            column.Item().PaddingTop(5).Table(table =>
+            {
+                DefineStandardColumns(table);
+                RenderStandardTableHeader(table);
+
+                int lp = 1;
+                foreach (var (przed, po) in grupy)
+                {
+                    // Jeśli jest para (przed, po) - pokazujemy PO
+                    // Jeśli jest tylko przed (bez zmian) - pokazujemy PRZED (bo to jest stan PO)
+                    var wierszDoWyswietlenia = po ?? przed;
+                    if (wierszDoWyswietlenia != null)
+                    {
+                        RenderStandardRow(table, lp++, wierszDoWyswietlenia);
+                    }
+                }
+            });
+        });
+    }
+
+    private void DefineStandardColumns(TableDescriptor table)
+    {
+        table.ColumnsDefinition(columns =>
+        {
+            columns.ConstantColumn(25);      // Lp
+            columns.ConstantColumn(60);      // Kod
+            columns.RelativeColumn(3);       // Nazwa
+            columns.ConstantColumn(40);      // JM
+            columns.ConstantColumn(50);      // Ilość
+            columns.ConstantColumn(60);      // Cena jedn.
+            columns.ConstantColumn(70);      // Wartość netto
+            columns.ConstantColumn(40);      // VAT%
+        });
+    }
+
+    private void RenderStandardTableHeader(TableDescriptor table)
+    {
+        table.Header(header =>
+        {
+            header.Cell().Background(Colors.Grey.Lighten3).Padding(5).AlignCenter().Text("Lp.").FontSize(8).Bold();
+            header.Cell().Background(Colors.Grey.Lighten3).Padding(5).AlignCenter().Text("Kod").FontSize(8).Bold();
+            header.Cell().Background(Colors.Grey.Lighten3).Padding(5).Text("Nazwa towaru/usługi").FontSize(8).Bold();
+            header.Cell().Background(Colors.Grey.Lighten3).Padding(5).AlignCenter().Text("JM").FontSize(8).Bold();
+            header.Cell().Background(Colors.Grey.Lighten3).Padding(5).AlignRight().Text("Ilość").FontSize(8).Bold();
+            header.Cell().Background(Colors.Grey.Lighten3).Padding(5).AlignRight().Text("Cena jedn.").FontSize(8).Bold();
+            header.Cell().Background(Colors.Grey.Lighten3).Padding(5).AlignRight().Text("Wartość netto").FontSize(8).Bold();
+            header.Cell().Background(Colors.Grey.Lighten3).Padding(5).AlignCenter().Text("VAT%").FontSize(8).Bold();
+        });
+    }
+
+    private void RenderStandardRow(TableDescriptor table, int lp, Models.FA3.FaWiersz wiersz)
+    {
+        // Lp
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignCenter().Text(lp.ToString()).FontSize(8);
+
+        // Kod
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .Text(wiersz.P_6A ?? "").FontSize(7);
+
+        // Nazwa
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .Text(wiersz.P_7).FontSize(8);
+
+        // JM
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignCenter().Text(wiersz.P_8A ?? "").FontSize(8);
+
+        // Ilość
+        var ilosc = wiersz.P_8B.HasValue ? wiersz.P_8B.Value.ToString("N2") : "";
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignRight().Text(ilosc).FontSize(8);
+
+        // Cena jedn.
+        var cena = wiersz.P_9A.HasValue ? wiersz.P_9A.Value.ToString("N2") : "";
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignRight().Text(cena).FontSize(8);
+
+        // Wartość netto
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignRight().Text(wiersz.P_11.ToString("N2")).FontSize(8);
+
+        // VAT%
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignCenter().Text(wiersz.P_12).FontSize(8);
+    }
+
+    private void RenderDifferenceRow(TableDescriptor table, int lp, Models.FA3.FaWiersz przed, Models.FA3.FaWiersz po)
+    {
+        // Lp
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignCenter().Text(lp.ToString()).FontSize(8);
+
+        // Kod
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .Text(po.P_6A ?? "").FontSize(7);
+
+        // Nazwa
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .Text(po.P_7).FontSize(8);
+
+        // JM
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignCenter().Text(po.P_8A ?? "").FontSize(8);
+
+        // Różnica ilości
+        var roznicaIlosc = (po.P_8B ?? 0) - (przed.P_8B ?? 0);
+        var iloscText = roznicaIlosc != 0
+            ? (roznicaIlosc > 0 ? "+" : "") + roznicaIlosc.ToString("N2")
+            : "";
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignRight().Text(iloscText).FontSize(8);
+
+        // Różnica ceny
+        var roznicaCena = (po.P_9A ?? 0) - (przed.P_9A ?? 0);
+        var cenaText = roznicaCena != 0
+            ? (roznicaCena > 0 ? "+" : "") + roznicaCena.ToString("N2")
+            : "";
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignRight().Text(cenaText).FontSize(8);
+
+        // Różnica wartości netto
+        var roznicaNetto = po.P_11 - przed.P_11;
+        var nettoText = (roznicaNetto > 0 ? "+" : "") + roznicaNetto.ToString("N2");
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignRight().Text(nettoText).FontSize(8).Bold();
+
+        // VAT%
+        table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5)
+            .AlignCenter().Text(po.P_12).FontSize(8);
+    }
+
+
+    /// <summary>
     /// Komponuje podsumowanie kwot
     /// </summary>
     private void ComposeSummary(IContainer container, Models.FA3.Faktura faktura)
     {
+        var rodzajFaktury = faktura.Fa.RodzajFaktury?.ToUpper();
+        bool isCorrectionInvoice = rodzajFaktury == "KOR" || rodzajFaktury == "KOR_ZAL" || rodzajFaktury == "KOR_ROZ";
+
         container.AlignRight().Column(column =>
         {
             column.Item().Row(row =>
             {
-                row.ConstantItem(150).Text("Suma netto:").FontSize(10);
-                row.ConstantItem(100).AlignRight().Text($"{faktura.Fa.P_13_1:N2} {faktura.Fa.KodWaluty}").FontSize(10);
+                var label = isCorrectionInvoice ? "Różnica netto:" : "Suma netto:";
+                row.ConstantItem(150).Text(label).FontSize(10);
+
+                var nettoPrefix = isCorrectionInvoice && faktura.Fa.P_13_1 >= 0 ? "+" : "";
+                row.ConstantItem(100).AlignRight().Text($"{nettoPrefix}{faktura.Fa.P_13_1:N2} {faktura.Fa.KodWaluty}")
+                    .FontSize(10);
             });
 
             column.Item().Row(row =>
             {
-                row.ConstantItem(150).Text("Podatek VAT:").FontSize(10);
-                row.ConstantItem(100).AlignRight().Text($"{faktura.Fa.P_14_1:N2} {faktura.Fa.KodWaluty}").FontSize(10);
+                var label = isCorrectionInvoice ? "Różnica VAT:" : "Podatek VAT:";
+                row.ConstantItem(150).Text(label).FontSize(10);
+
+                var vatPrefix = isCorrectionInvoice && faktura.Fa.P_14_1 >= 0 ? "+" : "";
+                row.ConstantItem(100).AlignRight().Text($"{vatPrefix}{faktura.Fa.P_14_1:N2} {faktura.Fa.KodWaluty}")
+                    .FontSize(10);
             });
 
             column.Item().PaddingTop(5).Row(row =>
             {
-                row.ConstantItem(150).Text("RAZEM BRUTTO:").FontSize(12).Bold();
-                row.ConstantItem(100).AlignRight().Text($"{faktura.Fa.P_15:N2} {faktura.Fa.KodWaluty}").FontSize(12).Bold();
+                var label = isCorrectionInvoice ? "RÓŻNICA BRUTTO:" : "RAZEM BRUTTO:";
+                row.ConstantItem(150).Text(label).FontSize(12).Bold();
+
+                var bruttoPrefix = isCorrectionInvoice && faktura.Fa.P_15 >= 0 ? "+" : "";
+                row.ConstantItem(100).AlignRight().Text($"{bruttoPrefix}{faktura.Fa.P_15:N2} {faktura.Fa.KodWaluty}")
+                    .FontSize(12).Bold();
             });
 
             // Rozliczenie - szczegółowe obciążenia i odliczenia
