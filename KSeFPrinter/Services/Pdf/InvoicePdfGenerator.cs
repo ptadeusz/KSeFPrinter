@@ -227,6 +227,12 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 column.Item().PaddingTop(10).Element(c => ComposeAnnotations(c, faktura));
             }
 
+            // Dodatkowe opisy (jeśli są wypełnione)
+            if (faktura.Fa.DodatkowyOpis != null && faktura.Fa.DodatkowyOpis.Any())
+            {
+                column.Item().PaddingTop(10).Element(c => ComposeDodatkowyOpis(c, faktura));
+            }
+
             // Płatność
             if (faktura.Fa.Platnosc != null)
             {
@@ -297,6 +303,32 @@ public class InvoicePdfGenerator : IPdfGeneratorService
     }
 
     /// <summary>
+    /// Komponuje dodatkowe opisy faktury
+    /// </summary>
+    private void ComposeDodatkowyOpis(IContainer container, Models.FA3.Faktura faktura)
+    {
+        var opisy = faktura.Fa.DodatkowyOpis!;
+
+        // Księgowy styl - delikatna szara ramka z jasnym tłem
+        container.Border(0.5f).BorderColor(Colors.Grey.Lighten2)
+            .Background(Colors.Grey.Lighten4).Padding(8).Column(column =>
+        {
+            // Nagłówek sekcji
+            column.Item().Text("Informacje dodatkowe:").FontSize(9).Bold();
+
+            // Każda para klucz-wartość
+            foreach (var opis in opisy)
+            {
+                column.Item().PaddingTop(3).Text(text =>
+                {
+                    text.Span($"{opis.Klucz}: ").FontSize(9).SemiBold();
+                    text.Span(opis.Wartosc).FontSize(9);
+                });
+            }
+        });
+    }
+
+    /// <summary>
     /// Komponuje tabelę pozycji faktury
     /// </summary>
     private void ComposeItemsTable(IContainer container, Models.FA3.Faktura faktura)
@@ -330,7 +362,7 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 // Lp.
                 table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(wiersz.NrWierszaFa.ToString()).FontSize(9);
 
-                // Nazwa towaru/usługi (z opcjonalnym kodem towaru i GTU)
+                // Nazwa towaru/usługi (z opcjonalnymi kodami)
                 table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).Column(col =>
                 {
                     col.Item().Text(wiersz.P_7).FontSize(9);
@@ -346,6 +378,18 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                     {
                         col.Item().Text($"GTU: {wiersz.GTU}").FontSize(7).FontColor(Colors.Grey.Darken1);
                     }
+
+                    // CN (kod nomenklatury celnej) - jeśli wypełniony
+                    if (!string.IsNullOrEmpty(wiersz.CN))
+                    {
+                        col.Item().Text($"CN: {wiersz.CN}").FontSize(7).FontColor(Colors.Grey.Darken1);
+                    }
+
+                    // PKOB (klasyfikacja obiektów budowlanych) - jeśli wypełniony
+                    if (!string.IsNullOrEmpty(wiersz.PKOB))
+                    {
+                        col.Item().Text($"PKOB: {wiersz.PKOB}").FontSize(7).FontColor(Colors.Grey.Darken1);
+                    }
                 });
 
                 // Ilość (z opcjonalną jednostką miary)
@@ -359,8 +403,17 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 // Cena jednostkowa
                 table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text(wiersz.P_9A?.ToString("N2") ?? "-").FontSize(9);
 
-                // Wartość netto
-                table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text(wiersz.P_11.ToString("N2")).FontSize(9);
+                // Wartość netto (opcjonalnie z brutto)
+                table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Column(col =>
+                {
+                    col.Item().Text(wiersz.P_11.ToString("N2")).FontSize(9);
+
+                    // P_11A (wartość brutto) - jeśli wypełnione
+                    if (wiersz.P_11A.HasValue)
+                    {
+                        col.Item().Text($"brutto: {wiersz.P_11A.Value:N2}").FontSize(7).FontColor(Colors.Grey.Darken1);
+                    }
+                });
 
                 // VAT %
                 table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignCenter().Text(wiersz.P_12).FontSize(9);
