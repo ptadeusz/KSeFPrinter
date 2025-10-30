@@ -8,10 +8,10 @@ namespace KSeFPrinter.Models.FA3;
 public class Platnosc
 {
     /// <summary>
-    /// Termin płatności
+    /// Terminy płatności (do 100 - np. raty)
     /// </summary>
     [XmlElement("TerminPlatnosci")]
-    public TerminPlatnosci? TerminPlatnosci { get; set; }
+    public List<TerminPlatnosci>? TerminPlatnosci { get; set; }
 
     /// <summary>
     /// Forma płatności (kod numeryczny)
@@ -47,7 +47,37 @@ public class TerminPlatnosci
     /// Data terminu płatności
     /// </summary>
     [XmlElement("Termin", DataType = "date")]
-    public DateTime Termin { get; set; }
+    public DateTime? Termin { get; set; }
+
+    /// <summary>
+    /// Opis terminu płatności (alternatywa dla daty)
+    /// </summary>
+    [XmlElement("TerminOpis")]
+    public TerminOpis? TerminOpis { get; set; }
+}
+
+/// <summary>
+/// Opisowy termin płatności (np. "30 dni od dostawy")
+/// </summary>
+public class TerminOpis
+{
+    /// <summary>
+    /// Liczba jednostek
+    /// </summary>
+    [XmlElement("Ilosc")]
+    public int Ilosc { get; set; }
+
+    /// <summary>
+    /// Jednostka czasu (dni, tygodni, miesięcy)
+    /// </summary>
+    [XmlElement("Jednostka")]
+    public string Jednostka { get; set; } = null!;
+
+    /// <summary>
+    /// Zdarzenie początkowe (np. "od daty wystawienia", "od daty dostawy")
+    /// </summary>
+    [XmlElement("ZdarzeniePoczatkowe")]
+    public string ZdarzeniePoczatkowe { get; set; } = null!;
 }
 
 /// <summary>

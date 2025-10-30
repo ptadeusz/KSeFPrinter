@@ -28,10 +28,10 @@ public class Faktura
     public Podmiot Podmiot2 { get; set; } = null!;
 
     /// <summary>
-    /// Podmiot 3 - Opcjonalny podmiot trzeci
+    /// Podmiot 3 - Opcjonalne podmioty trzecie (do 100)
     /// </summary>
     [XmlElement("Podmiot3")]
-    public Podmiot? Podmiot3 { get; set; }
+    public List<Podmiot>? Podmiot3 { get; set; }
 
     /// <summary>
     /// Główne dane faktury

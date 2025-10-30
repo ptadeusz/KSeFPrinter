@@ -90,6 +90,18 @@ public class Fa
     /// </summary>
     [XmlElement("Platnosc")]
     public Platnosc? Platnosc { get; set; }
+
+    /// <summary>
+    /// Umowy związane z fakturą (do 100)
+    /// </summary>
+    [XmlElement("Umowy")]
+    public List<Umowa>? Umowy { get; set; }
+
+    /// <summary>
+    /// Zamówienia związane z fakturą (do 100)
+    /// </summary>
+    [XmlElement("Zamowienia")]
+    public List<Zamowienie>? Zamowienia { get; set; }
 }
 
 /// <summary>
@@ -216,4 +228,40 @@ public class DodatkowyOpis
     /// </summary>
     [XmlElement("Wartosc")]
     public string Wartosc { get; set; } = null!;
+}
+
+/// <summary>
+/// Umowa związana z fakturą
+/// </summary>
+public class Umowa
+{
+    /// <summary>
+    /// Data umowy
+    /// </summary>
+    [XmlElement("DataUmowy", DataType = "date")]
+    public DateTime? DataUmowy { get; set; }
+
+    /// <summary>
+    /// Numer umowy
+    /// </summary>
+    [XmlElement("NrUmowy")]
+    public string? NrUmowy { get; set; }
+}
+
+/// <summary>
+/// Zamówienie związane z fakturą
+/// </summary>
+public class Zamowienie
+{
+    /// <summary>
+    /// Data zamówienia
+    /// </summary>
+    [XmlElement("DataZamowienia", DataType = "date")]
+    public DateTime? DataZamowienia { get; set; }
+
+    /// <summary>
+    /// Numer zamówienia
+    /// </summary>
+    [XmlElement("NrZamowienia")]
+    public string? NrZamowienia { get; set; }
 }

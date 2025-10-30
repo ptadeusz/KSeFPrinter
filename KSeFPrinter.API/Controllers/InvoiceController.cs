@@ -117,16 +117,16 @@ public class InvoiceController : ControllerBase
                     Name = faktura.Podmiot1.DaneIdentyfikacyjne.Nazwa,
                     Nip = faktura.Podmiot1.DaneIdentyfikacyjne.NIP,
                     Address = $"{faktura.Podmiot1.Adres?.AdresL1}, {faktura.Podmiot1.Adres?.AdresL2}".Trim(',', ' '),
-                    Email = faktura.Podmiot1.DaneKontaktowe?.Email,
-                    Phone = faktura.Podmiot1.DaneKontaktowe?.Telefon
+                    Email = faktura.Podmiot1.DaneKontaktowe?.FirstOrDefault()?.Email,
+                    Phone = faktura.Podmiot1.DaneKontaktowe?.FirstOrDefault()?.Telefon
                 },
                 Buyer = new BuyerInfo
                 {
                     Name = faktura.Podmiot2.DaneIdentyfikacyjne.Nazwa,
                     Nip = faktura.Podmiot2.DaneIdentyfikacyjne.NIP,
                     Address = $"{faktura.Podmiot2.Adres?.AdresL1}, {faktura.Podmiot2.Adres?.AdresL2}".Trim(',', ' '),
-                    Email = faktura.Podmiot2.DaneKontaktowe?.Email,
-                    Phone = faktura.Podmiot2.DaneKontaktowe?.Telefon
+                    Email = faktura.Podmiot2.DaneKontaktowe?.FirstOrDefault()?.Email,
+                    Phone = faktura.Podmiot2.DaneKontaktowe?.FirstOrDefault()?.Telefon
                 },
                 Lines = faktura.Fa.FaWiersz.Select(w => new InvoiceLineInfo
                 {
@@ -146,7 +146,10 @@ public class InvoiceController : ControllerBase
                 },
                 Payment = faktura.Fa.Platnosc != null ? new PaymentInfo
                 {
-                    DueDate = faktura.Fa.Platnosc.TerminPlatnosci?.Termin,
+                    DueDates = faktura.Fa.Platnosc.TerminPlatnosci?
+                        .Where(t => t.Termin.HasValue)
+                        .Select(t => t.Termin!.Value)
+                        .ToList(),
                     PaymentMethod = faktura.Fa.Platnosc.FormaPlatnosci,
                     BankAccounts = faktura.Fa.Platnosc.RachunekBankowy?.Select(r => r.NrRB).ToList(),
                     FactorBankAccounts = faktura.Fa.Platnosc.RachunekBankowyFaktora?.Select(r => r.NrRB).ToList()

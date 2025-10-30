@@ -20,10 +20,10 @@ public class Podmiot
     public Adres Adres { get; set; } = null!;
 
     /// <summary>
-    /// Dane kontaktowe (email, telefon)
+    /// Dane kontaktowe (email, telefon) - do 3 zestawów
     /// </summary>
     [XmlElement("DaneKontaktowe")]
-    public DaneKontaktowe? DaneKontaktowe { get; set; }
+    public List<DaneKontaktowe>? DaneKontaktowe { get; set; }
 
     /// <summary>
     /// Numer klienta (opcjonalny, dla Podmiot2)

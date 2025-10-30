@@ -94,7 +94,8 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 page.PageColor(Colors.White);
                 page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Calibri"));
 
-                page.Header().Element(c => ComposeHeader(c, faktura, context.Metadata));
+                // Header pusty - wszystkie dane są w Content
+                page.Header().Height(0);
                 page.Content().Element(c => ComposeContent(c, faktura, context, options));
                 page.Footer().Element(c => ComposeFooter(c, faktura));
             });
@@ -102,9 +103,9 @@ public class InvoicePdfGenerator : IPdfGeneratorService
     }
 
     /// <summary>
-    /// Komponuje nagłówek strony
+    /// Komponuje nagłówek faktury z podmiotami (tylko pierwsza strona)
     /// </summary>
-    private void ComposeHeader(IContainer container, Models.FA3.Faktura faktura, KSeFMetadata metadata)
+    private void ComposeInvoiceHeader(IContainer container, Models.FA3.Faktura faktura, KSeFMetadata metadata)
     {
         container.Column(column =>
         {
@@ -130,12 +131,15 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                         adresL2 += $", {faktura.Podmiot1.Adres.KodKraju}";
                     col.Item().Text(adresL2).FontSize(9);
 
-                    if (faktura.Podmiot1.DaneKontaktowe != null)
+                    if (faktura.Podmiot1.DaneKontaktowe != null && faktura.Podmiot1.DaneKontaktowe.Any())
                     {
-                        if (!string.IsNullOrEmpty(faktura.Podmiot1.DaneKontaktowe.Email))
-                            col.Item().Text($"Email: {faktura.Podmiot1.DaneKontaktowe.Email}").FontSize(8);
-                        if (!string.IsNullOrEmpty(faktura.Podmiot1.DaneKontaktowe.Telefon))
-                            col.Item().Text($"Tel: {faktura.Podmiot1.DaneKontaktowe.Telefon}").FontSize(8);
+                        foreach (var kontakt in faktura.Podmiot1.DaneKontaktowe)
+                        {
+                            if (!string.IsNullOrEmpty(kontakt.Email))
+                                col.Item().Text($"Email: {kontakt.Email}").FontSize(8);
+                            if (!string.IsNullOrEmpty(kontakt.Telefon))
+                                col.Item().Text($"Tel: {kontakt.Telefon}").FontSize(8);
+                        }
                     }
                 });
 
@@ -160,20 +164,26 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                         adresL2 += $", {faktura.Podmiot2.Adres.KodKraju}";
                     col.Item().Text(adresL2).FontSize(9);
 
-                    if (faktura.Podmiot2.DaneKontaktowe != null)
+                    if (faktura.Podmiot2.DaneKontaktowe != null && faktura.Podmiot2.DaneKontaktowe.Any())
                     {
-                        if (!string.IsNullOrEmpty(faktura.Podmiot2.DaneKontaktowe.Email))
-                            col.Item().Text($"Email: {faktura.Podmiot2.DaneKontaktowe.Email}").FontSize(8);
-                        if (!string.IsNullOrEmpty(faktura.Podmiot2.DaneKontaktowe.Telefon))
-                            col.Item().Text($"Tel: {faktura.Podmiot2.DaneKontaktowe.Telefon}").FontSize(8);
+                        foreach (var kontakt in faktura.Podmiot2.DaneKontaktowe)
+                        {
+                            if (!string.IsNullOrEmpty(kontakt.Email))
+                                col.Item().Text($"Email: {kontakt.Email}").FontSize(8);
+                            if (!string.IsNullOrEmpty(kontakt.Telefon))
+                                col.Item().Text($"Tel: {kontakt.Telefon}").FontSize(8);
+                        }
                     }
                 });
             });
 
-            // Podmiot3 (jeśli występuje)
-            if (faktura.Podmiot3 != null)
+            // Podmiot3 (jeśli występuje - może być wiele)
+            if (faktura.Podmiot3 != null && faktura.Podmiot3.Any())
             {
-                column.Item().PaddingTop(10).Element(c => ComposeInnyPodmiot(c, faktura.Podmiot3, 1));
+                for (int i = 0; i < faktura.Podmiot3.Count; i++)
+                {
+                    column.Item().PaddingTop(i == 0 ? 10 : 5).Element(c => ComposeInnyPodmiot(c, faktura.Podmiot3[i], i + 1));
+                }
             }
 
             // Separator
@@ -219,10 +229,13 @@ public class InvoicePdfGenerator : IPdfGeneratorService
     /// </summary>
     private void ComposeContent(IContainer container, Models.FA3.Faktura faktura, InvoiceContext context, PdfGenerationOptions options)
     {
-        container.PaddingTop(20).Column(column =>
+        container.Column(column =>
         {
+            // Nagłówek z podmiotami (tylko na pierwszej stronie)
+            column.Item().Element(c => ComposeInvoiceHeader(c, faktura, context.Metadata));
+
             // Tabela pozycji
-            column.Item().Element(c => ComposeItemsTable(c, faktura));
+            column.Item().PaddingTop(20).Element(c => ComposeItemsTable(c, faktura));
 
             // Podsumowanie
             column.Item().PaddingTop(15).Element(c => ComposeSummary(c, faktura));
@@ -243,6 +256,18 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             if (faktura.Fa.Platnosc != null)
             {
                 column.Item().PaddingTop(15).Element(c => ComposePayment(c, faktura));
+            }
+
+            // Umowy (jeśli są)
+            if (faktura.Fa.Umowy != null && faktura.Fa.Umowy.Any())
+            {
+                column.Item().PaddingTop(10).Element(c => ComposeUmowy(c, faktura));
+            }
+
+            // Zamówienia (jeśli są)
+            if (faktura.Fa.Zamowienia != null && faktura.Fa.Zamowienia.Any())
+            {
+                column.Item().PaddingTop(10).Element(c => ComposeZamowienia(c, faktura));
             }
 
             // Kody QR
@@ -543,9 +568,34 @@ public class InvoicePdfGenerator : IPdfGeneratorService
         {
             column.Item().Text("PŁATNOŚĆ").FontSize(10).Bold();
 
-            if (platnosc.TerminPlatnosci != null)
+            // Terminy płatności (może być wiele - np. raty)
+            if (platnosc.TerminPlatnosci != null && platnosc.TerminPlatnosci.Any())
             {
-                column.Item().Text($"Termin płatności: {platnosc.TerminPlatnosci.Termin:dd.MM.yyyy}").FontSize(9);
+                if (platnosc.TerminPlatnosci.Count > 1)
+                    column.Item().Text($"Terminy płatności ({platnosc.TerminPlatnosci.Count} rat):").FontSize(9).Bold();
+                else
+                    column.Item().Text("Termin płatności:").FontSize(9).Bold();
+
+                for (int i = 0; i < platnosc.TerminPlatnosci.Count; i++)
+                {
+                    var termin = platnosc.TerminPlatnosci[i];
+
+                    if (termin.Termin.HasValue)
+                    {
+                        if (platnosc.TerminPlatnosci.Count > 1)
+                            column.Item().Text($"  Rata {i + 1}: {termin.Termin.Value:dd.MM.yyyy}").FontSize(9);
+                        else
+                            column.Item().Text($"{termin.Termin.Value:dd.MM.yyyy}").FontSize(9);
+                    }
+                    else if (termin.TerminOpis != null)
+                    {
+                        var opis = $"{termin.TerminOpis.Ilosc} {termin.TerminOpis.Jednostka} {termin.TerminOpis.ZdarzeniePoczatkowe}";
+                        if (platnosc.TerminPlatnosci.Count > 1)
+                            column.Item().Text($"  Rata {i + 1}: {opis}").FontSize(9);
+                        else
+                            column.Item().Text(opis).FontSize(9);
+                    }
+                }
             }
 
             column.Item().Text($"Forma płatności: {Models.Common.FormaPlatnosci.GetOpis(platnosc.FormaPlatnosci)}").FontSize(9);
@@ -617,6 +667,52 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                     if (!string.IsNullOrEmpty(rachunek.OpisRachunku))
                         column.Item().Text($"Opis: {rachunek.OpisRachunku}").FontSize(8).FontColor(Colors.Grey.Darken1);
                 }
+            }
+        });
+    }
+
+    /// <summary>
+    /// Komponuje sekcję umów
+    /// </summary>
+    private void ComposeUmowy(IContainer container, Models.FA3.Faktura faktura)
+    {
+        container.Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Column(column =>
+        {
+            column.Item().Text($"UMOWY ({faktura.Fa.Umowy!.Count})").FontSize(10).Bold();
+
+            foreach (var umowa in faktura.Fa.Umowy)
+            {
+                column.Item().PaddingTop(3).Row(row =>
+                {
+                    if (umowa.DataUmowy.HasValue)
+                        row.ConstantItem(100).Text($"{umowa.DataUmowy.Value:dd.MM.yyyy}").FontSize(9);
+
+                    if (!string.IsNullOrEmpty(umowa.NrUmowy))
+                        row.RelativeItem().Text($"Nr: {umowa.NrUmowy}").FontSize(9);
+                });
+            }
+        });
+    }
+
+    /// <summary>
+    /// Komponuje sekcję zamówień
+    /// </summary>
+    private void ComposeZamowienia(IContainer container, Models.FA3.Faktura faktura)
+    {
+        container.Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Column(column =>
+        {
+            column.Item().Text($"ZAMÓWIENIA ({faktura.Fa.Zamowienia!.Count})").FontSize(10).Bold();
+
+            foreach (var zamowienie in faktura.Fa.Zamowienia)
+            {
+                column.Item().PaddingTop(3).Row(row =>
+                {
+                    if (zamowienie.DataZamowienia.HasValue)
+                        row.ConstantItem(100).Text($"{zamowienie.DataZamowienia.Value:dd.MM.yyyy}").FontSize(9);
+
+                    if (!string.IsNullOrEmpty(zamowienie.NrZamowienia))
+                        row.RelativeItem().Text($"Nr: {zamowienie.NrZamowienia}").FontSize(9);
+                });
             }
         });
     }
@@ -744,12 +840,12 @@ public class InvoicePdfGenerator : IPdfGeneratorService
     private void ComposeInnyPodmiot(IContainer container, Models.FA3.Podmiot podmiot, int numerPodmiotu = 1)
     {
         container.Border(1).BorderColor(Colors.Grey.Lighten2)
-            .Background(Colors.Grey.Lighten5).Padding(10).Column(column =>
+            .Background(Colors.Grey.Lighten5).Padding(7).Column(column =>
         {
             // Nagłówek - taki sam styl jak SPRZEDAWCA/NABYWCA
             column.Item().Text($"PODMIOT TRZECI ({numerPodmiotu})").FontSize(8).Bold();
 
-            column.Item().PaddingTop(5).Row(row =>
+            column.Item().PaddingTop(3).Row(row =>
             {
                 // Dane identyfikacyjne i adres
                 row.RelativeItem().Column(col =>
@@ -772,12 +868,15 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 // Dane kontaktowe
                 row.RelativeItem().Column(col =>
                 {
-                    if (podmiot.DaneKontaktowe != null)
+                    if (podmiot.DaneKontaktowe != null && podmiot.DaneKontaktowe.Any())
                     {
-                        if (!string.IsNullOrEmpty(podmiot.DaneKontaktowe.Email))
-                            col.Item().Text($"Email: {podmiot.DaneKontaktowe.Email}").FontSize(8);
-                        if (!string.IsNullOrEmpty(podmiot.DaneKontaktowe.Telefon))
-                            col.Item().Text($"Tel: {podmiot.DaneKontaktowe.Telefon}").FontSize(8);
+                        foreach (var kontakt in podmiot.DaneKontaktowe)
+                        {
+                            if (!string.IsNullOrEmpty(kontakt.Email))
+                                col.Item().Text($"Email: {kontakt.Email}").FontSize(8);
+                            if (!string.IsNullOrEmpty(kontakt.Telefon))
+                                col.Item().Text($"Tel: {kontakt.Telefon}").FontSize(8);
+                        }
                     }
 
                     if (!string.IsNullOrEmpty(podmiot.NrKlienta))
@@ -788,17 +887,17 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             // Rola (jako osobna sekcja pod danymi kontaktowymi)
             if (!string.IsNullOrEmpty(podmiot.Rola))
             {
-                column.Item().PaddingTop(5).Column(col =>
+                column.Item().PaddingTop(3).Column(col =>
                 {
-                    col.Item().Text("Rola").FontSize(9).Bold();
-                    col.Item().Text(GetRolaDescription(podmiot.Rola)).FontSize(9);
+                    col.Item().Text("Rola").FontSize(8).Bold();
+                    col.Item().Text(GetRolaDescription(podmiot.Rola)).FontSize(8);
                 });
             }
 
             // Udział procentowy (jeśli występuje)
             if (podmiot.UdzialProcentowy.HasValue)
             {
-                column.Item().PaddingTop(3).Column(col =>
+                column.Item().PaddingTop(2).Column(col =>
                 {
                     col.Item().Text("Udział procentowy").FontSize(9).Bold();
                     col.Item().Text($"{podmiot.UdzialProcentowy.Value:F2}%").FontSize(9);

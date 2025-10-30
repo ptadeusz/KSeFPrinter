@@ -34,7 +34,10 @@ public class InvoiceValidator
 
         if (faktura.Podmiot3 != null)
         {
-            ValidatePodmiot(faktura.Podmiot3, "Podmiot3", result);
+            for (int i = 0; i < faktura.Podmiot3.Count; i++)
+            {
+                ValidatePodmiot(faktura.Podmiot3[i], $"Podmiot3 ({i + 1})", result);
+            }
         }
 
         // Walidacja danych faktury
