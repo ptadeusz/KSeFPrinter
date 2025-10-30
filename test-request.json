@@ -1,0 +1,6 @@
+{
+  "xmlContent": "test",
+  "isBase64": false,
+  "validateInvoice": false,
+  "returnFormat": "base64"
+}

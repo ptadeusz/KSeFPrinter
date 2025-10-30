@@ -210,6 +210,28 @@ API obsługuje certyfikaty z **Windows Certificate Store** do generowania QR kod
 - `CurrentUser` - Store użytkownika (domyślnie)
 - `LocalMachine` - Store systemowy (wymaga uprawnień administratora)
 
+## Ważne: Konwencja nazewnictwa JSON
+
+API używa konwencji **camelCase** dla nazw właściwości JSON (zgodnie ze standardem ASP.NET Core).
+
+**Poprawne nazwy parametrów:**
+- `xmlContent` - zawartość XML faktury
+- `isBase64` - czy XML jest zakodowany w base64
+- `ksefNumber` - numer KSeF (opcjonalny)
+- `validateInvoice` - czy walidować fakturę (domyślnie: true)
+- `returnFormat` - format odpowiedzi: "file" lub "base64"
+- `certificateThumbprint` - thumbprint certyfikatu z Windows Store
+- `certificateSubject` - subject certyfikatu
+- `certificateStoreName` - nazwa store (domyślnie: "My")
+- `certificateStoreLocation` - lokalizacja store (domyślnie: "CurrentUser")
+- `useProduction` - użyj środowiska produkcyjnego (domyślnie: false)
+
+**Odpowiedź (returnFormat = "base64"):**
+- `pdfBase64` - PDF zakodowany w base64
+- `fileSizeBytes` - rozmiar pliku w bajtach
+- `invoiceNumber` - numer faktury
+- `mode` - tryb wystawienia ("Online" lub "Offline")
+
 ## Testowanie
 
 ### 1. Przez Swagger UI
@@ -249,18 +271,45 @@ curl -X POST "http://localhost:5000/api/invoice/generate-pdf" \
 ```
 
 ### 3. Przez PowerShell
+
+**Przykład 1: XML jako tekst**
 ```powershell
 $xml = Get-Content "faktura.xml" -Raw
 $body = @{
-    XmlContent = $xml
-    IsBase64 = $false
-    ReturnFormat = "base64"
+    xmlContent = $xml
+    isBase64 = $false
+    validateInvoice = $false
+    returnFormat = "base64"
 } | ConvertTo-Json
 
 $response = Invoke-RestMethod -Uri "http://localhost:5000/api/invoice/generate-pdf" `
     -Method Post -Body $body -ContentType "application/json"
 
-[Convert]::FromBase64String($response.PdfBase64) | Set-Content "faktura.pdf" -Encoding Byte
+$pdfBytes = [Convert]::FromBase64String($response.pdfBase64)
+[System.IO.File]::WriteAllBytes("faktura.pdf", $pdfBytes)
+```
+
+**Przykład 2: XML jako base64 (zalecane)**
+```powershell
+$xmlBytes = [System.IO.File]::ReadAllBytes("faktura.xml")
+$xmlBase64 = [Convert]::ToBase64String($xmlBytes)
+
+$body = @{
+    xmlContent = $xmlBase64
+    isBase64 = $true
+    validateInvoice = $false
+    returnFormat = "base64"
+} | ConvertTo-Json
+
+$response = Invoke-RestMethod -Uri "http://localhost:5000/api/invoice/generate-pdf" `
+    -Method Post -Body $body -ContentType "application/json"
+
+Write-Host "Invoice: $($response.invoiceNumber)"
+Write-Host "Mode: $($response.mode)"
+Write-Host "Size: $($response.fileSizeBytes) bytes"
+
+$pdfBytes = [Convert]::FromBase64String($response.pdfBase64)
+[System.IO.File]::WriteAllBytes("faktura.pdf", $pdfBytes)
 ```
 
 ### 4. Przez C#
@@ -271,15 +320,20 @@ var client = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
 
 var request = new
 {
-    XmlContent = File.ReadAllText("faktura.xml"),
-    IsBase64 = false,
-    ReturnFormat = "base64"
+    xmlContent = File.ReadAllText("faktura.xml"),
+    isBase64 = false,
+    validateInvoice = false,
+    returnFormat = "base64"
 };
 
 var response = await client.PostAsJsonAsync("/api/invoice/generate-pdf", request);
-var result = await response.Content.ReadFromJsonAsync<PdfResponse>();
+var result = await response.Content.ReadFromJsonAsync<dynamic>();
 
-File.WriteAllBytes("faktura.pdf", Convert.FromBase64String(result.PdfBase64));
+Console.WriteLine($"Invoice: {result.invoiceNumber}");
+Console.WriteLine($"Mode: {result.mode}");
+Console.WriteLine($"Size: {result.fileSizeBytes} bytes");
+
+File.WriteAllBytes("faktura.pdf", Convert.FromBase64String(result.pdfBase64.ToString()));
 ```
 
 ## Przykładowe Pliki XML

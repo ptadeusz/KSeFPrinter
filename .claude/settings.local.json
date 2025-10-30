@@ -13,7 +13,9 @@
       "Bash(powershell -Command:*)",
       "Bash(powershell -ExecutionPolicy Bypass -File test-api.ps1)",
       "Bash(powershell -ExecutionPolicy Bypass -File prepare-test-json.ps1:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File test-api-generate.ps1:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File test-api-simple.ps1:*)"
     ],
     "deny": [],
     "ask": []
