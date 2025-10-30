@@ -39,7 +39,8 @@
       "Bash(grep:*)",
       "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_EUR.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_EUR.pdf\" --no-validate)",
       "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_EUR.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_EUR_Fixed.pdf\" --no-validate)",
-      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_Korekta_Poprawna.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_Korekta_Fixed.pdf\" --no-validate)"
+      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_Korekta_Poprawna.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_Korekta_Fixed.pdf\" --no-validate)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

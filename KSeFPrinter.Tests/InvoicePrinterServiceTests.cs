@@ -353,7 +353,7 @@ public class InvoicePrinterServiceTests : IDisposable
 
         // Act & Assert - Parser rzuca InvoiceParseException dla nieistniejącego pliku
         var act = async () => await _service.GeneratePdfFromFileAsync(xmlPath);
-        await act.Should().ThrowAsync<Exceptions.InvoiceParseException>();
+        await act.Should().ThrowAsync<KSeFPrinter.Exceptions.InvoiceParseException>();
     }
 
     [Fact]

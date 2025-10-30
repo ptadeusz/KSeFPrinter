@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Faktura xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+	<Naglowek>
+		<KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+		<WariantFormularza>3</WariantFormularza>
+		<DataWytworzeniaFa>2025-02-15T00:00:00Z</DataWytworzeniaFa>
+		<SystemInfo>KSeF Printer v1.0.0 - Faktura korygująca TEST</SystemInfo>
+	</Naglowek>
+	<Podmiot1>
+		<DaneIdentyfikacyjne>
+			<NIP>7309436499</NIP>
+			<Nazwa>Elektrownia S.A.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Kwiatowa 1</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+	</Podmiot1>
+	<Podmiot2>
+		<DaneIdentyfikacyjne>
+			<NIP>1187654321</NIP>
+			<Nazwa>ABC Sp. z o.o.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Testowa 123</AdresL1>
+			<AdresL2>02-123 Warszawa</AdresL2>
+		</Adres>
+	</Podmiot2>
+	<Fa>
+		<KodWaluty>PLN</KodWaluty>
+		<P_1>2025-02-15</P_1>
+		<P_1M>Warszawa</P_1M>
+		<P_2>FK/002/2025/001</P_2>
+
+		<!-- Wartości standardowe (po korekcie) -->
+		<P_13_1>1100.00</P_13_1>
+		<P_14_1>253.00</P_14_1>
+		<P_15>1353.00</P_15>
+
+		<!-- Wartości przed korektą -->
+		<P_13_6>1000.00</P_13_6>
+		<P_14_6>230.00</P_14_6>
+		<P_15_6>1230.00</P_15_6>
+
+		<!-- Wartości po korekcie -->
+		<P_13_7>1100.00</P_13_7>
+		<P_14_7>253.00</P_14_7>
+		<P_15_7>1353.00</P_15_7>
+
+		<!-- Informacje o fakturze korygowanej -->
+		<FakturaKorygowana>
+			<DataWystFaKorygowanej>2025-01-15</DataWystFaKorygowanej>
+			<NrFaKorygowanej>FA/001/2025</NrFaKorygowanej>
+			<NrKSeFFaKorygowanej>1234567890-20250115-ABCDEF123456-AA</NrKSeFFaKorygowanej>
+			<PrzycznyKorekty>Błąd w cenie jednostkowej pozycji nr 2 - zastosowano cenę sprzed promocji. Korekta ceny z 200,00 PLN na 300,00 PLN.</PrzycznyKorekty>
+		</FakturaKorygowana>
+
+		<RodzajFaktury>ROZ</RodzajFaktury>
+
+		<!-- Wiersze faktury z wartościami przed i po korekcie -->
+		<FaWiersz>
+			<NrWierszaFa>1</NrWierszaFa>
+			<P_6A>PROD-001</P_6A>
+			<P_7>Usługa konsultingowa - analiza biznesowa</P_7>
+			<P_8A>godz</P_8A>
+			<P_8B>10.00</P_8B>
+			<P_8B_przed>10.00</P_8B_przed>
+			<P_8A_przed>godz</P_8A_przed>
+			<P_9A>50.00</P_9A>
+			<P_9A_przed>50.00</P_9A_przed>
+			<P_11>500.00</P_11>
+			<P_11_przed>500.00</P_11_przed>
+			<P_12>23</P_12>
+			<P_12_przed>23</P_12_przed>
+		</FaWiersz>
+
+		<FaWiersz>
+			<NrWierszaFa>2</NrWierszaFa>
+			<P_6A>PROD-002</P_6A>
+			<P_7>Oprogramowanie ERP - licencja roczna</P_7>
+			<P_7B>Oprogramowanie ERP - licencja roczna</P_7B>
+			<P_8A>szt</P_8A>
+			<P_8B>2.00</P_8B>
+			<P_8B_przed>2.00</P_8B_przed>
+			<P_8A_przed>szt</P_8A_przed>
+			<P_9A>300.00</P_9A>
+			<P_9A_przed>200.00</P_9A_przed>
+			<P_11>600.00</P_11>
+			<P_11_przed>400.00</P_11_przed>
+			<P_12>23</P_12>
+			<P_12_przed>23</P_12_przed>
+		</FaWiersz>
+
+		<Platnosc>
+			<TerminPlatnosci>
+				<Termin>2025-03-01</Termin>
+			</TerminPlatnosci>
+			<FormaPlatnosci>6</FormaPlatnosci>
+			<RachunekBankowy>
+				<NrRB>73111111111111111111111111</NrRB>
+				<NazwaBanku>Bank Przykładowy S.A.</NazwaBanku>
+			</RachunekBankowy>
+		</Platnosc>
+	</Fa>
+	<Stopka>
+		<Informacje>
+			<StopkaFaktury>Faktura korygująca - test wydruku PDF</StopkaFaktury>
+		</Informacje>
+	</Stopka>
+</Faktura>

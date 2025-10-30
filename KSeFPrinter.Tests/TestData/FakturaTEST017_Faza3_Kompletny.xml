@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Faktura xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+	<Naglowek>
+		<KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+		<WariantFormularza>3</WariantFormularza>
+		<DataWytworzeniaFa>2025-09-01T00:00:00Z</DataWytworzeniaFa>
+		<SystemInfo>KSeF Printer v1.0.0 - Pełna implementacja FA(3)</SystemInfo>
+	</Naglowek>
+	<Podmiot1>
+		<DaneIdentyfikacyjne>
+			<NIP>7309436499</NIP>
+			<Nazwa>Elektrownia S.A.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Kwiatowa 1 m. 2</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>kontakt@elektrownia.pl</Email>
+			<Telefon>667444555</Telefon>
+		</DaneKontaktowe>
+		<DaneKontaktowe>
+			<Email>ksiegowosc@elektrownia.pl</Email>
+			<Telefon>667444556</Telefon>
+		</DaneKontaktowe>
+	</Podmiot1>
+	<Podmiot2>
+		<DaneIdentyfikacyjne>
+			<NIP>1187654321</NIP>
+			<Nazwa>Urząd Miasta Warszawa - Wydział Gospodarki Miejskiej</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>Plac Defilad 1</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>gospodarka@um.warszawa.pl</Email>
+			<Telefon>555777999</Telefon>
+		</DaneKontaktowe>
+		<DaneKontaktowe>
+			<Email>faktury@um.warszawa.pl</Email>
+			<Telefon>555777998</Telefon>
+		</DaneKontaktowe>
+		<NrKlienta>UM-WGM-2025-001</NrKlienta>
+		<JST>1</JST>
+		<GV>1</GV>
+	</Podmiot2>
+	<Fa>
+		<KodWaluty>PLN</KodWaluty>
+		<P_1>2025-09-01</P_1>
+		<P_1M>Warszawa</P_1M>
+		<P_2>FA900/05/2025</P_2>
+		<OkresFa>
+			<P_6_Od>2025-08-01</P_6_Od>
+			<P_6_Do>2025-08-31</P_6_Do>
+		</OkresFa>
+		<P_13_1>200.00</P_13_1>
+		<P_14_1>46.00</P_14_1>
+		<P_15>246.00</P_15>
+		<Adnotacje>
+			<P_16>1</P_16>
+			<P_17>1</P_17>
+			<P_18>2</P_18>
+			<P_18A>1</P_18A>
+			<Zwolnienie>
+				<P_19N>2</P_19N>
+			</Zwolnienie>
+			<NoweSrodkiTransportu>
+				<P_22N>1</P_22N>
+			</NoweSrodkiTransportu>
+			<P_23>2</P_23>
+			<PMarzy>
+				<P_PMarzyN>2</P_PMarzyN>
+			</PMarzy>
+		</Adnotacje>
+		<RodzajFaktury>VAT</RodzajFaktury>
+		<DodatkowyOpis>
+			<Klucz>Uwagi specjalne</Klucz>
+			<Wartosc>Faktura wystawiona w ramach umowy na świadczenie usług wodno-kanalizacyjnych dla jednostek samorządowych</Wartosc>
+		</DodatkowyOpis>
+		<FaWiersz>
+			<NrWierszaFa>1</NrWierszaFa>
+			<P_7>Dostawa wody - gospodarstwa domowe (zwolnione)</P_7>
+			<P_11>50.00</P_11>
+			<P_12>zw</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>2</NrWierszaFa>
+			<P_7>Odbiór ścieków - procedura szczególna</P_7>
+			<P_11>50.00</P_11>
+			<P_12>zw</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>3</NrWierszaFa>
+			<P_7>Usługi konserwacji sieci wodociągowej</P_7>
+			<P_11>100.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<Rozliczenie>
+			<Obciazenia>
+				<Kwota>10.00</Kwota>
+				<Powod>Odsetki za opóźnienie w płatności</Powod>
+			</Obciazenia>
+			<Odliczenia>
+				<Kwota>5.00</Kwota>
+				<Powod>Rabat za terminowe płatności w poprzednim okresie</Powod>
+			</Odliczenia>
+			<DoZaplaty>251.00</DoZaplaty>
+		</Rozliczenie>
+		<Platnosc>
+			<TerminPlatnosci>
+				<Termin>2025-09-15</Termin>
+			</TerminPlatnosci>
+			<TerminPlatnosci>
+				<Termin>2025-10-15</Termin>
+				<Kwota>125.50</Kwota>
+			</TerminPlatnosci>
+			<TerminPlatnosci>
+				<Termin>2025-11-15</Termin>
+				<Kwota>125.50</Kwota>
+			</TerminPlatnosci>
+			<FormaPlatnosci>6</FormaPlatnosci>
+			<RachunekBankowy>
+				<NrRB>73111111111111111111111111</NrRB>
+				<NazwaBanku>Bank Bankowości Bankowej S.A.</NazwaBanku>
+				<OpisRachunku>PLN - rachunek podstawowy</OpisRachunku>
+			</RachunekBankowy>
+			<RachunekBankowy>
+				<NrRB>74222222222222222222222222</NrRB>
+				<NazwaBanku>Bank Spółdzielczy</NazwaBanku>
+				<OpisRachunku>EUR - płatności zagraniczne</OpisRachunku>
+			</RachunekBankowy>
+		</Platnosc>
+		<Umowy>
+			<DataUmowy>2024-01-01</DataUmowy>
+			<NrUmowy>UMW/GV/2024/001</NrUmowy>
+		</Umowy>
+		<Umowy>
+			<DataUmowy>2024-06-15</DataUmowy>
+			<NrUmowy>UMW/GV/2024/002-ANEKS</NrUmowy>
+		</Umowy>
+		<Zamowienia>
+			<DataZamowienia>2025-08-01</DataZamowienia>
+			<NrZamowienia>ZAM/2025/08/001</NrZamowienia>
+		</Zamowienia>
+		<Zamowienia>
+			<DataZamowienia>2025-08-15</DataZamowienia>
+			<NrZamowienia>ZAM/2025/08/002</NrZamowienia>
+		</Zamowienia>
+	</Fa>
+	<Stopka>
+		<Informacje>
+			<StopkaFaktury>Pełna implementacja FA(3): DaneKontaktowe x2, Podmiot2 (NrKlienta, JST, GV), Adnotacje kompletne, Umowy, Zamówienia, Rozliczenie, wiele Terminów i Rachunków</StopkaFaktury>
+		</Informacje>
+		<Rejestry>
+			<KRS>0000099999</KRS>
+			<REGON>999999999</REGON>
+			<BDO>000099999</BDO>
+		</Rejestry>
+	</Stopka>
+</Faktura>

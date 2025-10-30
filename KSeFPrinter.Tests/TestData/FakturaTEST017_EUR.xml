@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Faktura xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+	<Naglowek>
+		<KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+		<WariantFormularza>3</WariantFormularza>
+		<DataWytworzeniaFa>2025-02-20T00:00:00Z</DataWytworzeniaFa>
+		<SystemInfo>KSeF Printer v1.0.0 - Faktura w EUR z VAT w PLN</SystemInfo>
+	</Naglowek>
+	<Podmiot1>
+		<DaneIdentyfikacyjne>
+			<NIP>7309436499</NIP>
+			<Nazwa>Global Trade Sp. z o.o.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Międzynarodowa 10</AdresL1>
+			<AdresL2>00-950 Warszawa</AdresL2>
+		</Adres>
+	</Podmiot1>
+	<Podmiot2>
+		<DaneIdentyfikacyjne>
+			<NIP>1234567890</NIP>
+			<Nazwa>Export Company GmbH</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>DE</KodKraju>
+			<AdresL1>Hauptstrasse 25</AdresL1>
+			<AdresL2>10115 Berlin</AdresL2>
+		</Adres>
+	</Podmiot2>
+	<Fa>
+		<KodWaluty>EUR</KodWaluty>
+		<P_1>2025-02-20</P_1>
+		<P_1M>Warszawa</P_1M>
+		<P_2>FV-EUR/001/2025</P_2>
+
+		<!-- Wartości w EUR -->
+		<P_13_1>1000.00</P_13_1>
+		<P_14_1>230.00</P_14_1>
+		<P_13_2>500.00</P_13_2>
+		<P_14_2>40.00</P_14_2>
+		<P_15>1770.00</P_15>
+
+		<!-- VAT przeliczony na PLN (kurs przykładowy 1 EUR = 4.30 PLN) -->
+		<P_14_1W>989.00</P_14_1W>
+		<P_14_2W>172.00</P_14_2W>
+
+		<RodzajFaktury>VAT</RodzajFaktury>
+
+		<FaWiersz>
+			<NrWierszaFa>1</NrWierszaFa>
+			<P_6A>PROD-EUR-001</P_6A>
+			<P_7>Sprzęt elektroniczny - eksport</P_7>
+			<P_8A>szt</P_8A>
+			<P_8B>10.00</P_8B>
+			<P_9A>100.00</P_9A>
+			<P_11>1000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+
+		<FaWiersz>
+			<NrWierszaFa>2</NrWierszaFa>
+			<P_6A>PROD-EUR-002</P_6A>
+			<P_7>Usługa transportowa międzynarodowa</P_7>
+			<P_8A>usł</P_8A>
+			<P_8B>1.00</P_8B>
+			<P_9A>500.00</P_9A>
+			<P_11>500.00</P_11>
+			<P_12>8</P_12>
+		</FaWiersz>
+
+		<Platnosc>
+			<TerminPlatnosci>
+				<Termin>2025-03-20</Termin>
+			</TerminPlatnosci>
+			<FormaPlatnosci>6</FormaPlatnosci>
+			<RachunekBankowy>
+				<NrRB>PL73111111111111111111111111</NrRB>
+				<NazwaBanku>Bank Międzynarodowy S.A.</NazwaBanku>
+			</RachunekBankowy>
+		</Platnosc>
+	</Fa>
+	<Stopka>
+		<Informacje>
+			<StopkaFaktury>Faktura wystawiona w EUR, VAT przeliczony na PLN według kursu średniego NBP z dnia poprzedzającego wystawienie faktury (art. 106e ust. 11 ustawy o VAT)</StopkaFaktury>
+		</Informacje>
+	</Stopka>
+</Faktura>

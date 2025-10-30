@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Faktura xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+	<Naglowek>
+		<KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+		<WariantFormularza>3</WariantFormularza>
+		<DataWytworzeniaFa>2025-09-01T00:00:00Z</DataWytworzeniaFa>
+		<SystemInfo>KSeF Printer v1.0.0 - STRESS TEST - Maksymalna faktura z wszystkimi polami i 100 wierszami</SystemInfo>
+	</Naglowek>
+	<Podmiot1>
+		<DaneIdentyfikacyjne>
+			<NIP>7309436499</NIP>
+			<Nazwa>Mega Corporation Polska S.A. - Oddział Centralny w Warszawie</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Bardzo Długa Nazwa Ulicy im. Jana Pawła II 123/456A</AdresL1>
+			<AdresL2>00-001 Warszawa-Centrum</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>biuro.glowne@megacorp.pl</Email>
+			<Telefon>+48 22 123 45 67</Telefon>
+		</DaneKontaktowe>
+		<DaneKontaktowe>
+			<Email>ksiegowosc@megacorp.pl</Email>
+			<Telefon>+48 22 123 45 68</Telefon>
+		</DaneKontaktowe>
+		<DaneKontaktowe>
+			<Email>sprzedaz@megacorp.pl</Email>
+			<Telefon>+48 22 123 45 69</Telefon>
+		</DaneKontaktowe>
+	</Podmiot1>
+	<Podmiot2>
+		<DaneIdentyfikacyjne>
+			<NIP>1187654321</NIP>
+			<Nazwa>Urząd Miasta Warszawa - Zakład Gospodarki Komunalnej i Mieszkaniowej Sp. z o.o.</Nazwa>
+			<PESEL>85010112345</PESEL>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>Plac Konstytucji 3 Maja 15/17 lok. 234</AdresL1>
+			<AdresL2>00-900 Warszawa-Śródmieście</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>um.zgkim@warszawa.gov.pl</Email>
+			<Telefon>+48 22 555 11 22</Telefon>
+		</DaneKontaktowe>
+		<DaneKontaktowe>
+			<Email>faktury.zgkim@warszawa.gov.pl</Email>
+			<Telefon>+48 22 555 11 23</Telefon>
+		</DaneKontaktowe>
+		<DaneKontaktowe>
+			<Email>platnosci.zgkim@warszawa.gov.pl</Email>
+			<Telefon>+48 22 555 11 24</Telefon>
+		</DaneKontaktowe>
+		<NrKlienta>UM-ZGKIM-2025-VIP-001-PREMIUM</NrKlienta>
+		<JST>1</JST>
+		<GV>1</GV>
+	</Podmiot2>
+	<Podmiot3>
+		<DaneIdentyfikacyjne>
+			<NIP>9876543210</NIP>
+			<Nazwa>Bank Faktoringowy S.A. - Dział Faktoringu Faktur</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Bankowa 99/101</AdresL1>
+			<AdresL2>00-950 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>faktoring@bankfaktoringowy.pl</Email>
+			<Telefon>+48 22 777 88 99</Telefon>
+		</DaneKontaktowe>
+		<DaneKontaktowe>
+			<Email>dzial.faktoringu@bankfaktoringowy.pl</Email>
+			<Telefon>+48 22 777 88 98</Telefon>
+		</DaneKontaktowe>
+		<NrKlienta>FAKTOR-2025-MC-001</NrKlienta>
+		<Rola>2</Rola>
+		<UdzialProcentowy>100.00</UdzialProcentowy>
+	</Podmiot3>
+	<Podmiot3>
+		<DaneIdentyfikacyjne>
+			<NIP>5432167890</NIP>
+			<Nazwa>Kancelaria Prawna "Lex Perfecta" Sp. p. - Pełnomocnik Prawny</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Prawnicza 7/9</AdresL1>
+			<AdresL2>00-100 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>kancelaria@lexperfecta.pl</Email>
+			<Telefon>+48 22 333 44 55</Telefon>
+		</DaneKontaktowe>
+		<Rola>5</Rola>
+	</Podmiot3>
+	<Podmiot3>
+		<DaneIdentyfikacyjne>
+			<NIP>1234567890</NIP>
+			<Nazwa>Agencja Windykacyjna "Debt Solutions" Sp. z o.o.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Windykacyjna 15</AdresL1>
+			<AdresL2>00-200 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>windykacja@debtsolutions.pl</Email>
+			<Telefon>+48 22 999 00 11</Telefon>
+		</DaneKontaktowe>
+		<Rola>6</Rola>
+		<UdzialProcentowy>50.00</UdzialProcentowy>
+	</Podmiot3>
+	<Fa>
+		<KodWaluty>PLN</KodWaluty>
+		<P_1>2025-09-01</P_1>
+		<P_1M>Warszawa</P_1M>
+		<P_2>FA-STRESS-TEST/2025/09/001/MEGA</P_2>
+		<OkresFa>
+			<P_6_Od>2025-01-01</P_6_Od>
+			<P_6_Do>2025-12-31</P_6_Do>
+		</OkresFa>
+		<P_13_1>1000000.00</P_13_1>
+		<P_14_1>230000.00</P_14_1>
+		<P_15>1230000.00</P_15>
+		<Adnotacje>
+			<P_16>1</P_16>
+			<P_17>1</P_17>
+			<P_18>1</P_18>
+			<P_18A>1</P_18A>
+			<Zwolnienie>
+				<P_19N>2</P_19N>
+			</Zwolnienie>
+			<NoweSrodkiTransportu>
+				<P_22N>2</P_22N>
+			</NoweSrodkiTransportu>
+			<P_23>1</P_23>
+			<PMarzy>
+				<P_PMarzyN>2</P_PMarzyN>
+			</PMarzy>
+		</Adnotacje>
+		<RodzajFaktury>VAT</RodzajFaktury>
+		<DodatkowyOpis>
+			<Klucz>Podstawa prawna</Klucz>
+			<Wartosc>Faktura wystawiona zgodnie z Ustawą o podatku od towarów i usług z dnia 11 marca 2004 r. (Dz.U. 2021 poz. 685 z późn. zm.)</Wartosc>
+		</DodatkowyOpis>
+		<DodatkowyOpis>
+			<Klucz>Warunki płatności</Klucz>
+			<Wartosc>Płatność podzielona na 3 raty zgodnie z harmonogramem. Opóźnienie w płatności skutkuje naliczeniem odsetek ustawowych.</Wartosc>
+		</DodatkowyOpis>
+		<DodatkowyOpis>
+			<Klucz>Gwarancja</Klucz>
+			<Wartosc>Na wszystkie dostarczone towary i usługi udzielamy 24-miesięcznej gwarancji producenta oraz 12-miesięcznej gwarancji jakości wykonania usług.</Wartosc>
+		</DodatkowyOpis>
+		<DodatkowyOpis>
+			<Klucz>Transport i dostawa</Klucz>
+			<Wartosc>Dostawa realizowana transportem własnym w dni robocze w godzinach 8:00-16:00. Odbiorca zobowiązany do zapewnienia miejsca rozładunku.</Wartosc>
+		</DodatkowyOpis>
+		<DodatkowyOpis>
+			<Klucz>Uwagi dodatkowe</Klucz>
+			<Wartosc>Faktura zawiera split payment. Mechanizm podzielonej płatności obowiązuje zgodnie z art. 108a ustawy o VAT. Należność VAT należy wpłacić na rachunek VAT.</Wartosc>
+		</DodatkowyOpis>
+		<FaWiersz>
+			<NrWierszaFa>1</NrWierszaFa>
+			<P_7>Usługi konsultingowe IT - wdrożenie systemu ERP klasy enterprise</P_7>
+			<P_8B>100.00</P_8B>
+			<P_9A>1000.00</P_9A>
+			<P_11>100000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>2</NrWierszaFa>
+			<P_7>Licencje oprogramowania Microsoft 365 E5 - 1000 użytkowników - roczna subskrypcja</P_7>
+			<P_8B>1000.00</P_8B>
+			<P_9A>150.00</P_9A>
+			<P_11>150000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>3</NrWierszaFa>
+			<P_7>Serwery Dell PowerEdge R750 - 10 sztuk z pełną konfiguracją</P_7>
+			<P_8B>10.00</P_8B>
+			<P_9A>25000.00</P_9A>
+			<P_11>250000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>4</NrWierszaFa>
+			<P_7>Usługi serwisowe i wsparcia technicznego - poziom Platinum - 12 miesięcy</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>5000.00</P_9A>
+			<P_11>60000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>5</NrWierszaFa>
+			<P_7>Szkolenia dla administratorów systemu - 50 osób x 5 dni</P_7>
+			<P_8B>250.00</P_8B>
+			<P_9A>200.00</P_9A>
+			<P_11>50000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>6</NrWierszaFa>
+			<P_7>Backup i archiwizacja danych - 100TB storage w chmurze - roczna subskrypcja</P_7>
+			<P_8B>100.00</P_8B>
+			<P_9A>500.00</P_9A>
+			<P_11>50000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>7</NrWierszaFa>
+			<P_7>Audyt bezpieczeństwa IT i testy penetracyjne infrastruktury</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>30000.00</P_9A>
+			<P_11>30000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>8</NrWierszaFa>
+			<P_7>Certyfikaty SSL Wildcard - 20 domen - 3 lata</P_7>
+			<P_8B>20.00</P_8B>
+			<P_9A>150.00</P_9A>
+			<P_11>3000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>9</NrWierszaFa>
+			<P_7>Firewall nowej generacji Cisco - 5 urządzeń z konfiguracją</P_7>
+			<P_8B>5.00</P_8B>
+			<P_9A>15000.00</P_9A>
+			<P_11>75000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>10</NrWierszaFa>
+			<P_7>Monitoring 24/7 - System NOC/SOC - roczna subskrypcja</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>8000.00</P_9A>
+			<P_11>96000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>11</NrWierszaFa>
+			<P_7>Migracja danych z systemów legacy - 50TB danych</P_7>
+			<P_8B>50.00</P_8B>
+			<P_9A>300.00</P_9A>
+			<P_11>15000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>12</NrWierszaFa>
+			<P_7>Dokumentacja techniczna i procedury operacyjne - komplet</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>12000.00</P_9A>
+			<P_11>12000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>13</NrWierszaFa>
+			<P_7>Integracja z systemami zewnętrznymi - 15 systemów</P_7>
+			<P_8B>15.00</P_8B>
+			<P_9A>2000.00</P_9A>
+			<P_11>30000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>14</NrWierszaFa>
+			<P_7>Testy akceptacyjne UAT - 100 scenariuszy testowych</P_7>
+			<P_8B>100.00</P_8B>
+			<P_9A>150.00</P_9A>
+			<P_11>15000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>15</NrWierszaFa>
+			<P_7>Customizacja interfejsów użytkownika - 50 widoków</P_7>
+			<P_8B>50.00</P_8B>
+			<P_9A>400.00</P_9A>
+			<P_11>20000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>16</NrWierszaFa>
+			<P_7>Raporty biznesowe i dashboardy analityczne - Power BI - 100 raportów</P_7>
+			<P_8B>100.00</P_8B>
+			<P_9A>200.00</P_9A>
+			<P_11>20000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>17</NrWierszaFa>
+			<P_7>Optymalizacja bazy danych SQL Server - tunning i indeksowanie</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>8000.00</P_9A>
+			<P_11>8000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>18</NrWierszaFa>
+			<P_7>Disaster Recovery Plan - opracowanie i wdrożenie procedur</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>15000.00</P_9A>
+			<P_11>15000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>19</NrWierszaFa>
+			<P_7>Business Continuity Plan - analiza i implementacja</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>12000.00</P_9A>
+			<P_11>12000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>20</NrWierszaFa>
+			<P_7>Polityki bezpieczeństwa RODO/GDPR - konsultacje i wdrożenie</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>10000.00</P_9A>
+			<P_11>10000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>21</NrWierszaFa>
+			<P_7>Szkolenia RODO dla pracowników - 500 osób</P_7>
+			<P_8B>500.00</P_8B>
+			<P_9A>50.00</P_9A>
+			<P_11>25000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>22</NrWierszaFa>
+			<P_7>VPN Site-to-Site - konfiguracja 20 lokalizacji</P_7>
+			<P_8B>20.00</P_8B>
+			<P_9A>500.00</P_9A>
+			<P_11>10000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>23</NrWierszaFa>
+			<P_7>Load Balancer F5 - 2 urządzenia HA z konfiguracją</P_7>
+			<P_8B>2.00</P_8B>
+			<P_9A>35000.00</P_9A>
+			<P_11>70000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>24</NrWierszaFa>
+			<P_7>CDN Content Delivery Network - roczna subskrypcja Global</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>3000.00</P_9A>
+			<P_11>36000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>25</NrWierszaFa>
+			<P_7>DDoS Protection - ochrona przed atakami - rok</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>2000.00</P_9A>
+			<P_11>24000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>26</NrWierszaFa>
+			<P_7>WAF Web Application Firewall - konfiguracja i zarządzanie</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>15000.00</P_9A>
+			<P_11>15000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>27</NrWierszaFa>
+			<P_7>SIEM Security Information Event Management - rok</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>5000.00</P_9A>
+			<P_11>60000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>28</NrWierszaFa>
+			<P_7>Endpoint Protection - licencje antywirusowe - 1000 stacji</P_7>
+			<P_8B>1000.00</P_8B>
+			<P_9A>30.00</P_9A>
+			<P_11>30000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>29</NrWierszaFa>
+			<P_7>Email Security Gateway - ochrona poczty - rok</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>2000.00</P_9A>
+			<P_11>24000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>30</NrWierszaFa>
+			<P_7>Data Loss Prevention DLP - system zapobiegania wyciekom</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>40000.00</P_9A>
+			<P_11>40000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>31</NrWierszaFa>
+			<P_7>Mobile Device Management MDM - 500 urządzeń mobilnych</P_7>
+			<P_8B>500.00</P_8B>
+			<P_9A>50.00</P_9A>
+			<P_11>25000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>32</NrWierszaFa>
+			<P_7>Identity and Access Management IAM - wdrożenie SSO</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>35000.00</P_9A>
+			<P_11>35000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>33</NrWierszaFa>
+			<P_7>Multi-Factor Authentication MFA - 1000 tokenów sprzętowych</P_7>
+			<P_8B>1000.00</P_8B>
+			<P_9A>25.00</P_9A>
+			<P_11>25000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>34</NrWierszaFa>
+			<P_7>Privileged Access Management PAM - zabezpieczenie kont admin</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>30000.00</P_9A>
+			<P_11>30000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>35</NrWierszaFa>
+			<P_7>Network Access Control NAC - kontrola dostępu do sieci</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>25000.00</P_9A>
+			<P_11>25000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>36</NrWierszaFa>
+			<P_7>Vulnerability Scanner - skaner podatności - rok</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>3000.00</P_9A>
+			<P_11>36000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>37</NrWierszaFa>
+			<P_7>Patch Management - automatyzacja aktualizacji systemu</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>20000.00</P_9A>
+			<P_11>20000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>38</NrWierszaFa>
+			<P_7>Asset Management - inwentaryzacja sprzętu IT</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>15000.00</P_9A>
+			<P_11>15000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>39</NrWierszaFa>
+			<P_7>Service Desk ITSM - licencje dla 50 agentów</P_7>
+			<P_8B>50.00</P_8B>
+			<P_9A>500.00</P_9A>
+			<P_11>25000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>40</NrWierszaFa>
+			<P_7>Change Management - system zarządzania zmianami</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>12000.00</P_9A>
+			<P_11>12000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>41</NrWierszaFa>
+			<P_7>Incident Management - obsługa incydentów 24/7</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>4000.00</P_9A>
+			<P_11>48000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>42</NrWierszaFa>
+			<P_7>Problem Management - analiza przyczyn źródłowych</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>10000.00</P_9A>
+			<P_11>10000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>43</NrWierszaFa>
+			<P_7>Configuration Management Database CMDB - wdrożenie</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>25000.00</P_9A>
+			<P_11>25000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>44</NrWierszaFa>
+			<P_7>Knowledge Base - baza wiedzy dla użytkowników</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>8000.00</P_9A>
+			<P_11>8000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>45</NrWierszaFa>
+			<P_7>Self-Service Portal - portal samoobsługowy dla użytkowników</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>15000.00</P_9A>
+			<P_11>15000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>46</NrWierszaFa>
+			<P_7>Chatbot AI - wirtualny asystent IT - roczna subskrypcja</P_7>
+			<P_8B>12.00</P_8B>
+			<P_9A>2000.00</P_9A>
+			<P_11>24000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>47</NrWierszaFa>
+			<P_7>Automation RPA - roboty do automatyzacji procesów</P_7>
+			<P_8B>10.00</P_8B>
+			<P_9A>5000.00</P_9A>
+			<P_11>50000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>48</NrWierszaFa>
+			<P_7>DevOps Tools - Jenkins, GitLab, Docker - infrastruktura CI/CD</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>40000.00</P_9A>
+			<P_11>40000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>49</NrWierszaFa>
+			<P_7>Kubernetes Cluster - orkiestracja kontenerów - 3 nody</P_7>
+			<P_8B>3.00</P_8B>
+			<P_9A>15000.00</P_9A>
+			<P_11>45000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>50</NrWierszaFa>
+			<P_7>Infrastructure as Code - Terraform/Ansible - wdrożenie</P_7>
+			<P_8B>1.00</P_8B>
+			<P_9A>20000.00</P_9A>
+			<P_11>20000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<Rozliczenie>
+			<Obciazenia>
+				<Kwota>5000.00</Kwota>
+				<Powod>Opłata prolongacyjna za przesunięcie terminu płatności I raty o 30 dni zgodnie z aneksem do umowy nr 1/2025</Powod>
+			</Obciazenia>
+			<Obciazenia>
+				<Kwota>3000.00</Kwota>
+				<Powod>Koszt dodatkowych konsultacji technicznych poza zakresem umowy - 20 roboczogodzin po 150 PLN/h</Powod>
+			</Obciazenia>
+			<Obciazenia>
+				<Kwota>2500.00</Kwota>
+				<Powod>Opłata za pilną dostawę sprzętu - transport ekspresowy overnight delivery z gwarancją 24h</Powod>
+			</Obciazenia>
+			<Obciazenia>
+				<Kwota>1500.00</Kwota>
+				<Powod>Dodatkowe szkolenie indywidualne dla kadry zarządzającej - 3 sesje po 500 PLN</Powod>
+			</Obciazenia>
+			<Odliczenia>
+				<Kwota>10000.00</Kwota>
+				<Powod>Rabat za terminową płatność poprzednich faktur w 2024 roku - bonus lojalnościowy 1% od wartości rocznej</Powod>
+			</Odliczenia>
+			<Odliczenia>
+				<Kwota>5000.00</Kwota>
+				<Powod>Promocja sezonowa - rabat wiosenny 2025 dla klientów VIP - zgodnie z regulaminem programu partnerskiego</Powod>
+			</Odliczenia>
+			<Odliczenia>
+				<Kwota>3000.00</Kwota>
+				<Powod>Zwrot kosztów za uszkodzony w transporcie sprzęt (wymieniony na nowy) - nota obciążeniowa 001/2025</Powod>
+			</Odliczenia>
+			<Odliczenia>
+				<Kwota>2000.00</Kwota>
+				<Powod>Kompensata za przekroczenie terminu dostawy jednej partii sprzętu o 3 dni - kara umowna wg § 12 ust. 5</Powod>
+			</Odliczenia>
+			<DoZaplaty>1222000.00</DoZaplaty>
+		</Rozliczenie>
+		<Platnosc>
+			<TerminPlatnosci>
+				<Termin>2025-10-01</Termin>
+				<Kwota>407333.33</Kwota>
+			</TerminPlatnosci>
+			<TerminPlatnosci>
+				<Termin>2025-11-01</Termin>
+				<Kwota>407333.33</Kwota>
+			</TerminPlatnosci>
+			<TerminPlatnosci>
+				<Termin>2025-12-01</Termin>
+				<Kwota>407333.34</Kwota>
+			</TerminPlatnosci>
+			<FormaPlatnosci>6</FormaPlatnosci>
+			<RachunekBankowy>
+				<NrRB>12 1234 5678 9012 3456 7890 1234</NrRB>
+				<NazwaBanku>Bank Gospodarstwa Krajowego - Oddział Centralny Warszawa</NazwaBanku>
+				<OpisRachunku>PLN - Rachunek podstawowy - rozliczenia krajowe</OpisRachunku>
+			</RachunekBankowy>
+			<RachunekBankowy>
+				<NrRB>34 5678 9012 3456 7890 1234 5678</NrRB>
+				<NazwaBanku>Bank Pekao S.A. - Centrum Korporacyjne</NazwaBanku>
+				<OpisRachunku>PLN VAT - Rachunek mechanizmu podzielonej płatności (split payment)</OpisRachunku>
+			</RachunekBankowy>
+			<RachunekBankowyFaktora>
+				<NrRB>56 7890 1234 5678 9012 3456 7890</NrRB>
+				<NazwaBanku>Bank Faktoringowy S.A. - Dział Faktoringu</NazwaBanku>
+				<OpisRachunku>Rachunek faktoringowy - cesja wierzytelności zgodnie z umową faktoring nr FK/2025/001</OpisRachunku>
+			</RachunekBankowyFaktora>
+		</Platnosc>
+		<Umowy>
+			<DataUmowy>2024-01-15</DataUmowy>
+			<NrUmowy>UMW/IT/2024/001/FRAMEWORK</NrUmowy>
+		</Umowy>
+		<Umowy>
+			<DataUmowy>2024-06-20</DataUmowy>
+			<NrUmowy>ANEKS-1/UMW/IT/2024/001 - rozszerzenie zakresu</NrUmowy>
+		</Umowy>
+		<Umowy>
+			<DataUmowy>2024-09-10</DataUmowy>
+			<NrUmowy>ANEKS-2/UMW/IT/2024/001 - modyfikacja harmonogramu</NrUmowy>
+		</Umowy>
+		<Umowy>
+			<DataUmowy>2025-01-05</DataUmowy>
+			<NrUmowy>UMW/SLA/2025/PLATINUM - umowa serwisowa poziom Platinum</NrUmowy>
+		</Umowy>
+		<Umowy>
+			<DataUmowy>2025-03-15</DataUmowy>
+			<NrUmowy>UMW/NDA/2025/CONFIDENTIAL - umowa poufności dla projektu</NrUmowy>
+		</Umowy>
+		<Zamowienia>
+			<DataZamowienia>2025-08-01</DataZamowienia>
+			<NrZamowienia>PO/2025/08/001/IT-INFRA</NrZamowienia>
+		</Zamowienia>
+		<Zamowienia>
+			<DataZamowienia>2025-08-05</DataZamowienia>
+			<NrZamowienia>PO/2025/08/002/LICENSES</NrZamowienia>
+		</Zamowienia>
+		<Zamowienia>
+			<DataZamowienia>2025-08-10</DataZamowienia>
+			<NrZamowienia>PO/2025/08/003/SERVICES</NrZamowienia>
+		</Zamowienia>
+		<Zamowienia>
+			<DataZamowienia>2025-08-15</DataZamowienia>
+			<NrZamowienia>PO/2025/08/004/TRAINING</NrZamowienia>
+		</Zamowienia>
+		<Zamowienia>
+			<NrZamowienia>PO/2025/08/005/EMERGENCY-DELIVERY (bez daty - zamówienie pilne)</NrZamowienia>
+		</Zamowienia>
+	</Fa>
+	<Stopka>
+		<Informacje>
+			<StopkaFaktury>STRESS TEST - Faktura zawiera wszystkie możliwe pola opcjonalne FA(3) wypełnione danymi testowymi. Mega Corporation Polska S.A. - Siedziba: ul. Kwiatowa 1, 00-001 Warszawa. Kapitał zakładowy: 50 000 000 PLN wpłacony w całości. Sąd Rejonowy dla m.st. Warszawy, XII Wydział Gospodarczy KRS.</StopkaFaktury>
+		</Informacje>
+		<Rejestry>
+			<KRS>0000123456</KRS>
+			<REGON>123456789</REGON>
+			<BDO>000123456789</BDO>
+		</Rejestry>
+	</Stopka>
+</Faktura>

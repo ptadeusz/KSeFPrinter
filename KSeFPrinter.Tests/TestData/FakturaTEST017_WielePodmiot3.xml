@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Faktura xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+	<Naglowek>
+		<KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+		<WariantFormularza>3</WariantFormularza>
+		<DataWytworzeniaFa>2025-09-01T00:00:00Z</DataWytworzeniaFa>
+		<SystemInfo>SamploFaktur</SystemInfo>
+	</Naglowek>
+	<Podmiot1>
+		<DaneIdentyfikacyjne>
+			<NIP>7309436499</NIP>
+			<Nazwa>Elektrownia S.A.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Kwiatowa 1 m. 2</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>elektrownia@elektrownia.pl</Email>
+			<Telefon>667444555</Telefon>
+		</DaneKontaktowe>
+	</Podmiot1>
+	<Podmiot2>
+		<DaneIdentyfikacyjne>
+			<NIP>1187654321</NIP>
+			<Nazwa>F.H.U. Jan Kowalski</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Polna 1</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>jan@kowalski.pl</Email>
+			<Telefon>555777999</Telefon>
+		</DaneKontaktowe>
+		<NrKlienta>99999999</NrKlienta>
+		<JST>1</JST>
+	</Podmiot2>
+	<Podmiot3>
+		<DaneIdentyfikacyjne>
+			<NIP>5252644811</NIP>
+			<Nazwa>Urząd Miasta Warszawa</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>Plac Defilad 1</AdresL1>
+			<AdresL2>00-901 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>kontakt@um.warszawa.pl</Email>
+			<Telefon>225703000</Telefon>
+		</DaneKontaktowe>
+		<Rola>8</Rola>
+	</Podmiot3>
+	<Podmiot3>
+		<DaneIdentyfikacyjne>
+			<NIP>5261040567</NIP>
+			<Nazwa>Factoring Plus Sp. z o.o.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>al. Jerozolimskie 100</AdresL1>
+			<AdresL2>00-807 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>biuro@factoringplus.pl</Email>
+			<Telefon>222222222</Telefon>
+		</DaneKontaktowe>
+		<Rola>1</Rola>
+	</Podmiot3>
+	<Podmiot3>
+		<DaneIdentyfikacyjne>
+			<NIP>5213012345</NIP>
+			<Nazwa>Bank Pośredniczący S.A.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Bankowa 5</AdresL1>
+			<AdresL2>00-095 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>kontakt@bankposredniczacy.pl</Email>
+			<Telefon>223334444</Telefon>
+		</DaneKontaktowe>
+		<Rola>6</Rola>
+	</Podmiot3>
+	<Fa>
+		<KodWaluty>PLN</KodWaluty>
+		<P_1>2025-09-01</P_1>
+		<P_1M>Warszawa</P_1M>
+		<P_2>FA950/09/2025</P_2>
+		<P_13_1>50000.00</P_13_1>
+		<P_14_1>11500.00</P_14_1>
+		<P_15>61500.00</P_15>
+		<RodzajFaktury>VAT</RodzajFaktury>
+		<DodatkowyOpis>
+			<Klucz>Uwaga o podmiotach</Klucz>
+			<Wartosc>Faktura z trzema podmiotami trzecimi: JST (odbiorca), Faktor, Podmiot na rzecz którego płatność</Wartosc>
+		</DodatkowyOpis>
+		<FaWiersz>
+			<NrWierszaFa>1</NrWierszaFa>
+			<P_7>Usługa konsultingowa - projekt miejski</P_7>
+			<P_11>50000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<Platnosc>
+			<TerminPlatnosci>
+				<Termin>2025-10-15</Termin>
+			</TerminPlatnosci>
+			<FormaPlatnosci>6</FormaPlatnosci>
+			<RachunekBankowy>
+				<NrRB>73111111111111111111111111</NrRB>
+				<NazwaBanku>Bank Bankowości Bankowej S.A.</NazwaBanku>
+				<OpisRachunku>PLN</OpisRachunku>
+			</RachunekBankowy>
+		</Platnosc>
+	</Fa>
+	<Stopka>
+		<Informacje>
+			<StopkaFaktury>Kapitał zakładowy 5 000 000</StopkaFaktury>
+		</Informacje>
+		<Rejestry>
+			<KRS>0000099999</KRS>
+			<REGON>999999999</REGON>
+			<BDO>000099999</BDO>
+		</Rejestry>
+	</Stopka>
+</Faktura>

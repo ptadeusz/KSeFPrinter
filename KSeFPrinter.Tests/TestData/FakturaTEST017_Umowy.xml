@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Faktura xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+	<Naglowek>
+		<KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+		<WariantFormularza>3</WariantFormularza>
+		<DataWytworzeniaFa>2025-09-01T00:00:00Z</DataWytworzeniaFa>
+		<SystemInfo>Test umów</SystemInfo>
+	</Naglowek>
+	<Podmiot1>
+		<DaneIdentyfikacyjne>
+			<NIP>7309436499</NIP>
+			<Nazwa>Elektrownia S.A.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Kwiatowa 1 m. 2</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>elektrownia@elektrownia.pl</Email>
+			<Telefon>667444555</Telefon>
+		</DaneKontaktowe>
+	</Podmiot1>
+	<Podmiot2>
+		<DaneIdentyfikacyjne>
+			<NIP>1187654321</NIP>
+			<Nazwa>F.H.U. Jan Kowalski</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Polna 1</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>jan@kowalski.pl</Email>
+			<Telefon>555777999</Telefon>
+		</DaneKontaktowe>
+	</Podmiot2>
+	<Fa>
+		<KodWaluty>PLN</KodWaluty>
+		<P_1>2025-09-01</P_1>
+		<P_1M>Warszawa</P_1M>
+		<P_2>FA811/05/2025</P_2>
+		<P_13_1>43.60</P_13_1>
+		<P_14_1>10.03</P_14_1>
+		<P_15>53.63</P_15>
+		<Adnotacje>
+			<P_16>2</P_16>
+			<P_17>2</P_17>
+			<P_18>2</P_18>
+			<P_18A>2</P_18A>
+			<Zwolnienie>
+				<P_19N>1</P_19N>
+			</Zwolnienie>
+			<NoweSrodkiTransportu>
+				<P_22N>1</P_22N>
+			</NoweSrodkiTransportu>
+			<P_23>2</P_23>
+			<PMarzy>
+				<P_PMarzyN>1</P_PMarzyN>
+			</PMarzy>
+		</Adnotacje>
+		<RodzajFaktury>VAT</RodzajFaktury>
+		<FaWiersz>
+			<NrWierszaFa>1</NrWierszaFa>
+			<P_7>Usługi konsultingowe zgodnie z umową UMW/2024/001</P_7>
+			<P_11>18.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<FaWiersz>
+			<NrWierszaFa>2</NrWierszaFa>
+			<P_7>Usługi IT zgodnie z umową UMW/2024/002</P_7>
+			<P_11>25.60</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<Platnosc>
+			<TerminPlatnosci>
+				<Termin>2026-03-15</Termin>
+			</TerminPlatnosci>
+			<FormaPlatnosci>6</FormaPlatnosci>
+			<RachunekBankowy>
+				<NrRB>73111111111111111111111111</NrRB>
+			</RachunekBankowy>
+		</Platnosc>
+		<Umowy>
+			<DataUmowy>2024-01-15</DataUmowy>
+			<NrUmowy>UMW/2024/001</NrUmowy>
+		</Umowy>
+		<Umowy>
+			<DataUmowy>2024-03-20</DataUmowy>
+			<NrUmowy>UMW/2024/002</NrUmowy>
+		</Umowy>
+		<Umowy>
+			<DataUmowy>2024-06-10</DataUmowy>
+			<NrUmowy>UMW/2024/003</NrUmowy>
+		</Umowy>
+	</Fa>
+	<Stopka>
+		<Informacje>
+			<StopkaFaktury>Faktura wystawiona na podstawie umów</StopkaFaktury>
+		</Informacje>
+	</Stopka>
+</Faktura>

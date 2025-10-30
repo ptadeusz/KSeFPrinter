@@ -157,3 +157,6 @@ else
 }
 
 app.Run();
+
+// Make Program class public for testing with WebApplicationFactory
+public partial class Program { }

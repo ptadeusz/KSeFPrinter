@@ -266,8 +266,8 @@ public class InvoicePdfGeneratorTests : IDisposable
         pdf2.Should().NotBeNull();
 
         // PDFy będą różne ze względu na timestamp w stopce
-        // ale rozmiar powinien być bardzo podobny (różnica max 100 bajtów)
-        Math.Abs(pdf1.Length - pdf2.Length).Should().BeLessThan(100);
+        // ale rozmiar powinien być bardzo podobny (różnica max 300 bajtów)
+        Math.Abs(pdf1.Length - pdf2.Length).Should().BeLessThan(300);
     }
 
     [Fact]

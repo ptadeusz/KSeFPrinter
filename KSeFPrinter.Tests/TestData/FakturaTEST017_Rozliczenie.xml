@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Faktura xmlns:etd="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+	<Naglowek>
+		<KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+		<WariantFormularza>3</WariantFormularza>
+		<DataWytworzeniaFa>2025-09-01T00:00:00Z</DataWytworzeniaFa>
+		<SystemInfo>SamploFaktur</SystemInfo>
+	</Naglowek>
+	<Podmiot1>
+		<DaneIdentyfikacyjne>
+			<NIP>7309436499</NIP>
+			<Nazwa>Elektrownia S.A.</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Kwiatowa 1 m. 2</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>elektrownia@elektrownia.pl</Email>
+			<Telefon>667444555</Telefon>
+		</DaneKontaktowe>
+	</Podmiot1>
+	<Podmiot2>
+		<DaneIdentyfikacyjne>
+			<NIP>1187654321</NIP>
+			<Nazwa>F.H.U. Jan Kowalski</Nazwa>
+		</DaneIdentyfikacyjne>
+		<Adres>
+			<KodKraju>PL</KodKraju>
+			<AdresL1>ul. Polna 1</AdresL1>
+			<AdresL2>00-001 Warszawa</AdresL2>
+		</Adres>
+		<DaneKontaktowe>
+			<Email>jan@kowalski.pl</Email>
+			<Telefon>555777999</Telefon>
+		</DaneKontaktowe>
+		<NrKlienta>99999999</NrKlienta>
+	</Podmiot2>
+	<Fa>
+		<KodWaluty>EUR</KodWaluty>
+		<P_1>2025-09-01</P_1>
+		<P_1M>Warszawa</P_1M>
+		<P_2>FA812/05/2025</P_2>
+		<P_13_1>1000.00</P_13_1>
+		<P_14_1>230.00</P_14_1>
+		<P_15>1230.00</P_15>
+		<RodzajFaktury>VAT</RodzajFaktury>
+		<DodatkowyOpis>
+			<Klucz>Uwaga o rozliczeniu</Klucz>
+			<Wartosc>Faktura zawiera szczegółowe rozliczenie z obciążeniami (odsetki, kara) i odliczeniami (zaliczka, rabat)</Wartosc>
+		</DodatkowyOpis>
+		<FaWiersz>
+			<NrWierszaFa>1</NrWierszaFa>
+			<P_7>Usługa konsultingowa</P_7>
+			<P_11>1000.00</P_11>
+			<P_12>23</P_12>
+		</FaWiersz>
+		<Rozliczenie>
+			<Obciazenia>
+				<Kwota>50.00</Kwota>
+				<Powod>Odsetki za opóźnienie</Powod>
+			</Obciazenia>
+			<Obciazenia>
+				<Kwota>100.00</Kwota>
+				<Powod>Kara umowna</Powod>
+			</Obciazenia>
+			<SumaObciazen>150.00</SumaObciazen>
+			<Odliczenia>
+				<Kwota>200.00</Kwota>
+				<Powod>Zaliczka</Powod>
+			</Odliczenia>
+			<Odliczenia>
+				<Kwota>50.00</Kwota>
+				<Powod>Rabat za wcześniejszą wpłatę</Powod>
+			</Odliczenia>
+			<SumaOdliczen>250.00</SumaOdliczen>
+			<DoZaplaty>1130.00</DoZaplaty>
+		</Rozliczenie>
+		<Platnosc>
+			<TerminPlatnosci>
+				<Termin>2025-10-15</Termin>
+			</TerminPlatnosci>
+			<FormaPlatnosci>6</FormaPlatnosci>
+			<KwotaZaplacona>200.00</KwotaZaplacona>
+			<RachunekBankowy>
+				<NrRB>DE89370400440532013000</NrRB>
+				<NazwaBanku>Deutsche Bank AG</NazwaBanku>
+				<OpisRachunku>Rachunek walutowy EUR</OpisRachunku>
+				<SWIFT>DEUTDEFF</SWIFT>
+			</RachunekBankowy>
+		</Platnosc>
+	</Fa>
+	<Stopka>
+		<Informacje>
+			<StopkaFaktury>Kapitał zakładowy 5 000 000</StopkaFaktury>
+		</Informacje>
+		<Rejestry>
+			<KRS>0000099999</KRS>
+			<REGON>999999999</REGON>
+			<BDO>000099999</BDO>
+		</Rejestry>
+	</Stopka>
+</Faktura>
