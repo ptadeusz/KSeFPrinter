@@ -51,9 +51,31 @@ public class Fa
 
     /// <summary>
     /// P_15: Suma wartości brutto (do zapłaty)
+    /// W przypadku faktur korygujących - RÓŻNICA (korekta kwoty wynikającej z faktury korygowanej)
     /// </summary>
     [XmlElement("P_15")]
     public decimal P_15 { get; set; }
+
+    /// <summary>
+    /// Informacje o fakturze korygowanej (tylko dla faktur korygujących: KOR, KOR_ZAL, KOR_ROZ)
+    /// </summary>
+    [XmlElement("FaKorygowana")]
+    public FaKorygowana? FaKorygowana { get; set; }
+
+    /// <summary>
+    /// PrzyczynaKorekty: Przyczyna korekty dla faktur korygujących (opcjonalne)
+    /// </summary>
+    [XmlElement("PrzyczynaKorekty")]
+    public string? PrzyczynaKorekty { get; set; }
+
+    /// <summary>
+    /// TypKorekty: Typ korekty (opcjonalne)
+    /// 1 - Korekta skutkująca w dacie sprzedaży
+    /// 2 - Korekta skutkująca w dacie wystawienia faktury korygującej
+    /// 3 - Korekta skutkująca w dacie innej
+    /// </summary>
+    [XmlElement("TypKorekty")]
+    public string? TypKorekty { get; set; }
 
     /// <summary>
     /// Adnotacje faktury

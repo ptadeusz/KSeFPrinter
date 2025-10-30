@@ -231,6 +231,37 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                     }
                 });
             });
+
+            // Informacje o fakturze korygowanej (dla faktur korygujących: KOR, KOR_ZAL, KOR_ROZ)
+            var rodzajFaktury = faktura.Fa.RodzajFaktury?.ToUpper();
+            bool isCorrectionInvoice = rodzajFaktury == "KOR" || rodzajFaktury == "KOR_ZAL" || rodzajFaktury == "KOR_ROZ";
+
+            if (isCorrectionInvoice && faktura.Fa.FaKorygowana != null)
+            {
+                column.Item().PaddingTop(10).BorderTop(1).BorderColor(Colors.Red.Darken2).PaddingTop(10)
+                    .Background(Colors.Red.Lighten4).Padding(10).Column(col =>
+                {
+                    col.Item().Text("FAKTURA KORYGUJĄCA").FontSize(12).Bold().FontColor(Colors.Red.Darken3);
+
+                    var fk = faktura.Fa.FaKorygowana;
+
+                    if (!string.IsNullOrEmpty(fk.NrFaKorygowanej))
+                        col.Item().PaddingTop(3).Text($"Koryguje fakturę: {fk.NrFaKorygowanej}").FontSize(9);
+
+                    if (fk.DataWystFaKorygowanej.HasValue)
+                        col.Item().Text($"z dnia: {fk.DataWystFaKorygowanej.Value:dd.MM.yyyy}").FontSize(9);
+
+                    if (!string.IsNullOrEmpty(fk.NrKSeFFaKorygowanej))
+                        col.Item().Text($"Nr KSeF faktury korygowanej: {fk.NrKSeFFaKorygowanej}").FontSize(8).FontColor(Colors.Grey.Darken2);
+
+                    // PrzyczynaKorekty jest w Fa, nie w FaKorygowana
+                    if (!string.IsNullOrEmpty(faktura.Fa.PrzyczynaKorekty))
+                    {
+                        col.Item().PaddingTop(5).Text("Przyczyna korekty:").FontSize(9).Bold();
+                        col.Item().PaddingTop(2).Text(faktura.Fa.PrzyczynaKorekty).FontSize(9).Italic();
+                    }
+                });
+            }
         });
     }
 

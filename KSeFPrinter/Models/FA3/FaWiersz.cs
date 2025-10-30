@@ -78,4 +78,14 @@ public class FaWiersz
     /// </summary>
     [XmlElement("PKOB")]
     public string? PKOB { get; set; }
+
+    // === Pola dla faktur korygujących ===
+
+    /// <summary>
+    /// StanPrzed: Znacznik stanu przed korektą w przypadku faktury korygującej.
+    /// Wartość "1" oznacza, że ten wiersz reprezentuje stan PRZED korektą.
+    /// Kolejny wiersz bez tego znacznika to stan PO korekcie.
+    /// </summary>
+    [XmlElement("StanPrzed")]
+    public string? StanPrzed { get; set; }
 }
