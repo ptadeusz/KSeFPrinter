@@ -91,7 +91,9 @@ ksef-pdf --watch katalog1/ katalog2/
 
 ### Certyfikat (KOD QR II)
 
-Dodaj certyfikat KSeF typu Offline, aby wygenerować drugi kod QR (weryfikacja certyfikatu):
+Dodaj certyfikat KSeF typu Offline, aby wygenerować drugi kod QR (weryfikacja certyfikatu). Aplikacja obsługuje **dwie metody** wczytywania certyfikatu:
+
+#### Opcja 1: Z pliku PFX/P12
 
 ```bash
 # Z hasłem:
@@ -100,6 +102,45 @@ ksef-pdf faktura.xml --cert certyfikat.pfx --cert-password "mojeHaslo"
 # Bez hasła (jeśli certyfikat nie jest chroniony):
 ksef-pdf faktura.xml --cert certyfikat.pfx
 ```
+
+#### Opcja 2: Z Windows Certificate Store (tylko Windows)
+
+Wyszukaj certyfikat po thumbprint (odcisk palca):
+
+```bash
+ksef-pdf faktura.xml --cert-thumbprint "A1B2C3D4E5F6..."
+```
+
+Lub wyszukaj po subject (CN):
+
+```bash
+ksef-pdf faktura.xml --cert-subject "MojaFirma"
+```
+
+Dodatkowe opcje dla Windows Store:
+
+```bash
+# Własna lokalizacja Store (domyślnie: CurrentUser)
+ksef-pdf faktura.xml --cert-thumbprint "A1B2..." --cert-store-location LocalMachine
+
+# Własna nazwa Store (domyślnie: My)
+ksef-pdf faktura.xml --cert-thumbprint "A1B2..." --cert-store-name Root
+
+# Pełny przykład:
+ksef-pdf faktura.xml \
+  --cert-subject "CN=Jan Kowalski" \
+  --cert-store-name My \
+  --cert-store-location CurrentUser
+```
+
+**Jak znaleźć thumbprint certyfikatu w Windows:**
+
+1. Otwórz `certmgr.msc` (Windows + R)
+2. Przejdź do `Personal` → `Certificates`
+3. Kliknij dwukrotnie na certyfikat
+4. Przejdź do zakładki `Details`
+5. Przewiń w dół do pola `Thumbprint`
+6. Skopiuj wartość (np. `A1 B2 C3 D4...`)
 
 **Uwaga:** Bez certyfikatu generowany jest tylko KOD QR I (weryfikacja faktury).
 
@@ -163,7 +204,7 @@ ksef-pdf faktury/*.xml --no-validate
 
 **Wynik:** PDF dla każdego XML w katalogu `faktury/`
 
-### Przykład 3: Faktura z certyfikatem i własną nazwą
+### Przykład 3: Faktura z certyfikatem z pliku i własną nazwą
 
 ```bash
 ksef-pdf faktura.xml \
@@ -173,6 +214,21 @@ ksef-pdf faktura.xml \
 ```
 
 **Wynik:** `Faktura_Styczeń_2025.pdf` z dwoma kodami QR
+
+### Przykład 3a: Faktura z certyfikatem z Windows Store
+
+```bash
+# Po thumbprint:
+ksef-pdf faktura.xml \
+  --cert-thumbprint "A1B2C3D4E5F67890ABCDEF1234567890ABCDEF12"
+
+# Po subject:
+ksef-pdf faktura.xml \
+  --cert-subject "Jan Kowalski" \
+  --cert-store-location CurrentUser
+```
+
+**Wynik:** PDF z dwoma kodami QR (certyfikat wczytany z Windows Store)
 
 ### Przykład 4: Środowisko produkcyjne z numerem KSeF
 
@@ -314,6 +370,57 @@ ksef-pdf faktura.xml --cert cert.pfx --cert-password "haslo"
 - Katalog istnieje przed uruchomieniem watch mode
 - Pliki mają rozszerzenie `.xml`
 - System ma uprawnienia do odczytu katalogu
+
+### Problem: "Nie znaleziono certyfikatu w Windows Certificate Store"
+
+**Rozwiązanie:**
+
+1. Sprawdź, czy certyfikat faktycznie istnieje w Store:
+   ```bash
+   # Otwórz Certificate Manager
+   certmgr.msc
+   ```
+
+2. Sprawdź thumbprint certyfikatu:
+   - Kliknij dwukrotnie certyfikat → Details → Thumbprint
+   - Upewnij się, że kopiujesz dokładnie (bez spacji lub z spacjami - oba działają)
+
+3. Sprawdź lokalizację Store:
+   ```bash
+   # CurrentUser (domyślnie):
+   ksef-pdf faktura.xml --cert-thumbprint "..." --cert-store-location CurrentUser
+
+   # LocalMachine (certyfikaty systemowe):
+   ksef-pdf faktura.xml --cert-thumbprint "..." --cert-store-location LocalMachine
+   ```
+
+4. Sprawdź nazwę Store:
+   - `My` - Personal certificates (domyślnie)
+   - `Root` - Trusted Root Certification Authorities
+   - `CA` - Intermediate Certification Authorities
+   - `TrustedPeople` - Trusted People
+
+5. Użyj opcji `--verbose` aby zobaczyć szczegółowe logi:
+   ```bash
+   ksef-pdf faktura.xml --cert-thumbprint "..." --verbose
+   ```
+
+### Problem: "Certyfikat nie zawiera klucza prywatnego" (Windows Store)
+
+**Rozwiązanie:**
+
+Certyfikat w Windows Store musi mieć klucz prywatny. Sprawdź:
+
+1. Otwórz `certmgr.msc`
+2. Kliknij dwukrotnie certyfikat
+3. W zakładce `General` sprawdź, czy widać tekst:
+   ```
+   You have a private key that corresponds to this certificate.
+   ```
+
+Jeśli nie ma klucza prywatnego:
+- Re-importuj certyfikat z pliku PFX zawierającego klucz prywatny
+- Upewnij się, że podczas importu zaznaczono "Mark this key as exportable"
 
 ## Wymagania systemowe
 

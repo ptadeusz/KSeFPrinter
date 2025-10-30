@@ -489,6 +489,8 @@ await service.GeneratePdfFromFileAsync("faktura.xml", "faktura.pdf", options);
 
 #### Z magazynu certyfikatów Windows
 
+**Opcja A: Po thumbprint (odcisk palca)**
+
 ```csharp
 using System.Security.Cryptography.X509Certificates;
 
@@ -496,14 +498,25 @@ using System.Security.Cryptography.X509Certificates;
 var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
 store.Open(OpenFlags.ReadOnly);
 
-var cert = store.Certificates
-    .Find(X509FindType.FindByThumbprint, "AB12CD34EF56...", false)
-    .FirstOrDefault();
+// Usuń spacje z thumbprinta jeśli są
+var thumbprint = "AB 12 CD 34 EF 56...".Replace(" ", "");
+
+var certs = store.Certificates
+    .Find(X509FindType.FindByThumbprint, thumbprint, validOnly: false);
 
 store.Close();
 
-if (cert != null)
+if (certs.Count > 0)
 {
+    var cert = certs[0];
+
+    // Sprawdź czy ma klucz prywatny
+    if (!cert.HasPrivateKey)
+    {
+        Console.WriteLine("Certyfikat nie zawiera klucza prywatnego!");
+        return;
+    }
+
     var options = new PdfGenerationOptions
     {
         Certificate = cert,
@@ -512,6 +525,49 @@ if (cert != null)
 
     await service.GeneratePdfFromFileAsync("faktura.xml", "faktura.pdf", options);
 }
+```
+
+**Opcja B: Po subject (CN)**
+
+```csharp
+using System.Security.Cryptography.X509Certificates;
+
+// Wyszukaj po subject (np. "Jan Kowalski" lub "CN=Jan Kowalski")
+var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+store.Open(OpenFlags.ReadOnly);
+
+var certs = store.Certificates
+    .Find(X509FindType.FindBySubjectName, "Jan Kowalski", validOnly: false);
+
+store.Close();
+
+if (certs.Count > 0)
+{
+    // Jeśli znaleziono wiele, wybierz pierwszy lub daj użytkownikowi wybór
+    var cert = certs[0];
+
+    Console.WriteLine($"Znaleziono certyfikat: {cert.Subject}");
+    Console.WriteLine($"Thumbprint: {cert.Thumbprint}");
+    Console.WriteLine($"Ważny do: {cert.NotAfter:yyyy-MM-dd}");
+
+    var options = new PdfGenerationOptions
+    {
+        Certificate = cert,
+        IncludeQrCode2 = true
+    };
+
+    await service.GeneratePdfFromFileAsync("faktura.xml", "faktura.pdf", options);
+}
+```
+
+**Opcja C: Z LocalMachine Store (certyfikaty systemowe)**
+
+```csharp
+// Certyfikaty w LocalMachine wymagają uprawnień administratora
+var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+store.Open(OpenFlags.ReadOnly);
+
+// ... reszta kodu jak wyżej
 ```
 
 #### Z pliku PEM (Linux/macOS)

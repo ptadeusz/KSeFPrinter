@@ -6,7 +6,14 @@
       "Bash(rm:*)",
       "Bash(find:*)",
       "Bash(cat:*)",
-      "Bash(.ksef-pdf.exe --help)"
+      "Bash(.ksef-pdf.exe --help)",
+      "Bash(curl:*)",
+      "Bash(powershell -Command \"Invoke-RestMethod -Uri ''http://localhost:5000/api/invoice/health'' -Method Get | ConvertTo-Json\")",
+      "Bash(taskkill:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File test-api.ps1)",
+      "Bash(powershell -ExecutionPolicy Bypass -File prepare-test-json.ps1:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []
