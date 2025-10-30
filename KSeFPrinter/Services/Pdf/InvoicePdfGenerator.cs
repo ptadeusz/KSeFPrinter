@@ -759,8 +759,48 @@ public class InvoicePdfGenerator : IPdfGeneratorService
         var rodzajFaktury = faktura.Fa.RodzajFaktury?.ToUpper();
         bool isCorrectionInvoice = rodzajFaktury == "KOR" || rodzajFaktury == "KOR_ZAL" || rodzajFaktury == "KOR_ROZ";
 
+        var isForeignCurrency = faktura.Fa.KodWaluty?.ToUpper() != "PLN";
+
         container.AlignRight().Column(column =>
         {
+            // Podsumowanie wg stawek VAT
+            var vatRates = new List<(string label, decimal? netto, decimal? vat, decimal? vatPln)>
+            {
+                ("23%/22%", faktura.Fa.P_13_1 != 0 ? faktura.Fa.P_13_1 : null, faktura.Fa.P_14_1 != 0 ? faktura.Fa.P_14_1 : null, faktura.Fa.P_14_1W),
+                ("8%/7%", faktura.Fa.P_13_2, faktura.Fa.P_14_2, faktura.Fa.P_14_2W),
+                ("5%", faktura.Fa.P_13_3, faktura.Fa.P_14_3, faktura.Fa.P_14_3W),
+                ("pozostałe", faktura.Fa.P_13_4, faktura.Fa.P_14_4, faktura.Fa.P_14_4W),
+                ("0%", faktura.Fa.P_13_5, faktura.Fa.P_14_5, null)
+            };
+
+            bool hasMultipleRates = vatRates.Count(r => r.netto.HasValue || r.vat.HasValue) > 1;
+
+            if (hasMultipleRates)
+            {
+                column.Item().Text("Podsumowanie wg stawek VAT:").FontSize(9).Bold();
+                column.Item().PaddingTop(3);
+
+                foreach (var rate in vatRates.Where(r => r.netto.HasValue || r.vat.HasValue))
+                {
+                    column.Item().Row(row =>
+                    {
+                        row.ConstantItem(80).Text($"VAT {rate.label}:").FontSize(8);
+                        if (rate.netto.HasValue)
+                            row.ConstantItem(70).AlignRight().Text($"{rate.netto.Value:N2}").FontSize(8);
+                        else
+                            row.ConstantItem(70);
+                        row.ConstantItem(20).AlignCenter().Text("+").FontSize(8);
+                        if (rate.vat.HasValue)
+                            row.ConstantItem(70).AlignRight().Text($"{rate.vat.Value:N2}").FontSize(8);
+                        else
+                            row.ConstantItem(70);
+                        row.ConstantItem(20).AlignCenter().Text(faktura.Fa.KodWaluty).FontSize(7);
+                    });
+                }
+                column.Item().PaddingTop(5);
+            }
+
+            // Suma netto
             column.Item().Row(row =>
             {
                 var label = isCorrectionInvoice ? "Różnica netto:" : "Suma netto:";
@@ -771,6 +811,7 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                     .FontSize(10);
             });
 
+            // VAT w walucie obcej
             column.Item().Row(row =>
             {
                 var label = isCorrectionInvoice ? "Różnica VAT:" : "Podatek VAT:";
@@ -781,6 +822,60 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                     .FontSize(10);
             });
 
+            // VAT w PLN (dla faktur w walucie obcej)
+            if (isForeignCurrency && (faktura.Fa.P_14_1W.HasValue || faktura.Fa.P_14_2W.HasValue ||
+                faktura.Fa.P_14_3W.HasValue || faktura.Fa.P_14_4W.HasValue))
+            {
+                column.Item().PaddingTop(8).Text("VAT przeliczony na PLN (art. 106e ust. 11):").FontSize(9).Bold();
+                column.Item().PaddingTop(2);
+
+                var vatPlnRates = new List<(string label, decimal? vatPln)>
+                {
+                    ("23%/22%", faktura.Fa.P_14_1W),
+                    ("8%/7%", faktura.Fa.P_14_2W),
+                    ("5%", faktura.Fa.P_14_3W),
+                    ("pozostałe", faktura.Fa.P_14_4W)
+                };
+
+                bool hasMultipleVatPlnRates = vatPlnRates.Count(r => r.vatPln.HasValue && r.vatPln.Value != 0) > 1;
+
+                // Pokaż rozbicie tylko jeśli jest więcej niż jedna stawka
+                if (hasMultipleVatPlnRates)
+                {
+                    foreach (var rate in vatPlnRates.Where(r => r.vatPln.HasValue && r.vatPln.Value != 0))
+                    {
+                        column.Item().Row(row =>
+                        {
+                            row.ConstantItem(150).Text($"VAT {rate.label} w PLN:").FontSize(9);
+                            var vatPlnValue = rate.vatPln!.Value;
+                            var vatPrefix = isCorrectionInvoice && vatPlnValue >= 0 ? "+" : "";
+                            row.ConstantItem(100).AlignRight().Text($"{vatPrefix}{vatPlnValue:N2} PLN")
+                                .FontSize(9);
+                        });
+                    }
+                    column.Item().PaddingTop(3);
+                }
+
+                // Suma VAT w PLN (zawsze)
+                var totalVatPln = (faktura.Fa.P_14_1W ?? 0) + (faktura.Fa.P_14_2W ?? 0) +
+                                  (faktura.Fa.P_14_3W ?? 0) + (faktura.Fa.P_14_4W ?? 0);
+
+                if (totalVatPln != 0)
+                {
+                    var label = isCorrectionInvoice ? "RÓŻNICA VAT w PLN:" : "RAZEM VAT w PLN:";
+                    column.Item().Row(row =>
+                    {
+                        row.ConstantItem(150).Text(label).FontSize(10).Bold();
+                        var vatPrefix = isCorrectionInvoice && totalVatPln >= 0 ? "+" : "";
+                        row.ConstantItem(100).AlignRight().Text($"{vatPrefix}{totalVatPln:N2} PLN")
+                            .FontSize(10).Bold();
+                    });
+                }
+
+                column.Item().PaddingTop(3);
+            }
+
+            // Suma brutto
             column.Item().PaddingTop(5).Row(row =>
             {
                 var label = isCorrectionInvoice ? "RÓŻNICA BRUTTO:" : "RAZEM BRUTTO:";

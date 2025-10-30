@@ -38,16 +38,88 @@ public class Fa
     public OkresFa? OkresFa { get; set; }
 
     /// <summary>
-    /// P_13_1: Suma wartości netto
+    /// P_13_1: Suma wartości netto ze stawką podstawową 23%/22%
     /// </summary>
     [XmlElement("P_13_1")]
     public decimal P_13_1 { get; set; }
 
     /// <summary>
-    /// P_14_1: Suma podatku VAT
+    /// P_14_1: Suma podatku VAT 23%/22%
     /// </summary>
     [XmlElement("P_14_1")]
     public decimal P_14_1 { get; set; }
+
+    /// <summary>
+    /// P_14_1W: VAT 23%/22% w PLN (gdy faktura w walucie obcej)
+    /// </summary>
+    [XmlElement("P_14_1W")]
+    public decimal? P_14_1W { get; set; }
+
+    /// <summary>
+    /// P_13_2: Suma wartości netto ze stawką obniżoną pierwszą 8%/7%
+    /// </summary>
+    [XmlElement("P_13_2")]
+    public decimal? P_13_2 { get; set; }
+
+    /// <summary>
+    /// P_14_2: Suma podatku VAT 8%/7%
+    /// </summary>
+    [XmlElement("P_14_2")]
+    public decimal? P_14_2 { get; set; }
+
+    /// <summary>
+    /// P_14_2W: VAT 8%/7% w PLN (gdy faktura w walucie obcej)
+    /// </summary>
+    [XmlElement("P_14_2W")]
+    public decimal? P_14_2W { get; set; }
+
+    /// <summary>
+    /// P_13_3: Suma wartości netto ze stawką obniżoną drugą 5%
+    /// </summary>
+    [XmlElement("P_13_3")]
+    public decimal? P_13_3 { get; set; }
+
+    /// <summary>
+    /// P_14_3: Suma podatku VAT 5%
+    /// </summary>
+    [XmlElement("P_14_3")]
+    public decimal? P_14_3 { get; set; }
+
+    /// <summary>
+    /// P_14_3W: VAT 5% w PLN (gdy faktura w walucie obcej)
+    /// </summary>
+    [XmlElement("P_14_3W")]
+    public decimal? P_14_3W { get; set; }
+
+    /// <summary>
+    /// P_13_4: Suma wartości netto z pozostałymi stawkami VAT
+    /// </summary>
+    [XmlElement("P_13_4")]
+    public decimal? P_13_4 { get; set; }
+
+    /// <summary>
+    /// P_14_4: Suma podatku VAT z pozostałych stawek
+    /// </summary>
+    [XmlElement("P_14_4")]
+    public decimal? P_14_4 { get; set; }
+
+    /// <summary>
+    /// P_14_4W: VAT z pozostałych stawek w PLN (gdy faktura w walucie obcej)
+    /// </summary>
+    [XmlElement("P_14_4W")]
+    public decimal? P_14_4W { get; set; }
+
+    /// <summary>
+    /// P_13_5: Suma wartości netto ze stawką 0%
+    /// </summary>
+    [XmlElement("P_13_5")]
+    public decimal? P_13_5 { get; set; }
+
+    /// <summary>
+    /// P_14_5: Suma podatku VAT ze stawką 0% (zawsze 0)
+    /// </summary>
+    [XmlElement("P_14_5")]
+    public decimal? P_14_5 { get; set; }
 
     /// <summary>
     /// P_15: Suma wartości brutto (do zapłaty)
