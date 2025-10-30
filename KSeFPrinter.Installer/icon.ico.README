@@ -1,0 +1,9 @@
+Jeśli chcesz dodać ikonę do instalatora:
+
+1. Utwórz plik icon.ico (32x32 lub 48x48 pikseli)
+2. Umieść go w tym katalogu jako: icon.ico
+3. Odkomentuj linie w Package.wxs:
+   <Icon Id="ProductIcon" SourceFile="icon.ico" />
+   <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
+
+To spowoduje, że ikona będzie wyświetlana w Dodaj/Usuń programy (Control Panel).

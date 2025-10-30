@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="KSeF Printer"
+           Manufacturer="KSeF Team"
+           Version="1.0.0.0"
+           UpgradeCode="B8A2F9C3-7E4D-4F6A-9B2C-8D5E7F4A3B1C"
+           Compressed="yes"
+           InstallerVersion="500"
+           Scope="perMachine"
+           Codepage="1250">
+
+    <SummaryInformation Description="Generator wydruków PDF dla faktur elektronicznych w formacie KSeF FA(3)" />
+
+    <!-- Pozwól na upgrade przy reinstalacji -->
+    <MajorUpgrade DowngradeErrorMessage="Nowsza wersja KSeF Printer jest już zainstalowana."
+                  AllowSameVersionUpgrades="yes" />
+
+    <!-- Dodaj standardowy UI WiX -->
+    <ui:WixUI Id="WixUI_FeatureTree" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <!-- Ikona w Add/Remove Programs (opcjonalne - odkomentuj jeśli masz icon.ico) -->
+    <!-- <Icon Id="ProductIcon" SourceFile="icon.ico" /> -->
+    <!-- <Property Id="ARPPRODUCTICON" Value="ProductIcon" /> -->
+
+    <!-- Właściwości instalacji -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
+    <!-- Struktura katalogów -->
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="KSeF Printer">
+        <!-- Aplikacja CLI -->
+        <Directory Id="CLIINSTALLFOLDER" Name="CLI" />
+
+        <!-- Aplikacja API -->
+        <Directory Id="APIINSTALLFOLDER" Name="API" />
+
+        <!-- Przykłady -->
+        <Directory Id="EXAMPLESINSTALLFOLDER" Name="Examples">
+          <Directory Id="EXAMPLESXMLINSTALLFOLDER" Name="xml" />
+          <Directory Id="EXAMPLESOUTPUTINSTALLFOLDER" Name="output" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <!-- Start Menu -->
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="KSeF Printer" />
+    </StandardDirectory>
+
+    <!-- Feature 1: Aplikacja CLI (ksef-pdf.exe) -->
+    <Feature Id="CLIFeature"
+             Title="KSeF Printer CLI"
+             Description="Aplikacja konsolowa do generowania PDF z faktur XML (ksef-pdf.exe)"
+             Level="1"
+             ConfigurableDirectory="CLIINSTALLFOLDER"
+             Display="expand"
+             AllowAbsent="no">
+
+      <ComponentGroupRef Id="CLIComponents" />
+
+      <!-- Skrót w Start Menu dla CLI -->
+      <Component Id="CLIShortcut" Directory="ApplicationProgramsFolder" Guid="A1B2C3D4-E5F6-4A5B-8C7D-9E0F1A2B3C4D">
+        <Shortcut Id="CLIShortcut"
+                  Name="KSeF Printer CLI"
+                  Description="Uruchom wiersz polecenia w folderze KSeF Printer CLI"
+                  Target="[System64Folder]cmd.exe"
+                  Arguments='/k cd /d "[CLIINSTALLFOLDER]" &amp; echo Folder: [CLIINSTALLFOLDER] &amp; echo Użycie: ksef-pdf.exe [plik.xml] [wyjscie.pdf]'
+                  WorkingDirectory="CLIINSTALLFOLDER" />
+
+        <RemoveFolder Id="RemoveCLIShortcut" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\KSeF\KSeFPrinter" Name="CLIInstalled" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <!-- Dodaj CLI do PATH (opcjonalne) -->
+      <Component Id="CLIPathEnvironment" Directory="CLIINSTALLFOLDER" Guid="B2C3D4E5-F6A7-4B5C-8D7E-9F0A1B2C3D4E">
+        <Environment Id="PATH_CLI"
+                     Name="PATH"
+                     Value="[CLIINSTALLFOLDER]"
+                     Permanent="no"
+                     Part="last"
+                     Action="set"
+                     System="yes" />
+        <RegistryValue Root="HKCU" Key="Software\KSeF\KSeFPrinter" Name="CLIPath" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </Feature>
+
+    <!-- Feature 2: Aplikacja API (opcjonalna) -->
+    <Feature Id="APIFeature"
+             Title="KSeF Printer API"
+             Description="ASP.NET Core Web API z interfejsem Swagger"
+             Level="1000"
+             ConfigurableDirectory="APIINSTALLFOLDER"
+             Display="expand"
+             AllowAbsent="yes">
+
+      <ComponentGroupRef Id="APIComponents" />
+
+      <!-- Skrót w Start Menu dla API -->
+      <Component Id="APIShortcut" Directory="ApplicationProgramsFolder" Guid="C3D4E5F6-A7B8-4C5D-8E7F-9A0B1C2D3E4F">
+        <Shortcut Id="APIShortcut"
+                  Name="KSeF Printer API"
+                  Description="Uruchom API KSeF Printer"
+                  Target="[APIINSTALLFOLDER]KSeFPrinter.API.exe"
+                  WorkingDirectory="APIINSTALLFOLDER" />
+
+        <RemoveFolder Id="RemoveAPIShortcut" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\KSeF\KSeFPrinter" Name="APIInstalled" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </Feature>
+
+    <!-- Feature 3: Pliki przykładowe (opcjonalne) -->
+    <Feature Id="ExamplesFeature"
+             Title="Przykłady"
+             Description="Przykładowe faktury XML i wygenerowane PDF-y"
+             Level="1000"
+             AllowAbsent="yes">
+
+      <ComponentGroupRef Id="ExamplesComponents" />
+    </Feature>
+
+    <!-- Feature 4: Dokumentacja (opcjonalne) -->
+    <Feature Id="DocumentationFeature"
+             Title="Dokumentacja"
+             Description="README i dokumentacja użytkownika"
+             Level="1"
+             AllowAbsent="yes">
+
+      <Component Id="ReadmeComponent" Directory="INSTALLFOLDER" Guid="D4E5F6A7-B8C9-4D5E-8F7A-9B0C1D2E3F4A">
+        <File Id="ReadmeFile" Source="..\README.md" KeyPath="yes" />
+      </Component>
+    </Feature>
+
+  </Package>
+</Wix>

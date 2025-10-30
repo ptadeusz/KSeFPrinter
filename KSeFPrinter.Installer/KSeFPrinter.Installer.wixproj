@@ -1,0 +1,32 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputName>KSeFPrinter</OutputName>
+    <OutputType>Package</OutputType>
+    <Platform>x64</Platform>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <DefineConstants>CLIPublishDir=..\KSeFPrinter.CLI\bin\Release\net9.0\win-x64\publish\;APIPublishDir=..\KSeFPrinter.API\bin\Release\net9.0\win-x64\publish\</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <!-- Automatyczne zbieranie plików z publish -->
+  <ItemGroup>
+    <HarvestDirectory Include="..\KSeFPrinter.CLI\bin\$(Configuration)\net9.0\win-x64\publish">
+      <DirectoryRefId>CLIINSTALLFOLDER</DirectoryRefId>
+      <ComponentGroupName>CLIComponents</ComponentGroupName>
+      <PreprocessorVariable>var.CLIPublishDir</PreprocessorVariable>
+      <SuppressRootDirectory>true</SuppressRootDirectory>
+    </HarvestDirectory>
+
+    <HarvestDirectory Include="..\KSeFPrinter.API\bin\$(Configuration)\net9.0\win-x64\publish">
+      <DirectoryRefId>APIINSTALLFOLDER</DirectoryRefId>
+      <ComponentGroupName>APIComponents</ComponentGroupName>
+      <PreprocessorVariable>var.APIPublishDir</PreprocessorVariable>
+      <SuppressRootDirectory>true</SuppressRootDirectory>
+    </HarvestDirectory>
+  </ItemGroup>
+
+</Project>

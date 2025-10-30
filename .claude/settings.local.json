@@ -34,7 +34,8 @@
       "Bash(findstr:*)",
       "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_Podmiot2_Pola.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_Podmiot2_Pola.pdf\" --no-validate)",
       "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_Adnotacje.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_Adnotacje.pdf\" --no-validate)",
-      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_Faza3_Kompletny.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_Faza3_Kompletny.pdf\" --no-validate)"
+      "Bash(\"C:\\aplikacje\\KseFPrinter\\KSeFPrinter.CLI\\bin\\Release\\net9.0\\ksef-pdf.exe\" \"C:\\aplikacje\\KseFPrinter\\examples\\xml\\FakturaTEST017_Faza3_Kompletny.xml\" \"C:\\aplikacje\\KseFPrinter\\examples\\output\\FakturaTEST017_Faza3_Kompletny.pdf\" --no-validate)",
+      "Bash(wix:*)"
     ],
     "deny": [],
     "ask": []

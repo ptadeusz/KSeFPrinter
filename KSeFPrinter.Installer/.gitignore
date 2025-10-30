@@ -1,0 +1,6 @@
+bin/
+obj/
+*.wixpdb
+*.msi
+*.cab
+*.log
