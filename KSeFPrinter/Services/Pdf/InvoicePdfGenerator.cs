@@ -761,16 +761,19 @@ public class InvoicePdfGenerator : IPdfGeneratorService
 
         var isForeignCurrency = faktura.Fa.KodWaluty?.ToUpper() != "PLN";
 
+        // Wykryj rzeczywiste stawki VAT używane w fakturze
+        var actualRateLabels = GetActualVatRateLabels(faktura);
+
         container.AlignRight().Column(column =>
         {
             // Podsumowanie wg stawek VAT
             var vatRates = new List<(string label, decimal? netto, decimal? vat, decimal? vatPln)>
             {
-                ("23%/22%", faktura.Fa.P_13_1 != 0 ? faktura.Fa.P_13_1 : null, faktura.Fa.P_14_1 != 0 ? faktura.Fa.P_14_1 : null, faktura.Fa.P_14_1W),
-                ("8%/7%", faktura.Fa.P_13_2, faktura.Fa.P_14_2, faktura.Fa.P_14_2W),
-                ("5%", faktura.Fa.P_13_3, faktura.Fa.P_14_3, faktura.Fa.P_14_3W),
-                ("pozostałe", faktura.Fa.P_13_4, faktura.Fa.P_14_4, faktura.Fa.P_14_4W),
-                ("0%", faktura.Fa.P_13_5, faktura.Fa.P_14_5, null)
+                (actualRateLabels[1], faktura.Fa.P_13_1 != 0 ? faktura.Fa.P_13_1 : null, faktura.Fa.P_14_1 != 0 ? faktura.Fa.P_14_1 : null, faktura.Fa.P_14_1W),
+                (actualRateLabels[2], faktura.Fa.P_13_2, faktura.Fa.P_14_2, faktura.Fa.P_14_2W),
+                (actualRateLabels[3], faktura.Fa.P_13_3, faktura.Fa.P_14_3, faktura.Fa.P_14_3W),
+                (actualRateLabels[4], faktura.Fa.P_13_4, faktura.Fa.P_14_4, faktura.Fa.P_14_4W),
+                (actualRateLabels[5], faktura.Fa.P_13_5, faktura.Fa.P_14_5, null)
             };
 
             bool hasMultipleRates = vatRates.Count(r => r.netto.HasValue || r.vat.HasValue) > 1;
@@ -831,10 +834,10 @@ public class InvoicePdfGenerator : IPdfGeneratorService
 
                 var vatPlnRates = new List<(string label, decimal? vatPln)>
                 {
-                    ("23%/22%", faktura.Fa.P_14_1W),
-                    ("8%/7%", faktura.Fa.P_14_2W),
-                    ("5%", faktura.Fa.P_14_3W),
-                    ("pozostałe", faktura.Fa.P_14_4W)
+                    (actualRateLabels[1], faktura.Fa.P_14_1W),
+                    (actualRateLabels[2], faktura.Fa.P_14_2W),
+                    (actualRateLabels[3], faktura.Fa.P_14_3W),
+                    (actualRateLabels[4], faktura.Fa.P_14_4W)
                 };
 
                 bool hasMultipleVatPlnRates = vatPlnRates.Count(r => r.vatPln.HasValue && r.vatPln.Value != 0) > 1;
@@ -1320,6 +1323,73 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 });
             }
         });
+    }
+
+    /// <summary>
+    /// Wykrywa rzeczywiste stawki VAT użyte w fakturze dla każdej grupy (P_13_1, P_13_2, itd.)
+    /// Zwraca mapę: grupa -> etykieta stawki (np. "23%" zamiast "23%/22%")
+    /// </summary>
+    private Dictionary<int, string> GetActualVatRateLabels(Models.FA3.Faktura faktura)
+    {
+        var result = new Dictionary<int, string>();
+
+        // Analiza wierszy faktury - zbierz stawki VAT dla każdej grupy
+        var group1Rates = new HashSet<string>(); // P_13_1/P_14_1 - stawka podstawowa (23%, 22%)
+        var group2Rates = new HashSet<string>(); // P_13_2/P_14_2 - stawka obniżona pierwsza (8%, 7%)
+        var group3Rates = new HashSet<string>(); // P_13_3/P_14_3 - stawka obniżona druga (5%)
+        var group4Rates = new HashSet<string>(); // P_13_4/P_14_4 - pozostałe
+        var group5Rates = new HashSet<string>(); // P_13_5/P_14_5 - stawka 0%
+
+        foreach (var wiersz in faktura.Fa.FaWiersz)
+        {
+            if (string.IsNullOrEmpty(wiersz.P_12)) continue;
+
+            var stawka = wiersz.P_12.Trim();
+
+            // Klasyfikacja stawek według schematu FA(3)
+            if (stawka == "23" || stawka == "22")
+                group1Rates.Add(stawka);
+            else if (stawka == "8" || stawka == "7")
+                group2Rates.Add(stawka);
+            else if (stawka == "5")
+                group3Rates.Add(stawka);
+            else if (stawka == "0")
+                group5Rates.Add(stawka);
+            else
+                group4Rates.Add(stawka); // np, oo, zw, inne wartości
+        }
+
+        // Generuj etykiety
+        if (group1Rates.Count > 0)
+            result[1] = string.Join("/", group1Rates.OrderByDescending(r => r)) + "%";
+        else
+            result[1] = "23%"; // Domyślna aktualna stawka
+
+        if (group2Rates.Count > 0)
+            result[2] = string.Join("/", group2Rates.OrderByDescending(r => r)) + "%";
+        else
+            result[2] = "8%"; // Domyślna aktualna stawka
+
+        if (group3Rates.Count > 0)
+            result[3] = string.Join("/", group3Rates) + "%";
+        else
+            result[3] = "5%";
+
+        if (group4Rates.Count > 0)
+        {
+            // Dla pozostałych - pokaż konkretne stawki jeśli są liczbowe
+            var numericRates = group4Rates.Where(r => decimal.TryParse(r, out _)).OrderByDescending(r => decimal.Parse(r));
+            if (numericRates.Any())
+                result[4] = string.Join("/", numericRates) + "%";
+            else
+                result[4] = "pozostałe";
+        }
+        else
+            result[4] = "pozostałe";
+
+        result[5] = "0%";
+
+        return result;
     }
 
     /// <summary>
