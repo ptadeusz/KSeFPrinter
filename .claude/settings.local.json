@@ -15,7 +15,9 @@
       "Bash(powershell -ExecutionPolicy Bypass -File prepare-test-json.ps1:*)",
       "Bash(dir:*)",
       "Bash(powershell -ExecutionPolicy Bypass -File test-api-generate.ps1:*)",
-      "Bash(powershell -ExecutionPolicy Bypass -File test-api-simple.ps1:*)"
+      "Bash(powershell -ExecutionPolicy Bypass -File test-api-simple.ps1:*)",
+      "Bash(move examplesxmlFakturaTEST017.pdf examplesoutputFakturaTEST017_Faza2_Simple.pdf)",
+      "Bash(move:*)"
     ],
     "deny": [],
     "ask": []

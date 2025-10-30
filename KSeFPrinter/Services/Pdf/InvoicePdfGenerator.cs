@@ -117,8 +117,18 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                     col.Item().Text("SPRZEDAWCA").FontSize(8).Bold();
                     col.Item().Text(faktura.Podmiot1.DaneIdentyfikacyjne.Nazwa).FontSize(12).Bold();
                     col.Item().Text($"NIP: {faktura.Podmiot1.DaneIdentyfikacyjne.NIP}").FontSize(9);
+
+                    // PESEL (jeśli wypełniony - dla osób fizycznych)
+                    if (!string.IsNullOrEmpty(faktura.Podmiot1.DaneIdentyfikacyjne.PESEL))
+                        col.Item().Text($"PESEL: {faktura.Podmiot1.DaneIdentyfikacyjne.PESEL}").FontSize(9);
+
                     col.Item().Text(faktura.Podmiot1.Adres.AdresL1).FontSize(9);
-                    col.Item().Text(faktura.Podmiot1.Adres.AdresL2).FontSize(9);
+
+                    // Kod kraju (jeśli inny niż PL)
+                    var adresL2 = faktura.Podmiot1.Adres.AdresL2;
+                    if (!string.IsNullOrEmpty(faktura.Podmiot1.Adres.KodKraju) && faktura.Podmiot1.Adres.KodKraju != "PL")
+                        adresL2 += $", {faktura.Podmiot1.Adres.KodKraju}";
+                    col.Item().Text(adresL2).FontSize(9);
 
                     if (faktura.Podmiot1.DaneKontaktowe != null)
                     {
@@ -137,8 +147,18 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                     col.Item().Text("NABYWCA").FontSize(8).Bold();
                     col.Item().Text(faktura.Podmiot2.DaneIdentyfikacyjne.Nazwa).FontSize(12).Bold();
                     col.Item().Text($"NIP: {faktura.Podmiot2.DaneIdentyfikacyjne.NIP}").FontSize(9);
+
+                    // PESEL (jeśli wypełniony - dla osób fizycznych)
+                    if (!string.IsNullOrEmpty(faktura.Podmiot2.DaneIdentyfikacyjne.PESEL))
+                        col.Item().Text($"PESEL: {faktura.Podmiot2.DaneIdentyfikacyjne.PESEL}").FontSize(9);
+
                     col.Item().Text(faktura.Podmiot2.Adres.AdresL1).FontSize(9);
-                    col.Item().Text(faktura.Podmiot2.Adres.AdresL2).FontSize(9);
+
+                    // Kod kraju (jeśli inny niż PL)
+                    var adresL2 = faktura.Podmiot2.Adres.AdresL2;
+                    if (!string.IsNullOrEmpty(faktura.Podmiot2.Adres.KodKraju) && faktura.Podmiot2.Adres.KodKraju != "PL")
+                        adresL2 += $", {faktura.Podmiot2.Adres.KodKraju}";
+                    col.Item().Text(adresL2).FontSize(9);
 
                     if (faktura.Podmiot2.DaneKontaktowe != null)
                     {
@@ -168,6 +188,13 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                     if (!string.IsNullOrEmpty(faktura.Fa.P_1M))
                         col.Item().AlignRight().Text($"Miejsce: {faktura.Fa.P_1M}").FontSize(10);
 
+                    // Okres objęty fakturą (OkresFa)
+                    if (faktura.Fa.OkresFa != null)
+                    {
+                        col.Item().AlignRight().Text($"Okres: {faktura.Fa.OkresFa.P_6_Od:dd.MM.yyyy} - {faktura.Fa.OkresFa.P_6_Do:dd.MM.yyyy}")
+                            .FontSize(9).FontColor(Colors.Grey.Darken2);
+                    }
+
                     if (metadata.Tryb == TrybWystawienia.Online && !string.IsNullOrEmpty(metadata.NumerKSeF))
                     {
                         col.Item().AlignRight().Text($"Numer KSeF: {metadata.NumerKSeF}").FontSize(9).Bold();
@@ -194,6 +221,12 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             // Podsumowanie
             column.Item().PaddingTop(15).Element(c => ComposeSummary(c, faktura));
 
+            // Adnotacje (jeśli są wypełnione) - pod podsumowaniem
+            if (faktura.Fa.Adnotacje != null)
+            {
+                column.Item().PaddingTop(10).Element(c => ComposeAnnotations(c, faktura));
+            }
+
             // Płatność
             if (faktura.Fa.Platnosc != null)
             {
@@ -202,6 +235,64 @@ public class InvoicePdfGenerator : IPdfGeneratorService
 
             // Kody QR
             column.Item().PaddingTop(20).Element(c => ComposeQrCodes(c, context, options));
+        });
+    }
+
+    /// <summary>
+    /// Komponuje adnotacje prawne faktury
+    /// </summary>
+    private void ComposeAnnotations(IContainer container, Models.FA3.Faktura faktura)
+    {
+        var adnotacje = faktura.Fa.Adnotacje!;
+
+        // Sprawdź czy są jakiekolwiek aktywne adnotacje
+        var hasSplitPayment = !string.IsNullOrEmpty(adnotacje.P_18A) && adnotacje.P_18A == "1";
+        var hasReverseCharge = !string.IsNullOrEmpty(adnotacje.P_18) && adnotacje.P_18 == "1";
+        var hasMarginProcedure = adnotacje.PMarzy != null && adnotacje.PMarzy.P_PMarzyN != "1";
+        var hasReceiptInvoice = !string.IsNullOrEmpty(adnotacje.P_23) && adnotacje.P_23 == "1";
+
+        var hasAnyAnnotation = hasSplitPayment || hasReverseCharge || hasMarginProcedure || hasReceiptInvoice;
+
+        // Jeśli nie ma żadnych aktywnych adnotacji, nie renderuj sekcji wcale
+        if (!hasAnyAnnotation)
+        {
+            return;
+        }
+
+        // Księgowy styl - delikatna szara ramka z jasnym tłem
+        container.Border(0.5f).BorderColor(Colors.Grey.Lighten2)
+            .Background(Colors.Grey.Lighten4).Padding(8).Column(column =>
+        {
+            // Nagłówek sekcji
+            column.Item().Text("Adnotacje:").FontSize(9).Bold();
+
+            // Split Payment (Mechanizm podzielonej płatności) - P_18A
+            if (hasSplitPayment)
+            {
+                column.Item().PaddingTop(3).Text("• Mechanizm podzielonej płatności (split payment)")
+                    .FontSize(9);
+            }
+
+            // Odwrotne obciążenie (Reverse charge) - P_18
+            if (hasReverseCharge)
+            {
+                column.Item().PaddingTop(3).Text("• Odwrotne obciążenie - podatek rozlicza nabywca")
+                    .FontSize(9);
+            }
+
+            // Procedura marży - PMarzy
+            if (hasMarginProcedure)
+            {
+                column.Item().PaddingTop(3).Text("• Procedura marży")
+                    .FontSize(9);
+            }
+
+            // Faktura do paragonu - P_23
+            if (hasReceiptInvoice)
+            {
+                column.Item().PaddingTop(3).Text("• Faktura wystawiona do paragonu")
+                    .FontSize(9);
+            }
         });
     }
 
@@ -236,11 +327,42 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             // Wiersze
             foreach (var wiersz in faktura.Fa.FaWiersz)
             {
+                // Lp.
                 table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(wiersz.NrWierszaFa.ToString()).FontSize(9);
-                table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(wiersz.P_7).FontSize(9);
-                table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignCenter().Text(wiersz.P_8B?.ToString("N2") ?? "-").FontSize(9);
+
+                // Nazwa towaru/usługi (z opcjonalnym kodem towaru i GTU)
+                table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).Column(col =>
+                {
+                    col.Item().Text(wiersz.P_7).FontSize(9);
+
+                    // Kod towaru (P_6A) - jeśli wypełniony
+                    if (!string.IsNullOrEmpty(wiersz.P_6A))
+                    {
+                        col.Item().Text($"Kod: {wiersz.P_6A}").FontSize(7).FontColor(Colors.Grey.Darken1);
+                    }
+
+                    // GTU (Grupa Towarowa Usługowa) - jeśli wypełniony
+                    if (!string.IsNullOrEmpty(wiersz.GTU))
+                    {
+                        col.Item().Text($"GTU: {wiersz.GTU}").FontSize(7).FontColor(Colors.Grey.Darken1);
+                    }
+                });
+
+                // Ilość (z opcjonalną jednostką miary)
+                var iloscText = wiersz.P_8B?.ToString("N2") ?? "-";
+                if (wiersz.P_8B.HasValue && !string.IsNullOrEmpty(wiersz.P_8A))
+                {
+                    iloscText += $" {wiersz.P_8A}";
+                }
+                table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignCenter().Text(iloscText).FontSize(9);
+
+                // Cena jednostkowa
                 table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text(wiersz.P_9A?.ToString("N2") ?? "-").FontSize(9);
+
+                // Wartość netto
                 table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text(wiersz.P_11.ToString("N2")).FontSize(9);
+
+                // VAT %
                 table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignCenter().Text(wiersz.P_12).FontSize(9);
             }
         });
