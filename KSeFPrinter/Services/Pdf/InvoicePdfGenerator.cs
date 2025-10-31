@@ -204,7 +204,7 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             {
                 row.RelativeItem().Column(col =>
                 {
-                    col.Item().Text($"FAKTURA {faktura.Fa.RodzajFaktury}").FontSize(16).Bold();
+                    col.Item().Text(GetInvoiceTypeDisplayName(faktura.Fa.RodzajFaktury)).FontSize(16).Bold();
                     col.Item().Text($"Nr: {faktura.Fa.P_2}").FontSize(12);
                 });
 
@@ -1411,6 +1411,29 @@ public class InvoicePdfGenerator : IPdfGeneratorService
             "10" => "Członek grupy VAT - odbiorca",
             "11" => "Pracownik (osoba fizyczna wykonująca pracę na podstawie stosunku pracy)",
             _ => $"Rola {rola}"
+        };
+    }
+
+    /// <summary>
+    /// Zwraca pełną nazwę rodzaju faktury (do wyświetlenia na wydruku)
+    /// </summary>
+    private static string GetInvoiceTypeDisplayName(string? rodzajFaktury)
+    {
+        if (string.IsNullOrEmpty(rodzajFaktury))
+            return "FAKTURA";
+
+        return rodzajFaktury.ToUpper() switch
+        {
+            "VAT" => "FAKTURA VAT",
+            "KOR" => "FAKTURA KORYGUJĄCA",
+            "KOR_ZAL" => "FAKTURA KORYGUJĄCA ZALICZKOWA",
+            "KOR_ROZ" => "FAKTURA KORYGUJĄCA ROZLICZENIOWA",
+            "ROZ" => "FAKTURA ROZLICZENIOWA",
+            "UPR" => "FAKTURA UPROSZCZONA",
+            "ZAL" => "FAKTURA ZALICZKOWA",
+            "NOT" => "NOTA KORYGUJĄCA",
+            "WEW" => "FAKTURA WEWNĘTRZNA",
+            _ => $"FAKTURA {rodzajFaktury}"
         };
     }
 }
