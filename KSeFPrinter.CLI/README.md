@@ -153,6 +153,125 @@ ksef-pdf faktura.xml \
 
 **Uwaga:** Bez certyfikatu generowany jest tylko KOD QR I (weryfikacja faktury).
 
+#### Opcja 3: Z Azure Key Vault (chmura)
+
+Wczytaj certyfikat z Azure Key Vault:
+
+```bash
+# Podstawowe użycie (DefaultAzureCredential):
+ksef-pdf faktura.xml \
+  --azure-keyvault-url "https://myvault.vault.azure.net/" \
+  --azure-keyvault-cert "mycert"
+
+# Z konkretną wersją certyfikatu:
+ksef-pdf faktura.xml \
+  --azure-keyvault-url "https://myvault.vault.azure.net/" \
+  --azure-keyvault-cert "mycert" \
+  --azure-keyvault-version "abc123def456"
+```
+
+**Metody uwierzytelniania:**
+
+1. **DefaultAzureCredential** (domyślna):
+   - Automatycznie wykrywa środowisko (Managed Identity, Azure CLI, Visual Studio, itp.)
+   ```bash
+   ksef-pdf faktura.xml \
+     --azure-keyvault-url "https://myvault.vault.azure.net/" \
+     --azure-keyvault-cert "mycert"
+   ```
+
+2. **ManagedIdentity** (dla Azure VMs i App Service):
+   ```bash
+   ksef-pdf faktura.xml \
+     --azure-keyvault-url "https://myvault.vault.azure.net/" \
+     --azure-keyvault-cert "mycert" \
+     --azure-auth-type "ManagedIdentity"
+
+   # Z konkretnym Client ID dla User-Assigned Managed Identity:
+   ksef-pdf faktura.xml \
+     --azure-keyvault-url "https://myvault.vault.azure.net/" \
+     --azure-keyvault-cert "mycert" \
+     --azure-auth-type "ManagedIdentity" \
+     --azure-client-id "00000000-0000-0000-0000-000000000000"
+   ```
+
+3. **ClientSecret** (dla aplikacji z Service Principal):
+   ```bash
+   ksef-pdf faktura.xml \
+     --azure-keyvault-url "https://myvault.vault.azure.net/" \
+     --azure-keyvault-cert "mycert" \
+     --azure-auth-type "ClientSecret" \
+     --azure-tenant-id "tenant-id" \
+     --azure-client-id "client-id" \
+     --azure-client-secret "secret"
+   ```
+
+4. **EnvironmentCredential** (ze zmiennych środowiskowych):
+   ```bash
+   # Ustaw zmienne środowiskowe:
+   export AZURE_TENANT_ID="tenant-id"
+   export AZURE_CLIENT_ID="client-id"
+   export AZURE_CLIENT_SECRET="secret"
+
+   # Uruchom:
+   ksef-pdf faktura.xml \
+     --azure-keyvault-url "https://myvault.vault.azure.net/" \
+     --azure-keyvault-cert "mycert" \
+     --azure-auth-type "EnvironmentCredential"
+   ```
+
+5. **AzureCliCredential** (z zalogowanego Azure CLI):
+   ```bash
+   # Zaloguj się przez Azure CLI:
+   az login
+
+   # Uruchom:
+   ksef-pdf faktura.xml \
+     --azure-keyvault-url "https://myvault.vault.azure.net/" \
+     --azure-keyvault-cert "mycert" \
+     --azure-auth-type "AzureCliCredential"
+   ```
+
+**Parametry Azure Key Vault:**
+- `--azure-keyvault-url` - URL Key Vault (np. https://myvault.vault.azure.net/)
+- `--azure-keyvault-cert` - Nazwa certyfikatu w Key Vault
+- `--azure-keyvault-version` - Wersja certyfikatu (opcjonalna, domyślnie: latest)
+- `--azure-auth-type` - Typ uwierzytelniania (domyślnie: DefaultAzureCredential)
+- `--azure-tenant-id` - Azure Tenant ID (dla ClientSecret)
+- `--azure-client-id` - Azure Client ID (dla ClientSecret i User-Assigned Managed Identity)
+- `--azure-client-secret` - Azure Client Secret (dla ClientSecret)
+
+**Wymagane uprawnienia w Azure:**
+- **Key Vault Certificates User** lub **Key Vault Reader** - odczyt certyfikatów
+- **Key Vault Secrets User** - odczyt klucza prywatnego (jeśli nie jest eksportowany z certyfikatem)
+
+**Jak uzyskać URL Key Vault:**
+1. Otwórz Azure Portal (portal.azure.com)
+2. Znajdź swój Key Vault
+3. Skopiuj "Vault URI" z zakładki Overview
+4. Format: `https://{vault-name}.vault.azure.net/`
+
+**Jak uzyskać Service Principal credentials (dla ClientSecret):**
+```bash
+# Utwórz Service Principal:
+az ad sp create-for-rbac --name "ksef-pdf-app" --skip-assignment
+
+# Wynik:
+# {
+#   "appId": "client-id",
+#   "tenant": "tenant-id",
+#   "password": "client-secret"
+# }
+
+# Nadaj uprawnienia do Key Vault:
+az keyvault set-policy --name myvault \
+  --spn "client-id" \
+  --certificate-permissions get list \
+  --secret-permissions get list
+```
+
+**Uwaga:** Bez certyfikatu generowany jest tylko KOD QR I (weryfikacja faktury).
+
 ### Środowisko produkcyjne
 
 Domyślnie używane jest środowisko testowe KSeF. Aby użyć produkcyjnego:
@@ -282,6 +401,32 @@ ksef-pdf faktura.xml \
 ```
 
 **Wynik:** PDF z dwoma kodami QR (certyfikat wczytany z Windows Store)
+
+### Przykład 3b: Faktura z certyfikatem z Azure Key Vault
+
+```bash
+# Podstawowe użycie (DefaultAzureCredential):
+ksef-pdf faktura.xml \
+  --azure-keyvault-url "https://myvault.vault.azure.net/" \
+  --azure-keyvault-cert "ksef-offline-cert"
+
+# Z Service Principal (dla automatyzacji):
+ksef-pdf faktura.xml \
+  --azure-keyvault-url "https://myvault.vault.azure.net/" \
+  --azure-keyvault-cert "ksef-offline-cert" \
+  --azure-auth-type "ClientSecret" \
+  --azure-tenant-id "00000000-0000-0000-0000-000000000000" \
+  --azure-client-id "11111111-1111-1111-1111-111111111111" \
+  --azure-client-secret "your-secret-here"
+
+# W środowisku Azure (VM/App Service) z Managed Identity:
+ksef-pdf faktura.xml \
+  --azure-keyvault-url "https://myvault.vault.azure.net/" \
+  --azure-keyvault-cert "ksef-offline-cert" \
+  --azure-auth-type "ManagedIdentity"
+```
+
+**Wynik:** PDF z dwoma kodami QR (certyfikat wczytany z Azure Key Vault)
 
 ### Przykład 4: Środowisko produkcyjne z numerem KSeF
 

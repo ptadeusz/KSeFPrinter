@@ -47,6 +47,11 @@ ksef-pdf --watch faktury/
 
 # Z certyfikatem dla KODU QR II
 ksef-pdf faktura.xml --cert certyfikat.pfx --cert-password "haslo"
+
+# Z certyfikatem z Azure Key Vault
+ksef-pdf faktura.xml \
+  --azure-keyvault-url "https://myvault.vault.azure.net/" \
+  --azure-keyvault-cert "mycert"
 ```
 
 **Zobacz:** [KSeFPrinter.CLI/README.md](KSeFPrinter.CLI/README.md) - pełna dokumentacja CLI
@@ -110,6 +115,52 @@ ExampleGenerator/        # Generator przykładowych PDF
 ### Wymagania dla certyfikatów
 - Typ certyfikatu: **Offline** (keyUsage: Non-Repudiation 40)
 - Certyfikaty typu "Authentication" NIE mogą być używane do Kodu QR II
+
+### Źródła certyfikatów
+
+Aplikacja obsługuje **trzy źródła** certyfikatów dla Kodu QR II:
+
+#### 1. Pliki PFX/P12
+Certyfikat z kluczem prywatnym zapisany w pliku:
+```bash
+ksef-pdf faktura.xml --cert certyfikat.pfx --cert-password "haslo"
+```
+
+#### 2. Windows Certificate Store
+Certyfikat z magazynu certyfikatów Windows (tylko Windows):
+```bash
+# Po thumbprint (odcisk palca):
+ksef-pdf faktura.xml --cert-thumbprint "A1B2C3D4..."
+
+# Po subject (CN):
+ksef-pdf faktura.xml --cert-subject "MojaFirma"
+```
+
+#### 3. Azure Key Vault
+Certyfikat przechowywany w Azure Key Vault (chmura):
+```bash
+ksef-pdf faktura.xml \
+  --azure-keyvault-url "https://myvault.vault.azure.net/" \
+  --azure-keyvault-cert "mycert"
+```
+
+**Metody uwierzytelniania Azure:**
+- `DefaultAzureCredential` - domyślna (automatycznie wykrywa środowisko)
+- `ManagedIdentity` - dla Azure VMs i App Service
+- `ClientSecret` - dla aplikacji z Service Principal
+- `EnvironmentCredential` - ze zmiennych środowiskowych
+- `AzureCliCredential` - z zalogowanego Azure CLI
+
+**Przykład z uwierzytelnianiem ClientSecret:**
+```bash
+ksef-pdf faktura.xml \
+  --azure-keyvault-url "https://myvault.vault.azure.net/" \
+  --azure-keyvault-cert "mycert" \
+  --azure-auth-type "ClientSecret" \
+  --azure-tenant-id "tenant-id" \
+  --azure-client-id "client-id" \
+  --azure-client-secret "secret"
+```
 
 ## Format PDF
 

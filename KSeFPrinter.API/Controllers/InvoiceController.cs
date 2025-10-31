@@ -3,6 +3,8 @@ using KSeFPrinter;
 using KSeFPrinter.API.Models;
 using KSeFPrinter.API.Services;
 using KSeFPrinter.Models.Common;
+using KSeFPrinter.Services.QrCode;
+using KSeFPrinter.Validators;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
@@ -15,15 +17,21 @@ public class InvoiceController : ControllerBase
 {
     private readonly InvoicePrinterService _printerService;
     private readonly CertificateService _certificateService;
+    private readonly QrCodeService _qrCodeService;
+    private readonly VerificationLinkService _verificationLinkService;
     private readonly ILogger<InvoiceController> _logger;
 
     public InvoiceController(
         InvoicePrinterService printerService,
         CertificateService certificateService,
+        QrCodeService qrCodeService,
+        VerificationLinkService verificationLinkService,
         ILogger<InvoiceController> logger)
     {
         _printerService = printerService;
         _certificateService = certificateService;
+        _qrCodeService = qrCodeService;
+        _verificationLinkService = verificationLinkService;
         _logger = logger;
     }
 
@@ -264,6 +272,76 @@ public class InvoiceController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Błąd podczas generowania PDF");
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Generuje kod QR dla numeru KSeF (do osadzania w zewnętrznych systemach)
+    /// </summary>
+    /// <param name="request">Request z numerem KSeF i opcjami</param>
+    /// <returns>Kod QR w formacie SVG i/lub PNG base64</returns>
+    [HttpPost("generate-qr-code")]
+    [ProducesResponseType(typeof(GenerateQrCodeResponse), 200)]
+    [ProducesResponseType(400)]
+    public IActionResult GenerateQrCode([FromBody] GenerateQrCodeRequest request)
+    {
+        try
+        {
+            // Waliduj numer KSeF
+            if (!KsefNumberValidator.IsValid(request.KSeFNumber))
+            {
+                return BadRequest(new { error = $"Nieprawidłowy format numeru KSeF: {request.KSeFNumber}" });
+            }
+
+            // Zbuduj URL weryfikacyjny
+            var verificationUrl = _verificationLinkService.BuildKsefNumberVerificationUrl(
+                request.KSeFNumber,
+                request.UseProduction);
+
+            _logger.LogInformation(
+                "Generowanie kodu QR dla numeru KSeF: {KSeF}, Format: {Format}, Env: {Env}",
+                request.KSeFNumber, request.Format, request.UseProduction ? "PROD" : "TEST");
+
+            // Oblicz rozmiar w pikselach na moduł (minimalna wartość to 5)
+            var pixelsPerModule = Math.Max(5, request.Size / 50); // 200px / 50 modułów ≈ 4-5 px/module
+
+            var response = new GenerateQrCodeResponse
+            {
+                KSeFNumber = request.KSeFNumber,
+                VerificationUrl = verificationUrl,
+                Format = request.Format.ToLower(),
+                Size = request.Size,
+                Environment = request.UseProduction ? "production" : "test"
+            };
+
+            // Generuj w wybranym formacie
+            switch (request.Format.ToLower())
+            {
+                case "svg":
+                    response.QrCodeSvg = _qrCodeService.GenerateQrCodeSvg(verificationUrl, pixelsPerModule);
+                    break;
+
+                case "base64":
+                    response.QrCodeBase64 = _qrCodeService.GenerateQrCodeBase64(verificationUrl, pixelsPerModule);
+                    break;
+
+                case "both":
+                    response.QrCodeSvg = _qrCodeService.GenerateQrCodeSvg(verificationUrl, pixelsPerModule);
+                    response.QrCodeBase64 = _qrCodeService.GenerateQrCodeBase64(verificationUrl, pixelsPerModule);
+                    break;
+
+                default:
+                    return BadRequest(new { error = $"Nieprawidłowy format: {request.Format}. Dostępne: svg, base64, both" });
+            }
+
+            _logger.LogInformation("Kod QR wygenerowany pomyślnie dla numeru KSeF: {KSeF}", request.KSeFNumber);
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Błąd podczas generowania kodu QR dla numeru KSeF: {KSeF}", request.KSeFNumber);
             return BadRequest(new { error = ex.Message });
         }
     }

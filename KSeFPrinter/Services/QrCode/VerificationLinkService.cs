@@ -18,6 +18,10 @@ public class VerificationLinkService
     private const string ProductionBaseUrl = "https://ksef.mf.gov.pl/client-app";
     private const string TestBaseUrl = "https://ksef-test.mf.gov.pl/client-app";
 
+    // URL-e weryfikacyjne dla numerów KSeF
+    private const string ProductionVerifyUrl = "https://ksef.mf.gov.pl/web/verify";
+    private const string TestVerifyUrl = "https://ksef-test.mf.gov.pl/web/verify";
+
     public VerificationLinkService(
         CryptographyService cryptographyService,
         ILogger<VerificationLinkService> logger)
@@ -156,5 +160,33 @@ public class VerificationLinkService
             xmlContent,
             useProduction
         );
+    }
+
+    /// <summary>
+    /// Buduje URL weryfikacyjny dla faktury na podstawie numeru KSeF
+    /// Format: https://ksef-test.mf.gov.pl/web/verify/{NUMER_KSEF}
+    /// </summary>
+    /// <param name="ksefNumber">Numer KSeF faktury</param>
+    /// <param name="useProduction">Czy użyć środowiska produkcyjnego (domyślnie: false - test)</param>
+    /// <returns>Pełny URL weryfikacyjny</returns>
+    public string BuildKsefNumberVerificationUrl(string ksefNumber, bool useProduction = false)
+    {
+        if (string.IsNullOrWhiteSpace(ksefNumber))
+        {
+            throw new ArgumentException("Numer KSeF nie może być pusty", nameof(ksefNumber));
+        }
+
+        // Wybierz base URL
+        var baseUrl = useProduction ? ProductionVerifyUrl : TestVerifyUrl;
+
+        // Zbuduj URL
+        var url = $"{baseUrl}/{ksefNumber}";
+
+        _logger.LogDebug(
+            "Zbudowano URL weryfikacyjny z numeru KSeF: KSeF={KSeF}, Env={Env}",
+            ksefNumber, useProduction ? "PROD" : "TEST"
+        );
+
+        return url;
     }
 }

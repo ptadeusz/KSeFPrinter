@@ -67,6 +67,54 @@ var certStoreLocationOption = new Option<string>(
     description: "Lokalizacja Store (CurrentUser lub LocalMachine)",
     getDefaultValue: () => "CurrentUser");
 
+// Azure Key Vault options
+var azureKeyVaultUrlOption = new Option<string?>(
+    aliases: new[] { "--azure-keyvault-url" },
+    description: "URL Azure Key Vault (np. https://myvault.vault.azure.net/)")
+{
+    IsRequired = false
+};
+
+var azureKeyVaultCertOption = new Option<string?>(
+    aliases: new[] { "--azure-keyvault-cert" },
+    description: "Nazwa certyfikatu w Azure Key Vault")
+{
+    IsRequired = false
+};
+
+var azureKeyVaultVersionOption = new Option<string?>(
+    aliases: new[] { "--azure-keyvault-version" },
+    description: "Wersja certyfikatu w Key Vault (opcjonalna)")
+{
+    IsRequired = false
+};
+
+var azureAuthTypeOption = new Option<string>(
+    aliases: new[] { "--azure-auth-type" },
+    description: "Typ uwierzytelniania Azure (DefaultAzureCredential, ManagedIdentity, ClientSecret, EnvironmentCredential, AzureCliCredential)",
+    getDefaultValue: () => "DefaultAzureCredential");
+
+var azureTenantIdOption = new Option<string?>(
+    aliases: new[] { "--azure-tenant-id" },
+    description: "Azure Tenant ID (dla ClientSecret)")
+{
+    IsRequired = false
+};
+
+var azureClientIdOption = new Option<string?>(
+    aliases: new[] { "--azure-client-id" },
+    description: "Azure Client ID (dla ClientSecret lub ManagedIdentity)")
+{
+    IsRequired = false
+};
+
+var azureClientSecretOption = new Option<string?>(
+    aliases: new[] { "--azure-client-secret" },
+    description: "Azure Client Secret (dla ClientSecret)")
+{
+    IsRequired = false
+};
+
 var productionOption = new Option<bool>(
     aliases: new[] { "--production" },
     description: "Użyj środowiska produkcyjnego KSeF (domyślnie: test)",
@@ -108,6 +156,13 @@ rootCommand.AddOption(certThumbprintOption);
 rootCommand.AddOption(certSubjectOption);
 rootCommand.AddOption(certStoreNameOption);
 rootCommand.AddOption(certStoreLocationOption);
+rootCommand.AddOption(azureKeyVaultUrlOption);
+rootCommand.AddOption(azureKeyVaultCertOption);
+rootCommand.AddOption(azureKeyVaultVersionOption);
+rootCommand.AddOption(azureAuthTypeOption);
+rootCommand.AddOption(azureTenantIdOption);
+rootCommand.AddOption(azureClientIdOption);
+rootCommand.AddOption(azureClientSecretOption);
 rootCommand.AddOption(productionOption);
 rootCommand.AddOption(noValidateOption);
 rootCommand.AddOption(ksefNumberOption);
@@ -128,6 +183,13 @@ rootCommand.SetHandler(async (InvocationContext context) =>
     var certSubject = context.ParseResult.GetValueForOption(certSubjectOption);
     var certStoreName = context.ParseResult.GetValueForOption(certStoreNameOption);
     var certStoreLocation = context.ParseResult.GetValueForOption(certStoreLocationOption);
+    var azureKeyVaultUrl = context.ParseResult.GetValueForOption(azureKeyVaultUrlOption);
+    var azureKeyVaultCert = context.ParseResult.GetValueForOption(azureKeyVaultCertOption);
+    var azureKeyVaultVersion = context.ParseResult.GetValueForOption(azureKeyVaultVersionOption);
+    var azureAuthType = context.ParseResult.GetValueForOption(azureAuthTypeOption);
+    var azureTenantId = context.ParseResult.GetValueForOption(azureTenantIdOption);
+    var azureClientId = context.ParseResult.GetValueForOption(azureClientIdOption);
+    var azureClientSecret = context.ParseResult.GetValueForOption(azureClientSecretOption);
     var production = context.ParseResult.GetValueForOption(productionOption);
     var noValidate = context.ParseResult.GetValueForOption(noValidateOption);
     var ksefNumber = context.ParseResult.GetValueForOption(ksefNumberOption);
@@ -159,8 +221,16 @@ rootCommand.SetHandler(async (InvocationContext context) =>
         X509Certificate2? certificate = null;
 
         // Sprawdź, czy podano więcej niż jedną metodę wczytywania certyfikatu
+        var hasKeyVault = !string.IsNullOrEmpty(azureKeyVaultUrl) && !string.IsNullOrEmpty(azureKeyVaultCert);
         var certMethodsCount = new[] { certPath, certThumbprint, certSubject }
             .Count(x => !string.IsNullOrEmpty(x));
+
+        if (hasKeyVault && certMethodsCount > 0)
+        {
+            logger.LogError("Błąd: Można podać tylko jedną metodę wczytywania certyfikatu: --cert, --cert-thumbprint, --cert-subject lub Azure Key Vault");
+            Environment.Exit(1);
+            return;
+        }
 
         if (certMethodsCount > 1)
         {
@@ -169,7 +239,47 @@ rootCommand.SetHandler(async (InvocationContext context) =>
             return;
         }
 
-        if (!string.IsNullOrEmpty(certPath))
+        if (hasKeyVault)
+        {
+            // Wczytaj z Azure Key Vault
+            logger.LogInformation("Wczytywanie certyfikatu z Azure Key Vault: {Vault}/{Cert}", azureKeyVaultUrl, azureKeyVaultCert);
+
+            var keyVaultOptions = new KSeFPrinter.Models.Common.AzureKeyVaultOptions
+            {
+                KeyVaultUrl = azureKeyVaultUrl,
+                CertificateName = azureKeyVaultCert,
+                CertificateVersion = azureKeyVaultVersion,
+                AuthenticationType = Enum.TryParse<KSeFPrinter.Models.Common.AzureAuthenticationType>(azureAuthType, out var authType)
+                    ? authType
+                    : KSeFPrinter.Models.Common.AzureAuthenticationType.DefaultAzureCredential,
+                TenantId = azureTenantId,
+                ClientId = azureClientId,
+                ClientSecret = azureClientSecret
+            };
+
+            var keyVaultProvider = new KSeFPrinter.Services.Certificates.AzureKeyVaultCertificateProvider(
+                loggerFactory.CreateLogger<KSeFPrinter.Services.Certificates.AzureKeyVaultCertificateProvider>()
+            );
+
+            try
+            {
+                certificate = await keyVaultProvider.LoadCertificateAsync(keyVaultOptions);
+                if (certificate == null)
+                {
+                    logger.LogError("Nie udało się wczytać certyfikatu z Azure Key Vault");
+                    Environment.Exit(1);
+                    return;
+                }
+                logger.LogInformation("Certyfikat wczytany z Azure Key Vault: {Subject}", certificate.Subject);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Błąd podczas wczytywania certyfikatu z Azure Key Vault");
+                Environment.Exit(1);
+                return;
+            }
+        }
+        else if (!string.IsNullOrEmpty(certPath))
         {
             // Wczytaj z pliku PFX
             logger.LogInformation("Wczytywanie certyfikatu z pliku: {CertPath}", certPath);

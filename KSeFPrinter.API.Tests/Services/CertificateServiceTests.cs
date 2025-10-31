@@ -14,7 +14,10 @@ public class CertificateServiceTests
 
     public CertificateServiceTests()
     {
-        _service = new CertificateService(NullLogger<CertificateService>.Instance);
+        _service = new CertificateService(
+            NullLogger<CertificateService>.Instance,
+            NullLogger<KSeFPrinter.Services.Certificates.AzureKeyVaultCertificateProvider>.Instance
+        );
     }
 
     [Fact]

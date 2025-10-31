@@ -134,7 +134,79 @@ Parsuje fakturę XML i zwraca dane jako JSON.
 }
 ```
 
-### 4. POST /api/invoice/generate-pdf
+### 4. POST /api/invoice/generate-qr-code
+Generuje kod QR dla numeru KSeF (do osadzania w zewnętrznych systemach).
+
+**Request Body:**
+```json
+{
+  "ksefNumber": "6511153259-20251015-010020140418-0D",
+  "useProduction": false,
+  "format": "svg",
+  "size": 200,
+  "includeLabel": false
+}
+```
+
+**Parametry:**
+- `ksefNumber` (required): Numer KSeF faktury (format: XXXXXXXXXX-YYYYMMDD-XXXXXXXXXXXX-XX)
+- `useProduction` (optional): Użyj środowiska produkcyjnego (domyślnie: false = test)
+- `format` (optional): Format kodu QR: "svg", "base64", "both" (domyślnie: "svg")
+- `size` (optional): Rozmiar kodu QR w pikselach (domyślnie: 200)
+- `includeLabel` (optional): Czy dołączyć etykietę z numerem KSeF (domyślnie: false)
+
+**Odpowiedź (format = "svg"):**
+```json
+{
+  "ksefNumber": "6511153259-20251015-010020140418-0D",
+  "qrCodeSvg": "<svg xmlns='http://www.w3.org/2000/svg'>...</svg>",
+  "qrCodeBase64": null,
+  "format": "svg",
+  "verificationUrl": "https://ksef-test.mf.gov.pl/web/verify/6511153259-20251015-010020140418-0D",
+  "size": 200,
+  "environment": "test"
+}
+```
+
+**Odpowiedź (format = "base64"):**
+```json
+{
+  "ksefNumber": "6511153259-20251015-010020140418-0D",
+  "qrCodeSvg": null,
+  "qrCodeBase64": "iVBORw0KGgoAAAANSUhEUgAA...",
+  "format": "base64",
+  "verificationUrl": "https://ksef-test.mf.gov.pl/web/verify/6511153259-20251015-010020140418-0D",
+  "size": 200,
+  "environment": "test"
+}
+```
+
+**Odpowiedź (format = "both"):**
+```json
+{
+  "ksefNumber": "6511153259-20251015-010020140418-0D",
+  "qrCodeSvg": "<svg xmlns='http://www.w3.org/2000/svg'>...</svg>",
+  "qrCodeBase64": "iVBORw0KGgoAAAANSUhEUgAA...",
+  "format": "both",
+  "verificationUrl": "https://ksef-test.mf.gov.pl/web/verify/6511153259-20251015-010020140418-0D",
+  "size": 200,
+  "environment": "test"
+}
+```
+
+**Przypadki użycia:**
+- System ERP generuje własne PDF-y i potrzebuje tylko kodu QR
+- Portal klienta wyświetla kod QR do weryfikacji faktury
+- Aplikacja mobilna skanuje kod QR z faktury
+- System drukowania etykiet drukuje kody QR
+- E-commerce dodaje kody QR do faktur online
+
+**Format SVG vs Base64:**
+- **SVG** (zalecany): Format wektorowy, idealny do osadzania w PDF-ach generowanych przez zewnętrzne systemy. Nieskończenie skalowalny bez utraty jakości.
+- **Base64 PNG**: Format rastrowy, gotowy do wyświetlenia w przeglądarkach i aplikacjach webowych jako `<img src="data:image/png;base64,..."/>`.
+- **Both**: Zwraca oba formaty jednocześnie.
+
+### 5. POST /api/invoice/generate-pdf
 Generuje PDF z faktury XML.
 
 **Request Body:**
@@ -143,10 +215,18 @@ Generuje PDF z faktury XML.
   "xmlContent": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>...",
   "isBase64": false,
   "ksefNumber": "6511153259-20251015-010020140418-0D",
+  "certificateSource": "WindowsStore",
   "certificateThumbprint": null,
   "certificateSubject": null,
   "certificateStoreName": "My",
   "certificateStoreLocation": "CurrentUser",
+  "azureKeyVaultUrl": null,
+  "azureKeyVaultCertificateName": null,
+  "azureKeyVaultCertificateVersion": null,
+  "azureAuthenticationType": "DefaultAzureCredential",
+  "azureTenantId": null,
+  "azureClientId": null,
+  "azureClientSecret": null,
   "useProduction": false,
   "validateInvoice": true,
   "returnFormat": "file"
@@ -157,10 +237,18 @@ Generuje PDF z faktury XML.
 - `xmlContent` (required): Zawartość XML faktury
 - `isBase64` (optional): Czy XML jest w base64 (domyślnie: false)
 - `ksefNumber` (optional): Numer KSeF (dla trybu online)
+- `certificateSource` (optional): Źródło certyfikatu: "WindowsStore" lub "AzureKeyVault" (domyślnie: "WindowsStore")
 - `certificateThumbprint` (optional): Thumbprint certyfikatu z Windows Store (dla QR kodu II)
 - `certificateSubject` (optional): Subject certyfikatu (alternatywa dla thumbprint)
 - `certificateStoreName` (optional): Nazwa store (domyślnie: "My")
 - `certificateStoreLocation` (optional): Lokalizacja store (domyślnie: "CurrentUser")
+- `azureKeyVaultUrl` (optional): URL Azure Key Vault (np. https://myvault.vault.azure.net/)
+- `azureKeyVaultCertificateName` (optional): Nazwa certyfikatu w Key Vault
+- `azureKeyVaultCertificateVersion` (optional): Wersja certyfikatu w Key Vault (domyślnie: latest)
+- `azureAuthenticationType` (optional): Typ uwierzytelniania Azure (domyślnie: "DefaultAzureCredential")
+- `azureTenantId` (optional): Azure Tenant ID (dla ClientSecret)
+- `azureClientId` (optional): Azure Client ID (dla ClientSecret i Managed Identity)
+- `azureClientSecret` (optional): Azure Client Secret (dla ClientSecret)
 - `useProduction` (optional): Użyj produkcyjnego API KSeF (domyślnie: false = test)
 - `validateInvoice` (optional): Waliduj przed generowaniem (domyślnie: true)
 - `returnFormat` (optional): Format odpowiedzi: "file" lub "base64" (domyślnie: "file")
@@ -180,51 +268,127 @@ Plik PDF do pobrania (`application/pdf`)
 
 ## Obsługa Certyfikatów
 
-API obsługuje certyfikaty z **Windows Certificate Store** do generowania QR kodu II (weryfikacja kwalifikowanym podpisem elektronicznym).
+API obsługuje certyfikaty do generowania QR kodu II (weryfikacja kwalifikowanym podpisem elektronicznym) z **dwóch źródeł**:
 
-### Wyszukiwanie po Thumbprint
+### 1. Windows Certificate Store
+
+Wyszukiwanie po Thumbprint:
 ```json
 {
+  "certificateSource": "WindowsStore",
   "certificateThumbprint": "1234567890ABCDEF1234567890ABCDEF12345678",
   "certificateStoreName": "My",
   "certificateStoreLocation": "CurrentUser"
 }
 ```
 
-### Wyszukiwanie po Subject
+Wyszukiwanie po Subject:
 ```json
 {
+  "certificateSource": "WindowsStore",
   "certificateSubject": "CN=Jan Kowalski, O=Firma, C=PL",
   "certificateStoreName": "My",
   "certificateStoreLocation": "CurrentUser"
 }
 ```
 
-### Dostępne Store Names
+**Dostępne Store Names:**
 - `My` - Personal (certyfikaty użytkownika)
 - `Root` - Trusted Root Certification Authorities
 - `CA` - Intermediate Certification Authorities
 - `TrustedPeople` - Trusted People
 
-### Dostępne Store Locations
+**Dostępne Store Locations:**
 - `CurrentUser` - Store użytkownika (domyślnie)
 - `LocalMachine` - Store systemowy (wymaga uprawnień administratora)
+
+### 2. Azure Key Vault
+
+API obsługuje certyfikaty z Azure Key Vault z różnymi metodami uwierzytelniania:
+
+**DefaultAzureCredential (domyślna):**
+```json
+{
+  "certificateSource": "AzureKeyVault",
+  "azureKeyVaultUrl": "https://myvault.vault.azure.net/",
+  "azureKeyVaultCertificateName": "ksef-offline-cert"
+}
+```
+
+**ManagedIdentity (dla Azure VMs i App Service):**
+```json
+{
+  "certificateSource": "AzureKeyVault",
+  "azureKeyVaultUrl": "https://myvault.vault.azure.net/",
+  "azureKeyVaultCertificateName": "ksef-offline-cert",
+  "azureAuthenticationType": "ManagedIdentity"
+}
+```
+
+**ClientSecret (dla Service Principal):**
+```json
+{
+  "certificateSource": "AzureKeyVault",
+  "azureKeyVaultUrl": "https://myvault.vault.azure.net/",
+  "azureKeyVaultCertificateName": "ksef-offline-cert",
+  "azureAuthenticationType": "ClientSecret",
+  "azureTenantId": "00000000-0000-0000-0000-000000000000",
+  "azureClientId": "11111111-1111-1111-1111-111111111111",
+  "azureClientSecret": "your-secret-here"
+}
+```
+
+**Z konkretną wersją certyfikatu:**
+```json
+{
+  "certificateSource": "AzureKeyVault",
+  "azureKeyVaultUrl": "https://myvault.vault.azure.net/",
+  "azureKeyVaultCertificateName": "ksef-offline-cert",
+  "azureKeyVaultCertificateVersion": "abc123def456"
+}
+```
+
+**Dostępne typy uwierzytelniania Azure:**
+- `DefaultAzureCredential` - automatycznie wykrywa środowisko (domyślnie)
+- `ManagedIdentity` - dla Azure VMs i App Service
+- `ClientSecret` - dla aplikacji z Service Principal
+- `EnvironmentCredential` - ze zmiennych środowiskowych
+- `AzureCliCredential` - z zalogowanego Azure CLI
+
+**Wymagane uprawnienia w Azure:**
+- **Key Vault Certificates User** lub **Key Vault Reader** - odczyt certyfikatów
+- **Key Vault Secrets User** - odczyt klucza prywatnego
 
 ## Ważne: Konwencja nazewnictwa JSON
 
 API używa konwencji **camelCase** dla nazw właściwości JSON (zgodnie ze standardem ASP.NET Core).
 
-**Poprawne nazwy parametrów:**
+**Poprawne nazwy parametrów (generate-pdf):**
 - `xmlContent` - zawartość XML faktury
 - `isBase64` - czy XML jest zakodowany w base64
 - `ksefNumber` - numer KSeF (opcjonalny)
 - `validateInvoice` - czy walidować fakturę (domyślnie: true)
 - `returnFormat` - format odpowiedzi: "file" lub "base64"
+- `certificateSource` - źródło certyfikatu: "WindowsStore" lub "AzureKeyVault" (domyślnie: "WindowsStore")
 - `certificateThumbprint` - thumbprint certyfikatu z Windows Store
 - `certificateSubject` - subject certyfikatu
 - `certificateStoreName` - nazwa store (domyślnie: "My")
 - `certificateStoreLocation` - lokalizacja store (domyślnie: "CurrentUser")
+- `azureKeyVaultUrl` - URL Azure Key Vault
+- `azureKeyVaultCertificateName` - nazwa certyfikatu w Key Vault
+- `azureKeyVaultCertificateVersion` - wersja certyfikatu w Key Vault (opcjonalna)
+- `azureAuthenticationType` - typ uwierzytelniania Azure (domyślnie: "DefaultAzureCredential")
+- `azureTenantId` - Azure Tenant ID (dla ClientSecret)
+- `azureClientId` - Azure Client ID (dla ClientSecret i Managed Identity)
+- `azureClientSecret` - Azure Client Secret (dla ClientSecret)
 - `useProduction` - użyj środowiska produkcyjnego (domyślnie: false)
+
+**Poprawne nazwy parametrów (generate-qr-code):**
+- `ksefNumber` - numer KSeF faktury (wymagany)
+- `useProduction` - użyj środowiska produkcyjnego (domyślnie: false)
+- `format` - format kodu QR: "svg", "base64", "both" (domyślnie: "svg")
+- `size` - rozmiar kodu QR w pikselach (domyślnie: 200)
+- `includeLabel` - czy dołączyć etykietę z numerem KSeF (domyślnie: false)
 
 **Odpowiedź (returnFormat = "base64"):**
 - `pdfBase64` - PDF zakodowany w base64
@@ -312,7 +476,57 @@ $pdfBytes = [Convert]::FromBase64String($response.pdfBase64)
 [System.IO.File]::WriteAllBytes("faktura.pdf", $pdfBytes)
 ```
 
-### 4. Przez C#
+**Przykład 3: Z certyfikatem z Azure Key Vault**
+```powershell
+$xmlBytes = [System.IO.File]::ReadAllBytes("faktura.xml")
+$xmlBase64 = [Convert]::ToBase64String($xmlBytes)
+
+$body = @{
+    xmlContent = $xmlBase64
+    isBase64 = $true
+    validateInvoice = $false
+    returnFormat = "base64"
+    certificateSource = "AzureKeyVault"
+    azureKeyVaultUrl = "https://myvault.vault.azure.net/"
+    azureKeyVaultCertificateName = "ksef-offline-cert"
+    azureAuthenticationType = "DefaultAzureCredential"
+} | ConvertTo-Json
+
+$response = Invoke-RestMethod -Uri "http://localhost:5000/api/invoice/generate-pdf" `
+    -Method Post -Body $body -ContentType "application/json"
+
+Write-Host "Invoice: $($response.invoiceNumber)"
+Write-Host "Mode: $($response.mode)"
+Write-Host "Size: $($response.fileSizeBytes) bytes"
+
+$pdfBytes = [Convert]::FromBase64String($response.pdfBase64)
+[System.IO.File]::WriteAllBytes("faktura.pdf", $pdfBytes)
+```
+
+**Przykład 4: Z Service Principal (dla automatyzacji)**
+```powershell
+$body = @{
+    xmlContent = [Convert]::ToBase64String([System.IO.File]::ReadAllBytes("faktura.xml"))
+    isBase64 = $true
+    validateInvoice = $false
+    returnFormat = "base64"
+    certificateSource = "AzureKeyVault"
+    azureKeyVaultUrl = "https://myvault.vault.azure.net/"
+    azureKeyVaultCertificateName = "ksef-offline-cert"
+    azureAuthenticationType = "ClientSecret"
+    azureTenantId = "00000000-0000-0000-0000-000000000000"
+    azureClientId = "11111111-1111-1111-1111-111111111111"
+    azureClientSecret = $env:AZURE_CLIENT_SECRET  # Ze zmiennej środowiskowej
+} | ConvertTo-Json
+
+$response = Invoke-RestMethod -Uri "http://localhost:5000/api/invoice/generate-pdf" `
+    -Method Post -Body $body -ContentType "application/json"
+
+[System.IO.File]::WriteAllBytes("faktura.pdf",
+    [Convert]::FromBase64String($response.pdfBase64))
+```
+
+### 4. Przez C# (Generate PDF)
 ```csharp
 using System.Net.Http.Json;
 
@@ -336,6 +550,80 @@ Console.WriteLine($"Size: {result.fileSizeBytes} bytes");
 File.WriteAllBytes("faktura.pdf", Convert.FromBase64String(result.pdfBase64.ToString()));
 ```
 
+### 5. Przez C# (Generate QR Code)
+
+**Przykład 1: SVG dla systemu generującego PDF-y**
+```csharp
+using System.Net.Http.Json;
+
+var client = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
+
+var request = new
+{
+    ksefNumber = "6511153259-20251015-010020140418-0D",
+    useProduction = false,
+    format = "svg",
+    size = 200
+};
+
+var response = await client.PostAsJsonAsync("/api/invoice/generate-qr-code", request);
+var result = await response.Content.ReadFromJsonAsync<dynamic>();
+
+Console.WriteLine($"KSeF Number: {result.ksefNumber}");
+Console.WriteLine($"Verification URL: {result.verificationUrl}");
+
+// Osadź SVG w swoim PDF-ie
+string svgContent = result.qrCodeSvg;
+File.WriteAllText("qr-code.svg", svgContent);
+```
+
+**Przykład 2: Base64 dla aplikacji webowej**
+```csharp
+var request = new
+{
+    ksefNumber = "6511153259-20251015-010020140418-0D",
+    useProduction = false,
+    format = "base64",
+    size = 300
+};
+
+var response = await client.PostAsJsonAsync("/api/invoice/generate-qr-code", request);
+var result = await response.Content.ReadFromJsonAsync<dynamic>();
+
+// Wygeneruj HTML z obrazem
+string html = $@"
+<html>
+<body>
+    <h1>Faktura KSeF</h1>
+    <img src=""data:image/png;base64,{result.qrCodeBase64}"" alt=""QR Code"" />
+    <p><a href=""{result.verificationUrl}"">Zweryfikuj fakturę</a></p>
+</body>
+</html>";
+
+File.WriteAllText("faktura.html", html);
+```
+
+**Przykład 3: Oba formaty jednocześnie**
+```csharp
+var request = new
+{
+    ksefNumber = "6511153259-20251015-010020140418-0D",
+    useProduction = true,
+    format = "both",
+    size = 200
+};
+
+var response = await client.PostAsJsonAsync("/api/invoice/generate-qr-code", request);
+var result = await response.Content.ReadFromJsonAsync<dynamic>();
+
+// SVG dla druku wysokiej jakości
+File.WriteAllText("qr-print.svg", result.qrCodeSvg);
+
+// PNG dla wyświetlenia na ekranie
+var pngBytes = Convert.FromBase64String(result.qrCodeBase64.ToString());
+File.WriteAllBytes("qr-display.png", pngBytes);
+```
+
 ## Przykładowe Pliki XML
 
 Przykładowe faktury znajdują się w:
@@ -357,6 +645,16 @@ Przykładowe faktury znajdują się w:
   "Swagger": {
     "EnableInProduction": true
   },
+  "AzureKeyVault": {
+    "KeyVaultUrl": "",
+    "CertificateName": "",
+    "CertificateVersion": null,
+    "AuthenticationType": "DefaultAzureCredential",
+    "TenantId": "",
+    "ClientId": "",
+    "ClientSecret": "",
+    "Note": "Konfiguracja dla certyfikatów z Azure Key Vault. Pozostaw puste jeśli nie używasz."
+  },
   "KSeFConnector": {
     "BaseUrl": "http://localhost:5000",
     "Timeout": 30,
@@ -364,6 +662,8 @@ Przykładowe faktury znajdują się w:
   }
 }
 ```
+
+**Uwaga:** Konfiguracja Azure Key Vault w `appsettings.json` jest opcjonalna. Parametry można przekazywać również bezpośrednio w request body do endpointu `/generate-pdf`.
 
 ### appsettings.Development.json
 ```json

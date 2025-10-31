@@ -207,4 +207,64 @@ public class QrCodeService
     {
         return GenerateQrCodeWithLabel(url, "Certyfikat KSeF wystawcy", pixelsPerModule);
     }
+
+    /// <summary>
+    /// Generuje kod QR w formacie SVG
+    /// </summary>
+    /// <param name="url">URL do zakodowania</param>
+    /// <param name="pixelsPerModule">Liczba pikseli na moduł (min 5)</param>
+    /// <returns>Kod QR jako string SVG</returns>
+    public string GenerateQrCodeSvg(string url, int pixelsPerModule = DefaultPixelsPerModule)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            throw new ArgumentException("URL nie może być pusty", nameof(url));
+        }
+
+        if (pixelsPerModule < 1)
+        {
+            throw new ArgumentException("Pikseli na moduł musi być >= 1", nameof(pixelsPerModule));
+        }
+
+        if (pixelsPerModule < DefaultPixelsPerModule)
+        {
+            _logger.LogWarning(
+                "Rozmiar QR ({Size} px/moduł) jest mniejszy niż zalecany minimum ({Min} px/moduł)",
+                pixelsPerModule, DefaultPixelsPerModule
+            );
+        }
+
+        try
+        {
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.M);
+            using var qrCode = new SvgQRCode(qrCodeData);
+
+            var svgString = qrCode.GetGraphic(pixelsPerModule);
+
+            _logger.LogDebug(
+                "Wygenerowano kod QR SVG: URL length={UrlLength}, Size={Size} px/moduł",
+                url.Length, pixelsPerModule
+            );
+
+            return svgString;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Błąd podczas generowania kodu QR SVG");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Generuje kod QR w formacie base64
+    /// </summary>
+    /// <param name="url">URL do zakodowania</param>
+    /// <param name="pixelsPerModule">Liczba pikseli na moduł</param>
+    /// <returns>Kod QR jako string base64</returns>
+    public string GenerateQrCodeBase64(string url, int pixelsPerModule = DefaultPixelsPerModule)
+    {
+        var qrCodeBytes = GenerateQrCode(url, pixelsPerModule);
+        return Convert.ToBase64String(qrCodeBytes);
+    }
 }
