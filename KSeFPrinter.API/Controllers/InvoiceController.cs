@@ -3,6 +3,7 @@ using KSeFPrinter;
 using KSeFPrinter.API.Models;
 using KSeFPrinter.API.Services;
 using KSeFPrinter.Models.Common;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace KSeFPrinter.API.Controllers;
@@ -183,11 +184,39 @@ public class InvoiceController : ControllerBase
                 : request.XmlContent;
 
             // Wczytaj certyfikat jeśli podany
-            var certificate = _certificateService.LoadFromStore(
-                request.CertificateThumbprint,
-                request.CertificateSubject,
-                request.CertificateStoreName,
-                request.CertificateStoreLocation);
+            X509Certificate2? certificate = null;
+
+            if (request.CertificateSource == "AzureKeyVault" &&
+                !string.IsNullOrWhiteSpace(request.AzureKeyVaultUrl) &&
+                !string.IsNullOrWhiteSpace(request.AzureKeyVaultCertificateName))
+            {
+                // Wczytaj z Azure Key Vault
+                var keyVaultOptions = new KSeFPrinter.Models.Common.AzureKeyVaultOptions
+                {
+                    KeyVaultUrl = request.AzureKeyVaultUrl,
+                    CertificateName = request.AzureKeyVaultCertificateName,
+                    CertificateVersion = request.AzureKeyVaultCertificateVersion,
+                    AuthenticationType = Enum.TryParse<KSeFPrinter.Models.Common.AzureAuthenticationType>(
+                        request.AzureAuthenticationType, out var authType)
+                        ? authType
+                        : KSeFPrinter.Models.Common.AzureAuthenticationType.DefaultAzureCredential,
+                    TenantId = request.AzureTenantId,
+                    ClientId = request.AzureClientId,
+                    ClientSecret = request.AzureClientSecret
+                };
+
+                certificate = await _certificateService.LoadFromKeyVaultAsync(keyVaultOptions);
+            }
+            else if (!string.IsNullOrWhiteSpace(request.CertificateThumbprint) ||
+                     !string.IsNullOrWhiteSpace(request.CertificateSubject))
+            {
+                // Wczytaj z Windows Certificate Store
+                certificate = _certificateService.LoadFromStore(
+                    request.CertificateThumbprint,
+                    request.CertificateSubject,
+                    request.CertificateStoreName,
+                    request.CertificateStoreLocation);
+            }
 
             // Opcje generowania PDF
             var options = new PdfGenerationOptions

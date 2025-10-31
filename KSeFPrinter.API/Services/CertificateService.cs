@@ -1,17 +1,23 @@
 using System.Security.Cryptography.X509Certificates;
+using KSeFPrinter.Models.Common;
+using KSeFPrinter.Services.Certificates;
 
 namespace KSeFPrinter.API.Services;
 
 /// <summary>
-/// Serwis do wczytywania certyfikatów z Windows Store
+/// Serwis do wczytywania certyfikatów z różnych źródeł (Windows Store, Azure Key Vault)
 /// </summary>
 public class CertificateService
 {
     private readonly ILogger<CertificateService> _logger;
+    private readonly AzureKeyVaultCertificateProvider _keyVaultProvider;
 
-    public CertificateService(ILogger<CertificateService> logger)
+    public CertificateService(
+        ILogger<CertificateService> logger,
+        ILogger<AzureKeyVaultCertificateProvider> keyVaultLogger)
     {
         _logger = logger;
+        _keyVaultProvider = new AzureKeyVaultCertificateProvider(keyVaultLogger);
     }
 
     /// <summary>
@@ -101,5 +107,22 @@ public class CertificateService
         {
             store?.Close();
         }
+    }
+
+    /// <summary>
+    /// Wczytuje certyfikat z Azure Key Vault
+    /// </summary>
+    public async Task<X509Certificate2?> LoadFromKeyVaultAsync(
+        AzureKeyVaultOptions options,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_keyVaultProvider.ValidateOptions(options))
+        {
+            return null;
+        }
+
+        _logger.LogInformation("Wczytywanie certyfikatu z Azure Key Vault");
+
+        return await _keyVaultProvider.LoadCertificateAsync(options, cancellationToken);
     }
 }
