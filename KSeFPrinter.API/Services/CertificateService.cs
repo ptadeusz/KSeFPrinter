@@ -1,4 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
+using KSeFPrinter.API.Models;
 using KSeFPrinter.Models.Common;
 using KSeFPrinter.Services.Certificates;
 
@@ -12,12 +13,123 @@ public class CertificateService
     private readonly ILogger<CertificateService> _logger;
     private readonly AzureKeyVaultCertificateProvider _keyVaultProvider;
 
+    // Cached certificates loaded from configuration
+    private X509Certificate2? _onlineCertificate;
+    private X509Certificate2? _offlineCertificate;
+
     public CertificateService(
         ILogger<CertificateService> logger,
         ILogger<AzureKeyVaultCertificateProvider> keyVaultLogger)
     {
         _logger = logger;
         _keyVaultProvider = new AzureKeyVaultCertificateProvider(keyVaultLogger);
+    }
+
+    /// <summary>
+    /// Pobiera certyfikat ONLINE (dla faktur ONLINE - KOD QR II)
+    /// </summary>
+    public X509Certificate2? GetOnlineCertificate() => _onlineCertificate;
+
+    /// <summary>
+    /// Pobiera certyfikat OFFLINE (dla faktur OFFLINE - podpis cyfrowy)
+    /// </summary>
+    public X509Certificate2? GetOfflineCertificate() => _offlineCertificate;
+
+    /// <summary>
+    /// Wczytuje certyfikaty z konfiguracji przy starcie aplikacji
+    /// </summary>
+    public async Task LoadCertificatesFromConfigurationAsync(CertificatesConfiguration config, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("=== Wczytywanie certyfikatów z konfiguracji ===");
+
+        // Wczytaj certyfikat ONLINE
+        if (config.Online.Enabled)
+        {
+            _logger.LogInformation("Wczytywanie certyfikatu ONLINE...");
+            _onlineCertificate = await LoadCertificateFromOptionsAsync(config.Online, "ONLINE", cancellationToken);
+
+            if (_onlineCertificate != null)
+            {
+                _logger.LogInformation("✅ Certyfikat ONLINE wczytany: {Subject}", _onlineCertificate.Subject);
+            }
+            else
+            {
+                _logger.LogWarning("⚠️ Certyfikat ONLINE nie został wczytany (KOD QR II nie będzie generowany dla faktur ONLINE)");
+            }
+        }
+        else
+        {
+            _logger.LogInformation("Certyfikat ONLINE wyłączony w konfiguracji");
+        }
+
+        // Wczytaj certyfikat OFFLINE
+        if (config.Offline.Enabled)
+        {
+            _logger.LogInformation("Wczytywanie certyfikatu OFFLINE...");
+            _offlineCertificate = await LoadCertificateFromOptionsAsync(config.Offline, "OFFLINE", cancellationToken);
+
+            if (_offlineCertificate != null)
+            {
+                _logger.LogInformation("✅ Certyfikat OFFLINE wczytany: {Subject}", _offlineCertificate.Subject);
+            }
+            else
+            {
+                _logger.LogWarning("⚠️ Certyfikat OFFLINE nie został wczytany (faktury OFFLINE nie będą podpisywane)");
+            }
+        }
+        else
+        {
+            _logger.LogInformation("Certyfikat OFFLINE wyłączony w konfiguracji");
+        }
+    }
+
+    /// <summary>
+    /// Wczytuje certyfikat z opcji konfiguracji
+    /// </summary>
+    private async Task<X509Certificate2?> LoadCertificateFromOptionsAsync(
+        CertificateOptions options,
+        string certificateType,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (options.Source.Equals("AzureKeyVault", StringComparison.OrdinalIgnoreCase))
+            {
+                var azureOptions = new KSeFPrinter.Models.Common.AzureKeyVaultOptions
+                {
+                    KeyVaultUrl = options.AzureKeyVault.KeyVaultUrl!,
+                    CertificateName = options.AzureKeyVault.CertificateName!,
+                    CertificateVersion = options.AzureKeyVault.CertificateVersion,
+                    AuthenticationType = Enum.TryParse<KSeFPrinter.Models.Common.AzureAuthenticationType>(
+                        options.AzureKeyVault.AuthenticationType, out var authType)
+                        ? authType
+                        : KSeFPrinter.Models.Common.AzureAuthenticationType.DefaultAzureCredential,
+                    TenantId = options.AzureKeyVault.TenantId,
+                    ClientId = options.AzureKeyVault.ClientId,
+                    ClientSecret = options.AzureKeyVault.ClientSecret
+                };
+
+                return await LoadFromKeyVaultAsync(azureOptions, cancellationToken);
+            }
+            else if (options.Source.Equals("WindowsStore", StringComparison.OrdinalIgnoreCase))
+            {
+                return LoadFromStore(
+                    options.WindowsStore.Thumbprint,
+                    options.WindowsStore.Subject,
+                    options.WindowsStore.StoreName,
+                    options.WindowsStore.StoreLocation);
+            }
+            else
+            {
+                _logger.LogError("Nieznane źródło certyfikatu {Type}: {Source}", certificateType, options.Source);
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Błąd wczytywania certyfikatu {Type}", certificateType);
+            return null;
+        }
     }
 
     /// <summary>
@@ -113,7 +225,7 @@ public class CertificateService
     /// Wczytuje certyfikat z Azure Key Vault
     /// </summary>
     public async Task<X509Certificate2?> LoadFromKeyVaultAsync(
-        AzureKeyVaultOptions options,
+        KSeFPrinter.Models.Common.AzureKeyVaultOptions options,
         CancellationToken cancellationToken = default)
     {
         if (!_keyVaultProvider.ValidateOptions(options))

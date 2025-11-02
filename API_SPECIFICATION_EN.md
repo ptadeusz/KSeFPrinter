@@ -94,30 +94,69 @@ dotnet KSeFPrinter.API.dll
       "Default": "Information"
     }
   },
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://localhost:5000"
+      }
+    }
+  },
   "Swagger": {
     "EnableInProduction": true
   },
   "License": {
     "FilePath": "license.lic"
   },
-  "AzureKeyVault": {
-    "KeyVaultUrl": "",
-    "CertificateName": "",
-    "CertificateVersion": null,
-    "AuthenticationType": "DefaultAzureCredential",
-    "TenantId": "",
-    "ClientId": "",
-    "ClientSecret": "",
-    "Note": "Configuration for Azure Key Vault certificates. Leave empty if not using."
+  "Certificates": {
+    "Online": {
+      "Enabled": false,
+      "Source": "WindowsStore",
+      "WindowsStore": {
+        "Thumbprint": "",
+        "Subject": "",
+        "StoreName": "My",
+        "StoreLocation": "CurrentUser"
+      },
+      "AzureKeyVault": {
+        "KeyVaultUrl": "",
+        "CertificateName": "",
+        "CertificateVersion": null,
+        "AuthenticationType": "DefaultAzureCredential",
+        "TenantId": "",
+        "ClientId": "",
+        "ClientSecret": ""
+      }
+    },
+    "Offline": {
+      "Enabled": false,
+      "Source": "WindowsStore",
+      "WindowsStore": {
+        "Thumbprint": "",
+        "Subject": "",
+        "StoreName": "My",
+        "StoreLocation": "CurrentUser"
+      },
+      "AzureKeyVault": {
+        "KeyVaultUrl": "",
+        "CertificateName": "",
+        "CertificateVersion": null,
+        "AuthenticationType": "DefaultAzureCredential",
+        "TenantId": "",
+        "ClientId": "",
+        "ClientSecret": ""
+      }
+    }
   }
 }
 ```
 
-**Note:** Certificates for generating QR CODE II (digital signature) can be configured in two ways:
-1. **Windows Certificate Store** - locally installed certificate
-2. **Azure Key Vault** - cloud-stored certificate (configured in `AzureKeyVault` section)
-
-**In current implementation (Variant A):** Certificate must be provided in the request to `/api/invoice/generate-pdf`.
+**Certificates:**
+- **Online Certificate** - used for generating QR CODE II for ONLINE invoices
+- **Offline Certificate** - used for digital signing of OFFLINE invoices
+- Certificates are loaded **at application startup** from configuration
+- **NOT provided in API request** - API automatically selects appropriate certificate based on invoice mode
+- Supported sources: **Windows Certificate Store** or **Azure Key Vault**
+- API port configured in `Kestrel.Endpoints.Http.Url`
 
 ### Environment Variables
 
@@ -170,19 +209,24 @@ The API requires a valid license for the **KSeF Printer** product. The applicati
 
 If the license is invalid or expired, the application will stop with exit code `1`.
 
-### What is validated at startup?
+### Validation at application startup:
 1. ✅ License file exists
 2. ✅ License has not expired (`expiryDate`)
 3. ✅ RSA signature is valid (verified with public key)
 4. ✅ `features.ksefPrinter = true` (permission for KSeF Printer)
 
-### What is NOT validated (TODO):
-⚠️ **WARNING:** In current version (1.0.0), it is **NOT validated** whether the seller/buyer/subject3 NIP from the invoice is in the `allowedNips` list.
+### Validation when generating PDF:
+✅ **NIP Validation** - on every PDF generation request, it is validated that **at least one** NIP from the invoice is in the `allowedNips` list:
+- Checked: **Seller** NIP (Podmiot1)
+- Checked: **Buyer** NIP (Podmiot2)
+- Checked: All **Subject3** NIPs (there can be many)
 
-This means that:
-- User with a valid license can generate PDFs for **any NIPs**
-- The `allowedNips` field in the license is read but not used for validation
-- NIP validation is planned for future versions
+**Validation logic:** If **ANY** of the NIPs is in the `allowedNips` list, PDF generation is allowed.
+
+**If no NIP is allowed:**
+- HTTP 403 Forbidden is returned
+- Response contains list of all NIPs from the invoice
+- Warning is logged with information about missing permissions
 
 ---
 
@@ -331,7 +375,7 @@ The generator creates **two types of QR codes** (according to KSeF requirements)
 - **Requires certificate** - generated only when certificate is available
 - Used for document authenticity verification
 
-**Request (basic - without certificate):**
+**Request:**
 ```json
 {
   "xmlContent": "<?xml version=\"1.0\"?>...",
@@ -343,57 +387,21 @@ The generator creates **two types of QR codes** (according to KSeF requirements)
 }
 ```
 
-**Note:** Request without certificate will generate PDF with **only QR CODE I** (invoice verification).
+**Parameters:**
+- `xmlContent` - invoice XML content (plain text or base64)
+- `isBase64` - whether XML is base64 encoded (default: false)
+- `ksefNumber` - optional KSeF number (if not in XML)
+- `useProduction` - verification environment (true = production, false = test)
+- `validateInvoice` - whether to validate invoice before generating (default: true)
+- `returnFormat` - return format: "file" (binary) or "base64" (JSON)
 
-**Request (with Windows Store certificate - QR CODE I + QR CODE II):**
-```json
-{
-  "xmlContent": "<?xml version=\"1.0\"?>...",
-  "isBase64": false,
-  "ksefNumber": "1234567890123456789012345-20250102-ABCD-EF",
-  "certificateSource": "WindowsStore",
-  "certificateThumbprint": "A1B2C3D4E5F6...",
-  "certificateStoreName": "My",
-  "certificateStoreLocation": "CurrentUser",
-  "useProduction": false,
-  "validateInvoice": true,
-  "returnFormat": "file"
-}
-```
-
-**Request (with Azure Key Vault certificate - QR CODE I + QR CODE II):**
-```json
-{
-  "xmlContent": "<?xml version=\"1.0\"?>...",
-  "isBase64": false,
-  "ksefNumber": "1234567890123456789012345-20250102-ABCD-EF",
-  "certificateSource": "AzureKeyVault",
-  "azureKeyVaultUrl": "https://myvault.vault.azure.net/",
-  "azureKeyVaultCertificateName": "my-certificate",
-  "azureKeyVaultCertificateVersion": null,
-  "azureAuthenticationType": "DefaultAzureCredential",
-  "useProduction": false,
-  "validateInvoice": true,
-  "returnFormat": "file"
-}
-```
-
-**Note:** Request with certificate will generate PDF with **QR CODE I + QR CODE II** (verification + digital signature).
-
-**Request (with Azure Key Vault - Client Secret):**
-```json
-{
-  "xmlContent": "<?xml version=\"1.0\"?>...",
-  "certificateSource": "AzureKeyVault",
-  "azureKeyVaultUrl": "https://myvault.vault.azure.net/",
-  "azureKeyVaultCertificateName": "my-certificate",
-  "azureAuthenticationType": "ClientSecret",
-  "azureTenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  "azureClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  "azureClientSecret": "secret",
-  "returnFormat": "base64"
-}
-```
+**Certificates:**
+- Certificates are loaded automatically from `appsettings.json` at startup
+- API automatically selects certificate based on invoice mode:
+  - **ONLINE mode** → uses `Certificates.Online` certificate
+  - **OFFLINE mode** → uses `Certificates.Offline` certificate
+- If certificate is available → **QR CODE I + QR CODE II** are generated
+- If certificate is NOT available → **only QR CODE I** is generated
 
 **Response (returnFormat="file", 200 OK):**
 ```
@@ -420,10 +428,16 @@ Content-Disposition: attachment; filename="Invoice_FV_2025_01_001_20250102_14352
 }
 ```
 
-**Response (400 Bad Request - certificate error):**
+**Response (403 Forbidden - NIP not covered by license):**
 ```json
 {
-  "error": "Certificate not found with thumbprint: A1B2C3D4E5F6..."
+  "error": "License does not cover any NIP from this invoice",
+  "invoiceNips": [
+    "Seller: 1234567890",
+    "Buyer: 0987654321"
+  ],
+  "allowedNips": 5,
+  "message": "At least one NIP (seller, buyer, or subject3) must be on the allowed NIPs list in the license"
 }
 ```
 

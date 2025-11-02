@@ -54,6 +54,10 @@ builder.Services.AddSingleton<InvoicePrinterService>();
 // API serwisy
 builder.Services.AddSingleton<CertificateService>();
 
+// Konfiguracja certyfikatów
+builder.Services.Configure<KSeFPrinter.API.Models.CertificatesConfiguration>(
+    builder.Configuration.GetSection("Certificates"));
+
 // Licencjonowanie
 builder.Services.AddSingleton<ILicenseValidator>(provider =>
 {
@@ -160,6 +164,27 @@ catch (Exception ex)
     logger.LogCritical("Aplikacja nie może zostać uruchomiona bez ważnej licencji.");
     Environment.Exit(1);
     return;
+}
+
+// === Wczytywanie certyfikatów z konfiguracji ===
+var certificateService = app.Services.GetRequiredService<CertificateService>();
+var certificatesConfig = app.Configuration.GetSection("Certificates").Get<KSeFPrinter.API.Models.CertificatesConfiguration>();
+
+if (certificatesConfig != null)
+{
+    try
+    {
+        await certificateService.LoadCertificatesFromConfigurationAsync(certificatesConfig);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "⚠️ Błąd wczytywania certyfikatów - aplikacja będzie działać bez certyfikatów");
+        logger.LogWarning("   KOD QR II nie będzie generowany (wymaga certyfikatu)");
+    }
+}
+else
+{
+    logger.LogInformation("Brak konfiguracji certyfikatów - aplikacja będzie działać bez certyfikatów");
 }
 
 // === Konfiguracja middleware ===

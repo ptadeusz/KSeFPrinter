@@ -19,6 +19,7 @@ public class InvoiceController : ControllerBase
     private readonly CertificateService _certificateService;
     private readonly QrCodeService _qrCodeService;
     private readonly VerificationLinkService _verificationLinkService;
+    private readonly KSeFPrinter.Services.License.ILicenseValidator _licenseValidator;
     private readonly ILogger<InvoiceController> _logger;
 
     public InvoiceController(
@@ -26,12 +27,14 @@ public class InvoiceController : ControllerBase
         CertificateService certificateService,
         QrCodeService qrCodeService,
         VerificationLinkService verificationLinkService,
+        KSeFPrinter.Services.License.ILicenseValidator licenseValidator,
         ILogger<InvoiceController> logger)
     {
         _printerService = printerService;
         _certificateService = certificateService;
         _qrCodeService = qrCodeService;
         _verificationLinkService = verificationLinkService;
+        _licenseValidator = licenseValidator;
         _logger = logger;
     }
 
@@ -183,6 +186,7 @@ public class InvoiceController : ControllerBase
     [ProducesResponseType(typeof(FileContentResult), 200, "application/pdf")]
     [ProducesResponseType(typeof(GeneratePdfResponse), 200, "application/json")]
     [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
     public async Task<IActionResult> GeneratePdf([FromBody] GeneratePdfRequest request)
     {
         try
@@ -191,39 +195,82 @@ public class InvoiceController : ControllerBase
                 ? Encoding.UTF8.GetString(Convert.FromBase64String(request.XmlContent))
                 : request.XmlContent;
 
-            // Wczytaj certyfikat jeśli podany
-            X509Certificate2? certificate = null;
+            // Parsuj fakturę aby uzyskać NIP-y
+            var context = await _printerService.ParseInvoiceFromXmlAsync(xmlContent, request.KSeFNumber);
 
-            if (request.CertificateSource == "AzureKeyVault" &&
-                !string.IsNullOrWhiteSpace(request.AzureKeyVaultUrl) &&
-                !string.IsNullOrWhiteSpace(request.AzureKeyVaultCertificateName))
+            // === WALIDACJA NIP - sprawdź czy przynajmniej jeden NIP jest dozwolony ===
+            var allowedNips = _licenseValidator.GetAllowedNips();
+
+            var nipSprzedawcy = context.Faktura.Podmiot1?.DaneIdentyfikacyjne?.NIP;
+            var nipNabywcy = context.Faktura.Podmiot2?.DaneIdentyfikacyjne?.NIP;
+            var nipyPodmiot3 = context.Faktura.Podmiot3?.Select(p => p.DaneIdentyfikacyjne?.NIP).Where(n => !string.IsNullOrEmpty(n)).ToList() ?? new List<string?>();
+
+            // Sprawdź czy KTÓRYKOLWIEK z NIP-ów jest na liście dozwolonych
+            bool anyNipAllowed = false;
+            List<string> foundNips = new();
+
+            if (!string.IsNullOrEmpty(nipSprzedawcy) && allowedNips.Contains(nipSprzedawcy))
             {
-                // Wczytaj z Azure Key Vault
-                var keyVaultOptions = new KSeFPrinter.Models.Common.AzureKeyVaultOptions
-                {
-                    KeyVaultUrl = request.AzureKeyVaultUrl,
-                    CertificateName = request.AzureKeyVaultCertificateName,
-                    CertificateVersion = request.AzureKeyVaultCertificateVersion,
-                    AuthenticationType = Enum.TryParse<KSeFPrinter.Models.Common.AzureAuthenticationType>(
-                        request.AzureAuthenticationType, out var authType)
-                        ? authType
-                        : KSeFPrinter.Models.Common.AzureAuthenticationType.DefaultAzureCredential,
-                    TenantId = request.AzureTenantId,
-                    ClientId = request.AzureClientId,
-                    ClientSecret = request.AzureClientSecret
-                };
-
-                certificate = await _certificateService.LoadFromKeyVaultAsync(keyVaultOptions);
+                anyNipAllowed = true;
+                foundNips.Add($"Sprzedawca: {nipSprzedawcy}");
             }
-            else if (!string.IsNullOrWhiteSpace(request.CertificateThumbprint) ||
-                     !string.IsNullOrWhiteSpace(request.CertificateSubject))
+
+            if (!string.IsNullOrEmpty(nipNabywcy) && allowedNips.Contains(nipNabywcy))
             {
-                // Wczytaj z Windows Certificate Store
-                certificate = _certificateService.LoadFromStore(
-                    request.CertificateThumbprint,
-                    request.CertificateSubject,
-                    request.CertificateStoreName,
-                    request.CertificateStoreLocation);
+                anyNipAllowed = true;
+                foundNips.Add($"Nabywca: {nipNabywcy}");
+            }
+
+            foreach (var nip in nipyPodmiot3.Where(n => !string.IsNullOrEmpty(n)))
+            {
+                if (allowedNips.Contains(nip!))
+                {
+                    anyNipAllowed = true;
+                    foundNips.Add($"Podmiot3: {nip}");
+                }
+            }
+
+            if (!anyNipAllowed)
+            {
+                var allNips = new List<string>();
+                if (!string.IsNullOrEmpty(nipSprzedawcy)) allNips.Add($"Sprzedawca: {nipSprzedawcy}");
+                if (!string.IsNullOrEmpty(nipNabywcy)) allNips.Add($"Nabywca: {nipNabywcy}");
+                allNips.AddRange(nipyPodmiot3.Select((n, i) => $"Podmiot3[{i}]: {n}"));
+
+                _logger.LogWarning(
+                    "❌ Brak uprawnień: żaden NIP z faktury nie jest dozwolony w licencji. NIP-y w fakturze: {Nips}",
+                    string.Join(", ", allNips));
+
+                return StatusCode(403, new
+                {
+                    error = "Licencja nie obejmuje żadnego NIP-u z tej faktury",
+                    invoiceNips = allNips,
+                    allowedNips = allowedNips.Count,
+                    message = "Przynajmniej jeden NIP (sprzedawcy, nabywcy lub podmiotu 3) musi być na liście dozwolonych NIP-ów w licencji"
+                });
+            }
+
+            _logger.LogInformation("✅ Walidacja NIP pomyślna: {FoundNips}", string.Join(", ", foundNips));
+
+            // === CERTYFIKAT - wybierz odpowiedni dla trybu faktury ===
+            X509Certificate2? certificate = null;
+            var isOnline = context.Metadata.Tryb == TrybWystawienia.Online;
+
+            if (isOnline)
+            {
+                certificate = _certificateService.GetOnlineCertificate();
+                if (certificate != null)
+                {
+                    _logger.LogDebug("Używam certyfikatu ONLINE: {Subject}", certificate.Subject);
+                }
+            }
+            else
+            {
+                certificate = _certificateService.GetOfflineCertificate();
+                if (certificate != null)
+                {
+                    _logger.LogDebug("Używam certyfikatu OFFLINE: {Subject}", certificate.Subject);
+                }
             }
 
             // Opcje generowania PDF
@@ -242,9 +289,6 @@ public class InvoiceController : ControllerBase
                 options: options,
                 numerKSeF: request.KSeFNumber,
                 validateInvoice: request.ValidateInvoice);
-
-            // Pobierz podstawowe dane dla response
-            var context = await _printerService.ParseInvoiceFromXmlAsync(xmlContent, request.KSeFNumber);
 
             if (request.ReturnFormat.Equals("base64", StringComparison.OrdinalIgnoreCase))
             {
