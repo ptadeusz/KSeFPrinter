@@ -2,15 +2,8 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
 
-    <!-- CLI Components - wszystkie pliki z KSeFPrinter.CLI\bin\Release\net9.0\publish -->
-    <ComponentGroup Id="CLIComponents" Directory="CLIINSTALLFOLDER">
-      <!-- Te komponenty będą automatycznie dodane przez HarvestDirectory -->
-    </ComponentGroup>
-
-    <!-- API Components - wszystkie pliki z KSeFPrinter.API\bin\Release\net9.0\publish -->
-    <ComponentGroup Id="APIComponents" Directory="APIINSTALLFOLDER">
-      <!-- Te komponenty będą automatycznie dodane przez HarvestDirectory (oprócz głównego .exe) -->
-
+    <!-- API Components - Main executable with Windows Service -->
+    <ComponentGroup Id="APIServiceComponents" Directory="APIINSTALLFOLDER">
       <!-- Main API Executable with Windows Service Installation -->
       <Component Id="KSeFPrinterAPIExeComponent" Guid="A9B8C7D6-E5F4-4A3B-9C2D-1E0F9A8B7C6D">
         <File Id="KSeFPrinterAPIExe"

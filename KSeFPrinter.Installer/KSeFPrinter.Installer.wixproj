@@ -12,28 +12,12 @@
     <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
   </ItemGroup>
 
-  <!-- Exclude custom dialogs from build (WiX 3 syntax, need update for WiX 5) -->
+  <!-- Exclude custom dialogs and generation scripts from build -->
   <ItemGroup>
     <Compile Remove="LicenseInfoDialog.wxs" />
     <Compile Remove="ExitDialog_Custom.wxs" />
-  </ItemGroup>
-
-  <!-- Automatyczne zbieranie plików z publish -->
-  <ItemGroup>
-    <HarvestDirectory Include="..\KSeFPrinter.CLI\bin\$(Configuration)\net9.0\win-x64\publish">
-      <DirectoryRefId>CLIINSTALLFOLDER</DirectoryRefId>
-      <ComponentGroupName>CLIComponents</ComponentGroupName>
-      <PreprocessorVariable>var.CLIPublishDir</PreprocessorVariable>
-      <SuppressRootDirectory>true</SuppressRootDirectory>
-    </HarvestDirectory>
-
-    <HarvestDirectory Include="..\KSeFPrinter.API\bin\$(Configuration)\net9.0\win-x64\publish">
-      <DirectoryRefId>APIINSTALLFOLDER</DirectoryRefId>
-      <ComponentGroupName>APIComponents</ComponentGroupName>
-      <PreprocessorVariable>var.APIPublishDir</PreprocessorVariable>
-      <SuppressRootDirectory>true</SuppressRootDirectory>
-      <ExcludeFilter>KSeFPrinter.API.exe</ExcludeFilter>
-    </HarvestDirectory>
+    <None Include="generate-components.ps1" />
+    <None Include="generate-wix-components.ps1" />
   </ItemGroup>
 
 </Project>

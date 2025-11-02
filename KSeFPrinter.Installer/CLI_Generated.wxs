@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="CLIComponents" Directory="CLIINSTALLFOLDER">
+      <Component Id="CLI_Azure_Core_dll_1" Guid="F8E120FF-9E66-4E82-8F7F-5343EAB78D88">
+        <File Id="CLI_File_1" Source="$(var.CLIPublishDir)Azure.Core.dll" />
+      </Component>
+      <Component Id="CLI_Azure_Identity_dll_2" Guid="799E4E88-7C40-40EB-9123-FCFE7ECA69D8">
+        <File Id="CLI_File_2" Source="$(var.CLIPublishDir)Azure.Identity.dll" />
+      </Component>
+      <Component Id="CLI_Azure_Security_KeyVault_Certificates_dll_3" Guid="C207BD8E-AC05-44F5-B09C-87FDFA77F076">
+        <File Id="CLI_File_3" Source="$(var.CLIPublishDir)Azure.Security.KeyVault.Certificates.dll" />
+      </Component>
+      <Component Id="CLI_Azure_Security_KeyVault_Secrets_dll_4" Guid="9A61B44B-0805-48E2-9DEB-A6391D10B55C">
+        <File Id="CLI_File_4" Source="$(var.CLIPublishDir)Azure.Security.KeyVault.Secrets.dll" />
+      </Component>
+      <Component Id="CLI_ksef_pdf_deps_json_5" Guid="D3589C99-54A2-4783-913D-D93A88AEB416">
+        <File Id="CLI_File_5" Source="$(var.CLIPublishDir)ksef-pdf.deps.json" />
+      </Component>
+      <Component Id="CLI_ksef_pdf_dll_6" Guid="ACF35FD3-3F39-4334-A061-B70B80944228">
+        <File Id="CLI_File_6" Source="$(var.CLIPublishDir)ksef-pdf.dll" />
+      </Component>
+      <Component Id="CLI_ksef_pdf_exe_7" Guid="DC56440F-DF88-4BC6-8A25-816AAE08EF5F">
+        <File Id="CLI_File_7" Source="$(var.CLIPublishDir)ksef-pdf.exe" />
+      </Component>
+      <Component Id="CLI_ksef_pdf_pdb_8" Guid="E5EE4CB9-A683-4EA8-98B5-DEDE27F30232">
+        <File Id="CLI_File_8" Source="$(var.CLIPublishDir)ksef-pdf.pdb" />
+      </Component>
+      <Component Id="CLI_ksef_pdf_runtimeconfig_json_9" Guid="0DF521E4-2682-488B-8C89-BD9B67A7D07E">
+        <File Id="CLI_File_9" Source="$(var.CLIPublishDir)ksef-pdf.runtimeconfig.json" />
+      </Component>
+      <Component Id="CLI_ksef_pdf_xml_10" Guid="0D2A28A2-AAF6-4220-B4D6-53BEFF327C67">
+        <File Id="CLI_File_10" Source="$(var.CLIPublishDir)ksef-pdf.xml" />
+      </Component>
+      <Component Id="CLI_KSeFPrinter_dll_11" Guid="1DCE0C4D-A0AD-4CB9-8FE8-AC4ED9816441">
+        <File Id="CLI_File_11" Source="$(var.CLIPublishDir)KSeFPrinter.dll" />
+      </Component>
+      <Component Id="CLI_KSeFPrinter_pdb_12" Guid="E5E1E0B6-D4F0-4B1D-87CA-199D4DF84CC2">
+        <File Id="CLI_File_12" Source="$(var.CLIPublishDir)KSeFPrinter.pdb" />
+      </Component>
+      <Component Id="CLI_KSeFPrinter_xml_13" Guid="8989D8A1-09DC-46D9-9CC9-04E43CC80B60">
+        <File Id="CLI_File_13" Source="$(var.CLIPublishDir)KSeFPrinter.xml" />
+      </Component>
+      <Component Id="CLI_libgcc_s_seh_1_dll_14" Guid="7E48ADF4-478D-4DA6-B59E-8F3ED29356EC">
+        <File Id="CLI_File_14" Source="$(var.CLIPublishDir)libgcc_s_seh-1.dll" />
+      </Component>
+      <Component Id="CLI_libstdc___6_dll_15" Guid="515C5020-DB68-4365-8605-CD09EBD3345D">
+        <File Id="CLI_File_15" Source="$(var.CLIPublishDir)libstdc++-6.dll" />
+      </Component>
+      <Component Id="CLI_libwinpthread_1_dll_16" Guid="11801C34-3667-4211-9F05-407F1B3C03CD">
+        <File Id="CLI_File_16" Source="$(var.CLIPublishDir)libwinpthread-1.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Bcl_AsyncInterfaces_dll_17" Guid="8DF12128-386E-483B-BF45-4ACD2DA90307">
+        <File Id="CLI_File_17" Source="$(var.CLIPublishDir)Microsoft.Bcl.AsyncInterfaces.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Configuration_Abstractions_dll_18" Guid="40CD2675-FD39-4746-9CB5-EFADBDFB8A11">
+        <File Id="CLI_File_18" Source="$(var.CLIPublishDir)Microsoft.Extensions.Configuration.Abstractions.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Configuration_Binder_dll_19" Guid="84C047B6-7E83-4C62-B057-BE7536ACB3C7">
+        <File Id="CLI_File_19" Source="$(var.CLIPublishDir)Microsoft.Extensions.Configuration.Binder.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Configuration_dll_20" Guid="C22FF65A-D2F8-46AF-AC49-8501D7741CBB">
+        <File Id="CLI_File_20" Source="$(var.CLIPublishDir)Microsoft.Extensions.Configuration.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_DependencyInjection_Abstractions_dll_21" Guid="A487076C-DC67-4387-984D-CCBAFB23885D">
+        <File Id="CLI_File_21" Source="$(var.CLIPublishDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_DependencyInjection_dll_22" Guid="7E285C21-E25D-4480-8B91-472A4ADBF316">
+        <File Id="CLI_File_22" Source="$(var.CLIPublishDir)Microsoft.Extensions.DependencyInjection.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Logging_Abstractions_dll_23" Guid="0B246405-CAAF-44FE-895F-C98242C17554">
+        <File Id="CLI_File_23" Source="$(var.CLIPublishDir)Microsoft.Extensions.Logging.Abstractions.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Logging_Configuration_dll_24" Guid="EC124059-BDC4-4360-B19E-39DCEAD4982C">
+        <File Id="CLI_File_24" Source="$(var.CLIPublishDir)Microsoft.Extensions.Logging.Configuration.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Logging_Console_dll_25" Guid="7E9B91B0-8C73-48D9-A2E8-FE31D55675CB">
+        <File Id="CLI_File_25" Source="$(var.CLIPublishDir)Microsoft.Extensions.Logging.Console.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Logging_dll_26" Guid="986EC20B-64D8-4780-9824-E360D14D8B66">
+        <File Id="CLI_File_26" Source="$(var.CLIPublishDir)Microsoft.Extensions.Logging.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Options_ConfigurationExtensions_dll_27" Guid="120FEFDD-FFAC-4DDC-90DF-177713A0A181">
+        <File Id="CLI_File_27" Source="$(var.CLIPublishDir)Microsoft.Extensions.Options.ConfigurationExtensions.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Options_dll_28" Guid="9BBC1E8B-08C8-48A4-94F8-03EE7CF8B724">
+        <File Id="CLI_File_28" Source="$(var.CLIPublishDir)Microsoft.Extensions.Options.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Extensions_Primitives_dll_29" Guid="BA325F48-871F-423A-883F-ADA9DDD60C96">
+        <File Id="CLI_File_29" Source="$(var.CLIPublishDir)Microsoft.Extensions.Primitives.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Identity_Client_dll_30" Guid="B26192F8-8082-4046-B9AD-EF102F156EDC">
+        <File Id="CLI_File_30" Source="$(var.CLIPublishDir)Microsoft.Identity.Client.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Identity_Client_Extensions_Msal_dll_31" Guid="FE9BD4A7-7F7E-43CE-AFD6-62F2BBF6C0E6">
+        <File Id="CLI_File_31" Source="$(var.CLIPublishDir)Microsoft.Identity.Client.Extensions.Msal.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_IdentityModel_Abstractions_dll_32" Guid="6061D4FD-9296-499C-829C-694D66F615A5">
+        <File Id="CLI_File_32" Source="$(var.CLIPublishDir)Microsoft.IdentityModel.Abstractions.dll" />
+      </Component>
+      <Component Id="CLI_Microsoft_Win32_SystemEvents_dll_33" Guid="FDA39156-BFF9-44DC-9E54-A658F3E13DB4">
+        <File Id="CLI_File_33" Source="$(var.CLIPublishDir)Microsoft.Win32.SystemEvents.dll" />
+      </Component>
+      <Component Id="CLI_qpdf_dll_34" Guid="459AD2E4-DC9D-4754-953C-3DD50B25DA49">
+        <File Id="CLI_File_34" Source="$(var.CLIPublishDir)qpdf.dll" />
+      </Component>
+      <Component Id="CLI_QRCoder_dll_35" Guid="E8C4F189-176A-4ED5-B940-15C0CDAC5B5D">
+        <File Id="CLI_File_35" Source="$(var.CLIPublishDir)QRCoder.dll" />
+      </Component>
+      <Component Id="CLI_QuestPDF_dll_36" Guid="A86924F2-068C-4819-9071-2EDFAC653563">
+        <File Id="CLI_File_36" Source="$(var.CLIPublishDir)QuestPDF.dll" />
+      </Component>
+      <Component Id="CLI_QuestPdfSkia_dll_37" Guid="BA846F2F-5D3B-4E98-A169-BD8385BC776E">
+        <File Id="CLI_File_37" Source="$(var.CLIPublishDir)QuestPdfSkia.dll" />
+      </Component>
+      <Component Id="CLI_System_ClientModel_dll_38" Guid="E559E108-2FA7-4AA6-BFC0-632331095234">
+        <File Id="CLI_File_38" Source="$(var.CLIPublishDir)System.ClientModel.dll" />
+      </Component>
+      <Component Id="CLI_System_CommandLine_dll_39" Guid="934E50A6-112C-4FBC-80F5-8D30AE0CC38A">
+        <File Id="CLI_File_39" Source="$(var.CLIPublishDir)System.CommandLine.dll" />
+      </Component>
+      <Component Id="CLI_System_Drawing_Common_dll_40" Guid="C665EBFB-22A0-40A9-8930-669B7FDB550B">
+        <File Id="CLI_File_40" Source="$(var.CLIPublishDir)System.Drawing.Common.dll" />
+      </Component>
+      <Component Id="CLI_System_Memory_Data_dll_41" Guid="1EE3A615-67C2-4BBC-BA2F-ED954DF7D1A0">
+        <File Id="CLI_File_41" Source="$(var.CLIPublishDir)System.Memory.Data.dll" />
+      </Component>
+      <Component Id="CLI_System_Security_Cryptography_ProtectedData_dll_42" Guid="9252CD7D-DE6F-4D04-8B26-9679B56E0F42">
+        <File Id="CLI_File_42" Source="$(var.CLIPublishDir)System.Security.Cryptography.ProtectedData.dll" />
+      </Component>
+      <Component Id="CLI_zlib1_dll_43" Guid="58B5C1FC-A1FB-474F-A05F-BD0695793339">
+        <File Id="CLI_File_43" Source="$(var.CLIPublishDir)zlib1.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

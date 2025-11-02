@@ -100,6 +100,7 @@
              AllowAbsent="yes">
 
       <ComponentGroupRef Id="APIComponents" />
+      <ComponentGroupRef Id="APIServiceComponents" />
 
       <!-- Skrót w Start Menu dla API -->
       <Component Id="APIShortcut" Directory="ApplicationProgramsFolder" Guid="C3D4E5F6-A7B8-4C5D-8E7F-9A0B1C2D3E4F">
