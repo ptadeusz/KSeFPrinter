@@ -99,9 +99,25 @@ dotnet KSeFPrinter.API.dll
   },
   "License": {
     "FilePath": "license.lic"
+  },
+  "AzureKeyVault": {
+    "KeyVaultUrl": "",
+    "CertificateName": "",
+    "CertificateVersion": null,
+    "AuthenticationType": "DefaultAzureCredential",
+    "TenantId": "",
+    "ClientId": "",
+    "ClientSecret": "",
+    "Note": "Konfiguracja dla certyfikatów z Azure Key Vault. Pozostaw puste jeśli nie używasz."
   }
 }
 ```
+
+**Uwaga:** Certyfikaty do generowania KOD QR II (podpis cyfrowy) mogą być konfigurowane w dwóch sposób:
+1. **Windows Certificate Store** - certyfikat zainstalowany lokalnie
+2. **Azure Key Vault** - certyfikat przechowywany w chmurze (konfiguracja w sekcji `AzureKeyVault`)
+
+**W obecnej implementacji (Wariant A):** Certyfikat musi być przekazany w requeście do `/api/invoice/generate-pdf`.
 
 ### Zmienne środowiskowe
 
@@ -153,6 +169,20 @@ Plik `license.lic` (JSON z podpisem RSA):
 ```
 
 Jeśli licencja jest nieprawidłowa lub wygasła, aplikacja zatrzyma się z kodem błędu `1`.
+
+### Co jest sprawdzane przy starcie?
+1. ✅ Czy plik licencji istnieje
+2. ✅ Czy licencja nie wygasła (`expiryDate`)
+3. ✅ Czy podpis RSA jest prawidłowy (weryfikacja z kluczem publicznym)
+4. ✅ Czy `features.ksefPrinter = true` (uprawnienie do KSeF Printer)
+
+### Co NIE jest sprawdzane (TODO):
+⚠️ **UWAGA:** W obecnej wersji (1.0.0) **NIE jest sprawdzane**, czy NIP wystawcy/odbiorcy/podmiotu 3 z faktury znajduje się na liście `allowedNips`.
+
+Oznacza to, że:
+- Użytkownik z ważną licencją może generować PDF dla **dowolnych NIP-ów**
+- Pole `allowedNips` w licencji jest odczytywane, ale nie jest wykorzystywane do walidacji
+- Planowana jest implementacja walidacji NIP-ów w przyszłych wersjach
 
 ---
 
@@ -283,9 +313,25 @@ Jeśli licencja jest nieprawidłowa lub wygasła, aplikacja zatrzyma się z kode
 
 **Endpoint:** `POST /api/invoice/generate-pdf`
 
-**Opis:** Generuje PDF z faktury XML wraz z kodami QR (weryfikacja KSeF + podpis certyfikatu).
+**Opis:** Generuje PDF z faktury XML wraz z kodami QR (weryfikacja KSeF + opcjonalnie podpis certyfikatu).
 
-**Request (podstawowy):**
+#### Kody QR na PDF
+
+Generator tworzy **dwa typy kodów QR** (zgodnie z wymogami KSeF):
+
+**KOD QR I - Weryfikacja faktury (zawsze generowany):**
+- Zawiera: NIP sprzedawcy + data wystawienia + hash XML + (opcjonalnie) numer KSeF
+- URL: `https://ksef.mf.gov.pl/web/verify/{ksefNumber}` (dla ONLINE)
+- URL: `https://ksef.mf.gov.pl/web/verify?nip={nip}&date={date}&hash={hash}` (dla OFFLINE)
+- **Nie wymaga certyfikatu** - zawsze generowany
+
+**KOD QR II - Podpis cyfrowy wystawcy (opcjonalny):**
+- Zawiera: podpis cyfrowy XML z certyfikatu wystawcy
+- URL: `https://ksef.mf.gov.pl/web/verify/signed?...`
+- **Wymaga certyfikatu** - generowany tylko gdy certyfikat jest dostępny
+- Służy do weryfikacji autentyczności dokumentu
+
+**Request (podstawowy - bez certyfikatu):**
 ```json
 {
   "xmlContent": "<?xml version=\"1.0\"?>...",
@@ -297,7 +343,9 @@ Jeśli licencja jest nieprawidłowa lub wygasła, aplikacja zatrzyma się z kode
 }
 ```
 
-**Request (z certyfikatem z Windows Store):**
+**Uwaga:** Request bez certyfikatu wygeneruje PDF z **tylko KOD QR I** (weryfikacja faktury).
+
+**Request (z certyfikatem z Windows Store - KOD QR I + KOD QR II):**
 ```json
 {
   "xmlContent": "<?xml version=\"1.0\"?>...",
@@ -313,7 +361,7 @@ Jeśli licencja jest nieprawidłowa lub wygasła, aplikacja zatrzyma się z kode
 }
 ```
 
-**Request (z certyfikatem z Azure Key Vault):**
+**Request (z certyfikatem z Azure Key Vault - KOD QR I + KOD QR II):**
 ```json
 {
   "xmlContent": "<?xml version=\"1.0\"?>...",
@@ -329,6 +377,8 @@ Jeśli licencja jest nieprawidłowa lub wygasła, aplikacja zatrzyma się z kode
   "returnFormat": "file"
 }
 ```
+
+**Uwaga:** Request z certyfikatem wygeneruje PDF z **KOD QR I + KOD QR II** (weryfikacja + podpis cyfrowy).
 
 **Request (z Azure Key Vault - Client Secret):**
 ```json
@@ -383,7 +433,9 @@ Content-Disposition: attachment; filename="Faktura_FV_2025_01_001_20250102_14352
 
 **Endpoint:** `POST /api/invoice/generate-qr-code`
 
-**Opis:** Generuje kod QR dla numeru KSeF (do osadzania w zewnętrznych systemach).
+**Opis:** Generuje **KOD QR I** (weryfikacja numeru KSeF) w formacie SVG lub PNG base64 (do osadzania w zewnętrznych systemach).
+
+**Uwaga:** Ten endpoint generuje **tylko KOD QR I** (link do weryfikacji faktury po numerze KSeF). Nie generuje **KOD QR II** (podpis cyfrowy), który wymaga certyfikatu i jest dostępny tylko w `/api/invoice/generate-pdf`.
 
 **Request:**
 ```json

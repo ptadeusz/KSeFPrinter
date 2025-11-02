@@ -99,9 +99,25 @@ dotnet KSeFPrinter.API.dll
   },
   "License": {
     "FilePath": "license.lic"
+  },
+  "AzureKeyVault": {
+    "KeyVaultUrl": "",
+    "CertificateName": "",
+    "CertificateVersion": null,
+    "AuthenticationType": "DefaultAzureCredential",
+    "TenantId": "",
+    "ClientId": "",
+    "ClientSecret": "",
+    "Note": "Configuration for Azure Key Vault certificates. Leave empty if not using."
   }
 }
 ```
+
+**Note:** Certificates for generating QR CODE II (digital signature) can be configured in two ways:
+1. **Windows Certificate Store** - locally installed certificate
+2. **Azure Key Vault** - cloud-stored certificate (configured in `AzureKeyVault` section)
+
+**In current implementation (Variant A):** Certificate must be provided in the request to `/api/invoice/generate-pdf`.
 
 ### Environment Variables
 
@@ -153,6 +169,20 @@ The API requires a valid license for the **KSeF Printer** product. The applicati
 ```
 
 If the license is invalid or expired, the application will stop with exit code `1`.
+
+### What is validated at startup?
+1. ✅ License file exists
+2. ✅ License has not expired (`expiryDate`)
+3. ✅ RSA signature is valid (verified with public key)
+4. ✅ `features.ksefPrinter = true` (permission for KSeF Printer)
+
+### What is NOT validated (TODO):
+⚠️ **WARNING:** In current version (1.0.0), it is **NOT validated** whether the seller/buyer/subject3 NIP from the invoice is in the `allowedNips` list.
+
+This means that:
+- User with a valid license can generate PDFs for **any NIPs**
+- The `allowedNips` field in the license is read but not used for validation
+- NIP validation is planned for future versions
 
 ---
 
@@ -283,9 +313,25 @@ If the license is invalid or expired, the application will stop with exit code `
 
 **Endpoint:** `POST /api/invoice/generate-pdf`
 
-**Description:** Generates PDF from invoice XML with QR codes (KSeF verification + certificate signature).
+**Description:** Generates PDF from invoice XML with QR codes (KSeF verification + optionally certificate signature).
 
-**Request (basic):**
+#### QR Codes on PDF
+
+The generator creates **two types of QR codes** (according to KSeF requirements):
+
+**QR CODE I - Invoice verification (always generated):**
+- Contains: Seller NIP + issue date + XML hash + (optionally) KSeF number
+- URL: `https://ksef.mf.gov.pl/web/verify/{ksefNumber}` (for ONLINE)
+- URL: `https://ksef.mf.gov.pl/web/verify?nip={nip}&date={date}&hash={hash}` (for OFFLINE)
+- **Does not require certificate** - always generated
+
+**QR CODE II - Issuer's digital signature (optional):**
+- Contains: digital signature of XML with issuer's certificate
+- URL: `https://ksef.mf.gov.pl/web/verify/signed?...`
+- **Requires certificate** - generated only when certificate is available
+- Used for document authenticity verification
+
+**Request (basic - without certificate):**
 ```json
 {
   "xmlContent": "<?xml version=\"1.0\"?>...",
@@ -297,7 +343,9 @@ If the license is invalid or expired, the application will stop with exit code `
 }
 ```
 
-**Request (with Windows Store certificate):**
+**Note:** Request without certificate will generate PDF with **only QR CODE I** (invoice verification).
+
+**Request (with Windows Store certificate - QR CODE I + QR CODE II):**
 ```json
 {
   "xmlContent": "<?xml version=\"1.0\"?>...",
@@ -313,7 +361,7 @@ If the license is invalid or expired, the application will stop with exit code `
 }
 ```
 
-**Request (with Azure Key Vault certificate):**
+**Request (with Azure Key Vault certificate - QR CODE I + QR CODE II):**
 ```json
 {
   "xmlContent": "<?xml version=\"1.0\"?>...",
@@ -329,6 +377,8 @@ If the license is invalid or expired, the application will stop with exit code `
   "returnFormat": "file"
 }
 ```
+
+**Note:** Request with certificate will generate PDF with **QR CODE I + QR CODE II** (verification + digital signature).
 
 **Request (with Azure Key Vault - Client Secret):**
 ```json
@@ -383,7 +433,9 @@ Content-Disposition: attachment; filename="Invoice_FV_2025_01_001_20250102_14352
 
 **Endpoint:** `POST /api/invoice/generate-qr-code`
 
-**Description:** Generates QR code for KSeF number (for embedding in external systems).
+**Description:** Generates **QR CODE I** (KSeF number verification) in SVG or PNG base64 format (for embedding in external systems).
+
+**Note:** This endpoint generates **only QR CODE I** (invoice verification link by KSeF number). It does not generate **QR CODE II** (digital signature), which requires a certificate and is only available in `/api/invoice/generate-pdf`.
 
 **Request:**
 ```json
