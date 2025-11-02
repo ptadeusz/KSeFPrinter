@@ -1,4 +1,5 @@
 using FluentAssertions;
+using KSeFPrinter.API.Models;
 using KSeFPrinter.API.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Security.Cryptography.X509Certificates;
@@ -250,5 +251,195 @@ public class CertificateServiceTests
         // Assert - szuka po thumbprint
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*Nie znaleziono certyfikatu*");
+    }
+
+    // === Testy nowych metod (po refaktoringu - certyfikaty z appsettings.json) ===
+
+    [Fact]
+    public void GetOnlineCertificate_Should_Return_Null_Before_Loading()
+    {
+        // Arrange - świeża instancja bez wczytanych certyfikatów
+        var service = new CertificateService(
+            NullLogger<CertificateService>.Instance,
+            NullLogger<KSeFPrinter.Services.Certificates.AzureKeyVaultCertificateProvider>.Instance);
+
+        // Act
+        var certificate = service.GetOnlineCertificate();
+
+        // Assert
+        certificate.Should().BeNull();
+    }
+
+    [Fact]
+    public void GetOfflineCertificate_Should_Return_Null_Before_Loading()
+    {
+        // Arrange - świeża instancja bez wczytanych certyfikatów
+        var service = new CertificateService(
+            NullLogger<CertificateService>.Instance,
+            NullLogger<KSeFPrinter.Services.Certificates.AzureKeyVaultCertificateProvider>.Instance);
+
+        // Act
+        var certificate = service.GetOfflineCertificate();
+
+        // Assert
+        certificate.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task LoadCertificatesFromConfigurationAsync_Should_Handle_Disabled_Certificates()
+    {
+        // Arrange
+        var config = new CertificatesConfiguration
+        {
+            Online = new CertificateOptions { Enabled = false },
+            Offline = new CertificateOptions { Enabled = false }
+        };
+
+        // Act
+        await _service.LoadCertificatesFromConfigurationAsync(config);
+
+        // Assert
+        _service.GetOnlineCertificate().Should().BeNull();
+        _service.GetOfflineCertificate().Should().BeNull();
+    }
+
+    [Fact]
+    public async Task LoadCertificatesFromConfigurationAsync_Should_Not_Throw_On_Invalid_Configuration()
+    {
+        // Arrange
+        var config = new CertificatesConfiguration
+        {
+            Online = new CertificateOptions
+            {
+                Enabled = true,
+                Source = "WindowsStore",
+                WindowsStore = new WindowsStoreOptions
+                {
+                    Thumbprint = "NONEXISTENT_CERT",
+                    StoreName = "My",
+                    StoreLocation = "CurrentUser"
+                }
+            }
+        };
+
+        // Act
+        var act = async () => await _service.LoadCertificatesFromConfigurationAsync(config);
+
+        // Assert - nie powinno rzucać wyjątku, tylko zalogować błąd
+        await act.Should().NotThrowAsync();
+        _service.GetOnlineCertificate().Should().BeNull();
+    }
+
+    [Fact]
+    public async Task LoadCertificatesFromConfigurationAsync_Should_Handle_Unknown_Source()
+    {
+        // Arrange
+        var config = new CertificatesConfiguration
+        {
+            Online = new CertificateOptions
+            {
+                Enabled = true,
+                Source = "UnknownSource" // Nieznane źródło
+            }
+        };
+
+        // Act
+        await _service.LoadCertificatesFromConfigurationAsync(config);
+
+        // Assert
+        _service.GetOnlineCertificate().Should().BeNull();
+    }
+
+    [Fact]
+    public async Task LoadCertificatesFromConfigurationAsync_Should_Load_Both_Certificates_Independently()
+    {
+        // Arrange
+        var config = new CertificatesConfiguration
+        {
+            Online = new CertificateOptions
+            {
+                Enabled = true,
+                Source = "WindowsStore",
+                WindowsStore = new WindowsStoreOptions
+                {
+                    Thumbprint = "NONEXISTENT_ONLINE",
+                    StoreName = "My",
+                    StoreLocation = "CurrentUser"
+                }
+            },
+            Offline = new CertificateOptions
+            {
+                Enabled = true,
+                Source = "WindowsStore",
+                WindowsStore = new WindowsStoreOptions
+                {
+                    Thumbprint = "NONEXISTENT_OFFLINE",
+                    StoreName = "My",
+                    StoreLocation = "CurrentUser"
+                }
+            }
+        };
+
+        // Act
+        await _service.LoadCertificatesFromConfigurationAsync(config);
+
+        // Assert - oba powinny być null bo certyfikaty nie istnieją
+        _service.GetOnlineCertificate().Should().BeNull();
+        _service.GetOfflineCertificate().Should().BeNull();
+    }
+
+    [Fact(Skip = "Integration test - requires test certificates")]
+    public async Task LoadCertificatesFromConfigurationAsync_Should_Load_Online_Certificate_From_Store()
+    {
+        // Arrange - wymaga rzeczywistego certyfikatu w systemie
+        var config = new CertificatesConfiguration
+        {
+            Online = new CertificateOptions
+            {
+                Enabled = true,
+                Source = "WindowsStore",
+                WindowsStore = new WindowsStoreOptions
+                {
+                    Thumbprint = "YOUR_REAL_CERTIFICATE_THUMBPRINT",
+                    StoreName = "My",
+                    StoreLocation = "CurrentUser"
+                }
+            }
+        };
+
+        // Act
+        await _service.LoadCertificatesFromConfigurationAsync(config);
+
+        // Assert
+        var cert = _service.GetOnlineCertificate();
+        cert.Should().NotBeNull();
+        cert!.HasPrivateKey.Should().BeTrue();
+    }
+
+    [Fact(Skip = "Integration test - requires Azure Key Vault access")]
+    public async Task LoadCertificatesFromConfigurationAsync_Should_Load_Certificate_From_Azure_KeyVault()
+    {
+        // Arrange - wymaga dostępu do Azure Key Vault
+        var config = new CertificatesConfiguration
+        {
+            Offline = new CertificateOptions
+            {
+                Enabled = true,
+                Source = "AzureKeyVault",
+                AzureKeyVault = new AzureKeyVaultOptions
+                {
+                    KeyVaultUrl = "https://your-vault.vault.azure.net/",
+                    CertificateName = "your-certificate",
+                    AuthenticationType = "DefaultAzureCredential"
+                }
+            }
+        };
+
+        // Act
+        await _service.LoadCertificatesFromConfigurationAsync(config);
+
+        // Assert
+        var cert = _service.GetOfflineCertificate();
+        cert.Should().NotBeNull();
     }
 }

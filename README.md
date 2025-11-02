@@ -45,14 +45,12 @@ ksef-pdf *.xml
 # Watch mode (automatyczne przetwarzanie)
 ksef-pdf --watch faktury/
 
-# Z certyfikatem dla KODU QR II
-ksef-pdf faktura.xml --cert certyfikat.pfx --cert-password "haslo"
-
-# Z certyfikatem z Azure Key Vault
-ksef-pdf faktura.xml \
-  --azure-keyvault-url "https://myvault.vault.azure.net/" \
-  --azure-keyvault-cert "mycert"
+# Certyfikaty (ONLINE/OFFLINE) konfigurowane w appsettings.json
+# API automatycznie wybiera odpowiedni certyfikat na podstawie trybu faktury
 ```
+
+**Certyfikaty:** Konfiguracja w `appsettings.json` - osobne certyfikaty dla trybu ONLINE i OFFLINE.
+Zobacz: [API_SPECIFICATION.md](API_SPECIFICATION.md) - pełna specyfikacja konfiguracji.
 
 **Zobacz:** [KSeFPrinter.CLI/README.md](KSeFPrinter.CLI/README.md) - pełna dokumentacja CLI
 

@@ -30,8 +30,55 @@ dotnet publish -c Release -r win-x64 --self-contained
 **Wariant A** (obecnie zaimplementowany):
 - Niezależne API do przetwarzania faktur XML
 - Walidacja, parsowanie i generowanie PDF
-- Obsługa certyfikatów z Windows Certificate Store
+- **Certyfikaty z appsettings.json** - osobne dla ONLINE i OFFLINE
+- **Walidacja NIP** - sprawdzanie uprawnień w licencji
 - Przygotowane do przyszłej integracji z KSeF Connector (Wariant B)
+
+## Konfiguracja
+
+### Certyfikaty (appsettings.json)
+
+API wymaga konfiguracji certyfikatów w `appsettings.json`:
+
+```json
+{
+  "Certificates": {
+    "Online": {
+      "Enabled": true,
+      "Source": "WindowsStore",
+      "WindowsStore": {
+        "Thumbprint": "ABC123...",
+        "StoreName": "My",
+        "StoreLocation": "CurrentUser"
+      }
+    },
+    "Offline": {
+      "Enabled": true,
+      "Source": "AzureKeyVault",
+      "AzureKeyVault": {
+        "KeyVaultUrl": "https://vault.azure.net/",
+        "CertificateName": "offline-cert",
+        "AuthenticationType": "DefaultAzureCredential"
+      }
+    }
+  }
+}
+```
+
+**Certyfikaty:**
+- **Online** - używany do generowania KOD QR II dla faktur ONLINE
+- **Offline** - używany do podpisywania cyfrowego faktur OFFLINE
+- API automatycznie wybiera certyfikat na podstawie trybu faktury
+- **NIE są przekazywane w requeście** - tylko konfiguracja
+
+### Licencja i walidacja NIP
+
+API wymaga ważnej licencji (`license.lic`). Przy każdym generowaniu PDF:
+- ✅ Sprawdzane jest czy **przynajmniej jeden** NIP z faktury jest w `allowedNips`
+- Sprawdzane NIPy: **Sprzedawca** OR **Nabywca** OR **Podmiot3**
+- ❌ HTTP 403 Forbidden - jeśli żaden NIP nie jest dozwolony
+
+**Pełna specyfikacja:** Zobacz [API_SPECIFICATION.md](../API_SPECIFICATION.md)
 
 ## Endpointy
 

@@ -330,29 +330,8 @@ public class InvoiceControllerGeneratePdfTests : IClassFixture<WebApplicationFac
         pdf1.Should().NotEqual(pdf2);
     }
 
-    // Note: Testy z certyfikatami wymagają faktycznego certyfikatu w Windows Store
-    // i będą pominięte w środowisku CI/CD bez dostępu do certyfikatów
-    [Fact(Skip = "Requires certificate in Windows Store")]
-    public async Task GeneratePdf_Should_Use_Certificate_When_Provided()
-    {
-        // Arrange
-        var xmlPath = Path.Combine("TestData", "FakturaTEST017.xml");
-        var xmlContent = await File.ReadAllTextAsync(xmlPath);
-        var request = new GeneratePdfRequest
-        {
-            XmlContent = xmlContent,
-            IsBase64 = false,
-            ValidateInvoice = false,
-            CertificateThumbprint = "YOUR_TEST_CERTIFICATE_THUMBPRINT",
-            CertificateStoreName = "My",
-            CertificateStoreLocation = "CurrentUser"
-        };
-
-        // Act
-        var response = await _client.PostAsJsonAsync("/api/invoice/generate-pdf", request);
-
-        // Assert
-        // Ten test wymaga rzeczywistego certyfikatu
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
+    // Note: Certyfikaty są teraz wczytywane z appsettings.json przy starcie aplikacji,
+    // nie są przekazywane w requeście API. API automatycznie wybiera certyfikat
+    // na podstawie trybu faktury (ONLINE/OFFLINE).
+    // Testy certyfikatów znajdują się w CertificateServiceTests.cs
 }
