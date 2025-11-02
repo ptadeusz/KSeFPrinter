@@ -42,6 +42,9 @@
           <Directory Id="EXAMPLESXMLINSTALLFOLDER" Name="xml" />
           <Directory Id="EXAMPLESOUTPUTINSTALLFOLDER" Name="output" />
         </Directory>
+
+        <!-- Dokumentacja -->
+        <Directory Id="DOCUMENTATIONINSTALLFOLDER" Name="Documentation" />
       </Directory>
     </StandardDirectory>
 
@@ -101,13 +104,62 @@
       <!-- Skrót w Start Menu dla API -->
       <Component Id="APIShortcut" Directory="ApplicationProgramsFolder" Guid="C3D4E5F6-A7B8-4C5D-8E7F-9A0B1C2D3E4F">
         <Shortcut Id="APIShortcut"
-                  Name="KSeF Printer API"
-                  Description="Uruchom API KSeF Printer"
-                  Target="[APIINSTALLFOLDER]KSeFPrinter.API.exe"
+                  Name="Otwórz API w przeglądarce"
+                  Description="Otwórz Swagger UI w przeglądarce (http://localhost:5000)"
+                  Target="[System64Folder]cmd.exe"
+                  Arguments='/c start http://localhost:5000'
                   WorkingDirectory="APIINSTALLFOLDER" />
 
         <RemoveFolder Id="RemoveAPIShortcut" Directory="ApplicationProgramsFolder" On="uninstall" />
         <RegistryValue Root="HKCU" Key="Software\KSeF\KSeFPrinter" Name="APIInstalled" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <!-- Skrót: Start Service -->
+      <Component Id="APIServiceStartShortcut" Directory="ApplicationProgramsFolder" Guid="D4E5F6A7-B8C9-4D5E-8F7A-9B0C1D2E3F4B">
+        <Shortcut Id="StartServiceShortcut"
+                  Name="Uruchom KSeF Printer API (Serwis)"
+                  Description="Uruchom serwis Windows API"
+                  Target="[System64Folder]cmd.exe"
+                  Arguments='/c net start KSeFPrinterAPI &amp;&amp; echo Serwis uruchomiony &amp;&amp; pause'
+                  WorkingDirectory="APIINSTALLFOLDER" />
+
+        <RegistryValue Root="HKCU" Key="Software\KSeF\KSeFPrinter" Name="StartServiceShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <!-- Skrót: Stop Service -->
+      <Component Id="APIServiceStopShortcut" Directory="ApplicationProgramsFolder" Guid="E5F6A7B8-C9D0-4E5F-8A7B-9C0D1E2F3A4C">
+        <Shortcut Id="StopServiceShortcut"
+                  Name="Zatrzymaj KSeF Printer API (Serwis)"
+                  Description="Zatrzymaj serwis Windows API"
+                  Target="[System64Folder]cmd.exe"
+                  Arguments='/c net stop KSeFPrinterAPI &amp;&amp; echo Serwis zatrzymany &amp;&amp; pause'
+                  WorkingDirectory="APIINSTALLFOLDER" />
+
+        <RegistryValue Root="HKCU" Key="Software\KSeF\KSeFPrinter" Name="StopServiceShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <!-- Skrót: Restart Service -->
+      <Component Id="APIServiceRestartShortcut" Directory="ApplicationProgramsFolder" Guid="F6A7B8C9-D0E1-4F5A-8B7C-9D0E1F2A3B4D">
+        <Shortcut Id="RestartServiceShortcut"
+                  Name="Restart KSeF Printer API (Serwis)"
+                  Description="Restartuj serwis Windows API"
+                  Target="[System64Folder]cmd.exe"
+                  Arguments='/c net stop KSeFPrinterAPI &amp; net start KSeFPrinterAPI &amp;&amp; echo Serwis zrestartowany &amp;&amp; pause'
+                  WorkingDirectory="APIINSTALLFOLDER" />
+
+        <RegistryValue Root="HKCU" Key="Software\KSeF\KSeFPrinter" Name="RestartServiceShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <!-- Skrót: Service Status -->
+      <Component Id="APIServiceStatusShortcut" Directory="ApplicationProgramsFolder" Guid="A1B2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6D">
+        <Shortcut Id="ServiceStatusShortcut"
+                  Name="Status serwisu API"
+                  Description="Sprawdź status serwisu Windows API"
+                  Target="[System64Folder]WindowsPowerShell\v1.0\powershell.exe"
+                  Arguments='-NoExit -Command "Get-Service KSeFPrinterAPI | Format-List Name, Status, StartType, DisplayName"'
+                  WorkingDirectory="APIINSTALLFOLDER" />
+
+        <RegistryValue Root="HKCU" Key="Software\KSeF\KSeFPrinter" Name="StatusServiceShortcut" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </Feature>
 
@@ -121,13 +173,16 @@
       <ComponentGroupRef Id="ExamplesComponents" />
     </Feature>
 
-    <!-- Feature 4: Dokumentacja (opcjonalne) -->
+    <!-- Feature 4: Dokumentacja (zalecane) -->
     <Feature Id="DocumentationFeature"
              Title="Dokumentacja"
-             Description="README i dokumentacja użytkownika"
+             Description="Przewodniki instalacji, licencjonowania i konfiguracji certyfikatów"
              Level="1"
              AllowAbsent="yes">
 
+      <ComponentGroupRef Id="DocumentationComponents" />
+
+      <!-- README w głównym folderze -->
       <Component Id="ReadmeComponent" Directory="INSTALLFOLDER" Guid="D4E5F6A7-B8C9-4D5E-8F7A-9B0C1D2E3F4A">
         <File Id="ReadmeFile" Source="..\README.md" KeyPath="yes" />
       </Component>

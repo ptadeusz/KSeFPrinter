@@ -11,12 +11,16 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// === Windows Service support ===
+builder.Host.UseWindowsService();
+
 // === Konfiguracja serwisów ===
 
 // Logowanie
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
+builder.Logging.AddEventLog(); // Dodaj Event Log dla Windows Service
 
 // Kontrolery
 builder.Services.AddControllers();

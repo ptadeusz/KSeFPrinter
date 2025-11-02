@@ -1,0 +1,17 @@
+{
+  "licenseKey": "KSEF-YYYYMMDD-XXXXXXXX",
+  "issuedTo": "Nazwa Twojej Firmy Sp. z o.o.",
+  "expiryDate": "2026-12-31T00:00:00Z",
+  "allowedNips": [
+    "1234567890"
+  ],
+  "maxNips": 5,
+  "features": {
+    "ksefConnector": false,
+    "ksefPrinter": true,
+    "batchMode": false,
+    "autoTokenGeneration": false,
+    "azureKeyVault": true
+  },
+  "signature": "BASE64_ENCODED_RSA_SIGNATURE_HERE"
+}
