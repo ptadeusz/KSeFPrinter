@@ -2,6 +2,7 @@ using KSeFPrinter;
 using KSeFPrinter.API.Services;
 using KSeFPrinter.Interfaces;
 using KSeFPrinter.Services.Cryptography;
+using KSeFPrinter.Services.License;
 using KSeFPrinter.Services.Parsers;
 using KSeFPrinter.Services.Pdf;
 using KSeFPrinter.Services.QrCode;
@@ -48,6 +49,15 @@ builder.Services.AddSingleton<InvoicePrinterService>();
 
 // API serwisy
 builder.Services.AddSingleton<CertificateService>();
+
+// Licencjonowanie
+builder.Services.AddSingleton<ILicenseValidator>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<LicenseValidator>>();
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var licenseFilePath = configuration["License:FilePath"];
+    return new LicenseValidator(licenseFilePath, logger);
+});
 
 // TODO: Wariant B - KSeF Connector integracja
 // builder.Services.AddHttpClient<IKSeFConnectorService, KSeFConnectorService>(client =>
@@ -114,6 +124,40 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// === Walidacja licencji przy starcie ===
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+var licenseValidator = app.Services.GetRequiredService<ILicenseValidator>();
+
+logger.LogInformation("=== Sprawdzanie licencji ===");
+
+try
+{
+    var validationResult = await licenseValidator.ValidateLicenseAsync();
+
+    if (!validationResult.IsValid)
+    {
+        logger.LogCritical("❌ BŁĄD LICENCJI: {Error}", validationResult.ErrorMessage);
+        logger.LogCritical("Aplikacja nie może zostać uruchomiona bez ważnej licencji.");
+        logger.LogCritical("Skontaktuj się z dostawcą w celu uzyskania licencji dla KSeF Printer.");
+
+        // Zatrzymaj aplikację
+        Environment.Exit(1);
+        return;
+    }
+
+    logger.LogInformation("✅ Licencja ważna");
+    logger.LogInformation("   Właściciel: {IssuedTo}", validationResult.License!.IssuedTo);
+    logger.LogInformation("   Ważna do: {ExpiryDate:yyyy-MM-dd}", validationResult.License.ExpiryDate);
+    logger.LogInformation("   Dozwolone NIP-y: {Count}", validationResult.License.AllowedNips.Count);
+}
+catch (Exception ex)
+{
+    logger.LogCritical(ex, "❌ BŁĄD podczas walidacji licencji");
+    logger.LogCritical("Aplikacja nie może zostać uruchomiona bez ważnej licencji.");
+    Environment.Exit(1);
+    return;
+}
+
 // === Konfiguracja middleware ===
 
 // Swagger w development i production
@@ -137,7 +181,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Informacja startowa
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("=== KSeF Printer API ===");
 logger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
 
