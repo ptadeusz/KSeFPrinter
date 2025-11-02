@@ -10,13 +10,22 @@
 ## Spis treści
 
 1. [Informacje ogólne](#informacje-ogólne)
-2. [Struktura projektu](#struktura-projektu)
-3. [Konfiguracja i uruchomienie](#konfiguracja-i-uruchomienie)
-4. [Licencjonowanie](#licencjonowanie)
-5. [Endpointy API](#endpointy-api)
-6. [Modele danych](#modele-danych)
-7. [Kody błędów](#kody-błędów)
-8. [Przykłady użycia](#przykłady-użycia)
+2. [Konfiguracja i uruchomienie](#konfiguracja-i-uruchomienie)
+3. [Licencjonowanie](#licencjonowanie)
+4. [Endpointy API](#endpointy-api)
+   - [1. Walidacja faktury XML](#1-walidacja-faktury-xml)
+   - [2. Parsowanie faktury XML do JSON](#2-parsowanie-faktury-xml-do-json)
+   - [3. Generowanie PDF](#3-generowanie-pdf)
+   - [4. Generowanie kodu QR](#4-generowanie-kodu-qr)
+   - [5. Health Check](#5-health-check)
+5. [Modele danych](#modele-danych)
+6. [Kody błędów](#kody-błędów)
+7. [Przykłady użycia](#przykłady-użycia)
+   - [cURL](#curl)
+   - [PowerShell](#powershell)
+   - [C# (.NET)](#c-net)
+   - [Python](#python)
+8. [Dodatkowe informacje](#dodatkowe-informacje)
 
 ---
 
@@ -50,77 +59,6 @@ Swagger UI dostępny pod:
 ```
 http://localhost:5000/
 https://localhost:5001/
-```
-
----
-
-## Struktura projektu
-
-### Główne foldery
-
-```
-KSeFPrinter/
-├── KSeFPrinter/                    # Biblioteka główna (class library)
-│   ├── Exceptions/                 # Wyjątki własne
-│   ├── Interfaces/                 # Interfejsy
-│   ├── Models/                     # Modele danych
-│   │   ├── Common/                 # Wspólne modele (opcje, enums)
-│   │   ├── FA3/                    # Modele faktury FA(3)
-│   │   └── License/                # Modele licencji
-│   ├── Services/                   # Serwisy biznesowe
-│   │   ├── Certificates/           # Zarządzanie certyfikatami
-│   │   ├── Cryptography/           # Kryptografia (SHA-256, podpisy)
-│   │   ├── License/                # Walidacja licencji
-│   │   ├── Parsers/                # Parsery XML
-│   │   ├── Pdf/                    # Generowanie PDF (QuestPDF)
-│   │   └── QrCode/                 # Generowanie kodów QR
-│   └── Validators/                 # Walidatory
-│
-├── KSeFPrinter.API/                # Web API (ASP.NET Core)
-│   ├── Controllers/                # Kontrolery REST
-│   │   └── InvoiceController.cs   # Główny kontroler
-│   ├── Models/                     # Modele Request/Response
-│   ├── Services/                   # Serwisy API-specific
-│   └── Program.cs                  # Konfiguracja aplikacji
-│
-├── KSeFPrinter.CLI/                # Aplikacja konsolowa
-├── KSeFPrinter.Tests/              # Testy jednostkowe biblioteki
-├── KSeFPrinter.API.Tests/          # Testy jednostkowe API
-├── KSeFPrinter.CLI.Tests/          # Testy CLI
-└── KSeFPrinter.Installer/          # Instalator MSI (WiX Toolset)
-```
-
-### Architektura warstw
-
-```
-┌─────────────────────────────────────┐
-│     KSeFPrinter.API (Web API)       │
-│   ┌─────────────────────────────┐   │
-│   │  Controllers (REST)         │   │
-│   │  - InvoiceController        │   │
-│   └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-              ↓
-┌─────────────────────────────────────┐
-│   KSeFPrinter (Business Logic)      │
-│   ┌─────────────────────────────┐   │
-│   │  Services                   │   │
-│   │  - InvoicePrinterService    │   │
-│   │  - QrCodeService            │   │
-│   │  - CertificateService       │   │
-│   │  - LicenseValidator         │   │
-│   └─────────────────────────────┘   │
-│   ┌─────────────────────────────┐   │
-│   │  Models & Validators        │   │
-│   └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-              ↓
-┌─────────────────────────────────────┐
-│   External Dependencies             │
-│   - QuestPDF (generowanie PDF)      │
-│   - QRCoder (kody QR)               │
-│   - Azure SDK (Key Vault)           │
-└─────────────────────────────────────┘
 ```
 
 ---
