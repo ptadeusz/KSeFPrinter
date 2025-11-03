@@ -52,7 +52,9 @@ ksef-pdf --watch faktury/
 **Certyfikaty:** Konfiguracja w `appsettings.json` - osobne certyfikaty dla trybu ONLINE i OFFLINE.
 Zobacz: [API_SPECIFICATION.md](API_SPECIFICATION.md) - pełna specyfikacja konfiguracji.
 
-**Zobacz:** [KSeFPrinter.CLI/README.md](KSeFPrinter.CLI/README.md) - pełna dokumentacja CLI
+**Zobacz:**
+- [KSeFPrinter.CLI/README.md](KSeFPrinter.CLI/README.md) - pełna dokumentacja CLI
+- [FOLDER_INTEGRATION.md](FOLDER_INTEGRATION.md) - integracja przez foldery (watch mode)
 
 ### Opcja 2: Biblioteka .NET
 
@@ -68,6 +70,26 @@ await service.GeneratePdfFromFileAsync("faktura.xml", "faktura.pdf");
 ```
 
 **Zobacz:** [INSTRUKCJA.md](INSTRUKCJA.md) - pełna dokumentacja API
+
+### Opcja 3: Integracja przez foldery (Watch Mode)
+
+Automatyczne przetwarzanie XML do PDF poprzez monitorowanie folderów:
+
+```bash
+# Obserwuj folder i automatycznie przetwarzaj nowe XMLe
+ksef-pdf --watch faktury/
+
+# Integracja z KSeFConnector
+ksef-pdf --watch C:\KSeFConnector\processed\ --ksef-from-filename --production
+```
+
+**Idealne dla:**
+- ✅ Integracji z systemami ERP (SAP, Sage, Symfonia)
+- ✅ Integracji z KSeFConnector
+- ✅ Automatycznego przetwarzania 24/7 (Windows Service)
+- ✅ Hot folder workflow
+
+**Zobacz:** [FOLDER_INTEGRATION.md](FOLDER_INTEGRATION.md) - kompletna dokumentacja integracji
 
 ## Struktura projektu
 
