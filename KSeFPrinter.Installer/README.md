@@ -1,13 +1,14 @@
-# KSeF Printer - Instalator
+# KSeF Printer - Instalator MSI
 
-Ten katalog zawiera projekt instalatora MSI dla KSeF Printer zbudowany przy użyciu WiX Toolset 5.
+Ten katalog zawiera projekt instalatora MSI dla KSeF Printer zbudowany przy użyciu **WiX Toolset 5**.
 
-## Wymagania
+## 📋 Wymagania
 
-- WiX Toolset 5.x lub nowszy
-- .NET SDK 9.0 lub nowszy
+- **WiX Toolset 5.0.2** lub nowszy
+- **.NET SDK 9.0** lub nowszy
+- **Windows 10/11** lub **Windows Server 2019/2022**
 
-## Budowanie instalatora
+## 🔨 Budowanie instalatora
 
 ### 1. Zbuduj projekty Release
 
@@ -70,8 +71,37 @@ C:\Program Files\KSeF Printer\
    - README.md
    - Dokumentacja użytkownika
 
-## Notatki
+## ✨ Nowe funkcje (zgodne z KSeF Connector)
 
-- Ikona `icon.ico` powinna być umieszczona w tym katalogu przed budowaniem
-- Licencja jest wyświetlana podczas instalacji (License.rtf)
-- UpgradeCode jest stały - pozwala na upgrade instalacji
+Instalator KSeF Printer został zaktualizowany o następujące funkcje z KSeF Connector:
+
+### 🔧 Mechanizmy czyszczenia przy deinstalacji
+
+1. **Automatyczne zabijanie procesów** przed deinstalacją
+   - `KSeFPrinter.API.exe` - proces API
+   - `ksef-pdf.exe` - proces CLI
+   - Zapobiega błędom "plik w użyciu" podczas deinstalacji
+
+2. **Automatyczne usuwanie plików**
+   - ✅ Pliki konfiguracyjne (`appsettings.json`, `appsettings.Development.json`)
+   - ✅ Pliki licencji (`license*.lic`)
+   - ✅ Wszystkie pliki logów w folderze `API\logs`
+
+3. **Folder logów**
+   - Automatycznie tworzony folder `API\logs` dla aplikacji API
+   - Czyszczony podczas deinstalacji
+
+### 🌍 Język polski
+
+- Interfejs instalatora w języku polskim (`Language="1045"`, `Cultures="pl-PL"`)
+
+### 📦 MediaTemplate
+
+- Wbudowany plik CAB (`EmbedCab="yes"`) - pojedynczy plik MSI bez zewnętrznych zależności
+
+## 📝 Notatki
+
+- Ikona `icon.ico` powinna być umieszczona w tym katalogu przed budowaniem (opcjonalne)
+- Licencja jest wyświetlana podczas instalacji (`License.rtf`)
+- **UpgradeCode jest stały** - pozwala na bezproblemowe upgrady i reinstalacje
+- Instalator obsługuje **tylko Windows x64** (64-bit)

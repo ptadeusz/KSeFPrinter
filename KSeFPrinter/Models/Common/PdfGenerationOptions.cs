@@ -43,4 +43,10 @@ public class PdfGenerationOptions
     /// Autor dokumentu PDF
     /// </summary>
     public string? DocumentAuthor { get; set; }
+
+    /// <summary>
+    /// Metadata pliku źródłowego (opcjonalne - dla audytu i śledzenia źródła faktury)
+    /// Jeśli podane, zostaną zapisane w metadanych PDF (XMP)
+    /// </summary>
+    public SourceFileMetadata? SourceFile { get; set; }
 }

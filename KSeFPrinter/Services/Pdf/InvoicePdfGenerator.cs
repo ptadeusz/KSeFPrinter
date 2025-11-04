@@ -51,8 +51,10 @@ public class InvoicePdfGenerator : IPdfGeneratorService
     {
         _logger.LogInformation("Generowanie PDF do pliku: {OutputPath}", outputPath);
 
-        var document = CreateDocument(context, new PdfGenerationOptions());
-        document.GeneratePdf(outputPath);
+        var options = new PdfGenerationOptions();
+        var metadata = CreateDocumentMetadata(context, options);
+
+        CreateDocumentWithMetadata(context, options, metadata).GeneratePdf(outputPath);
 
         _logger.LogInformation("PDF został zapisany: {OutputPath}", outputPath);
         await Task.CompletedTask;
@@ -71,17 +73,17 @@ public class InvoicePdfGenerator : IPdfGeneratorService
     {
         _logger.LogInformation("Generowanie PDF do bajtów");
 
-        var document = CreateDocument(context, options);
-        var pdfBytes = document.GeneratePdf();
+        var metadata = CreateDocumentMetadata(context, options);
+        var pdfBytes = CreateDocumentWithMetadata(context, options, metadata).GeneratePdf();
 
         _logger.LogInformation("PDF został wygenerowany: {Size} bajtów", pdfBytes.Length);
         return await Task.FromResult(pdfBytes);
     }
 
     /// <summary>
-    /// Tworzy dokument QuestPDF
+    /// Tworzy dokument QuestPDF z metadanymi
     /// </summary>
-    private IDocument CreateDocument(InvoiceContext context, PdfGenerationOptions options)
+    private IDocument CreateDocumentWithMetadata(InvoiceContext context, PdfGenerationOptions options, DocumentMetadata metadata)
     {
         var faktura = context.Faktura;
 
@@ -99,7 +101,80 @@ public class InvoicePdfGenerator : IPdfGeneratorService
                 page.Content().Element(c => ComposeContent(c, faktura, context, options));
                 page.Footer().Element(c => ComposeFooter(c, faktura));
             });
-        });
+        }).WithMetadata(metadata);
+    }
+
+    /// <summary>
+    /// Tworzy metadata PDF
+    /// </summary>
+    private DocumentMetadata CreateDocumentMetadata(InvoiceContext context, PdfGenerationOptions options)
+    {
+        var faktura = context.Faktura;
+
+        // Podstawowe metadata
+        var invoiceTitle = $"Faktura {faktura.Fa.P_2}";
+
+        // Keywords - dla łatwego wyszukiwania
+        var keywords = new List<string>
+        {
+            "KSeF",
+            "Faktura",
+            faktura.Fa.P_2, // Numer faktury
+            faktura.Podmiot1.DaneIdentyfikacyjne.NIP // NIP sprzedawcy
+        };
+
+        if (!string.IsNullOrEmpty(context.Metadata.NumerKSeF))
+        {
+            keywords.Add(context.Metadata.NumerKSeF);
+        }
+
+        // === CUSTOM METADATA - Informacje o pliku źródłowym ===
+        if (options.SourceFile != null)
+        {
+            var sourceFile = options.SourceFile;
+
+            // QuestPDF nie wspiera bezpośrednio custom XMP properties
+            // Ale możemy dodać je do Keywords jako structured data
+            var sourceMetadata = new List<string>();
+
+            if (!string.IsNullOrEmpty(sourceFile.FileName))
+                sourceMetadata.Add($"SourceFile={sourceFile.FileName}");
+
+            if (!string.IsNullOrEmpty(sourceFile.FileHash))
+                sourceMetadata.Add($"SourceHash={sourceFile.FileHash}");
+
+            if (!string.IsNullOrEmpty(sourceFile.Format))
+                sourceMetadata.Add($"SourceFormat={sourceFile.Format}");
+
+            if (sourceFile.ConvertedAt.HasValue)
+                sourceMetadata.Add($"ConvertedAt={sourceFile.ConvertedAt.Value:yyyy-MM-ddTHH:mm:ssZ}");
+
+            if (sourceFile.ConversionId.HasValue)
+                sourceMetadata.Add($"ConversionId={sourceFile.ConversionId.Value}");
+
+            if (!string.IsNullOrEmpty(sourceFile.AdditionalInfo))
+                sourceMetadata.Add($"SourceInfo={sourceFile.AdditionalInfo}");
+
+            if (sourceMetadata.Count > 0)
+            {
+                // Dodaj source metadata do keywords (z prefiksem dla łatwego parsowania)
+                keywords.AddRange(sourceMetadata);
+
+                _logger.LogInformation(
+                    "✅ Dodano metadata pliku źródłowego do PDF: {FileName}",
+                    sourceFile.FileName);
+            }
+        }
+
+        return new DocumentMetadata
+        {
+            Title = options.DocumentTitle ?? invoiceTitle,
+            Author = options.DocumentAuthor ?? "KSeF Suite",
+            Subject = "Faktura elektroniczna KSeF FA(3)",
+            Creator = "KSeFPrinter (QuestPDF)",
+            CreationDate = DateTimeOffset.Now,
+            Keywords = string.Join(", ", keywords)
+        };
     }
 
     /// <summary>

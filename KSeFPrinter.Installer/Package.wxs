@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
-     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 
   <Package Name="KSeF Printer"
            Manufacturer="KSeF Team"
            Version="1.0.0.0"
            UpgradeCode="B8A2F9C3-7E4D-4F6A-9B2C-8D5E7F4A3B1C"
+           Language="1045"
+           Codepage="1250"
            Compressed="yes"
            InstallerVersion="500"
-           Scope="perMachine"
-           Codepage="1250">
+           Scope="perMachine">
 
     <SummaryInformation Description="Generator wydruków PDF dla faktur elektronicznych w formacie KSeF FA(3)" />
 
     <!-- Pozwól na upgrade przy reinstalacji -->
     <MajorUpgrade DowngradeErrorMessage="Nowsza wersja KSeF Printer jest już zainstalowana."
                   AllowSameVersionUpgrades="yes" />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- ✅ CUSTOM ACTION - Forsowne zakończenie procesów przed deinstalacją -->
+    <CustomAction Id="KillKSeFPrinterProcesses"
+                  Directory="INSTALLFOLDER"
+                  ExeCommand='cmd.exe /c "taskkill /F /IM KSeFPrinter.API.exe 2>nul &amp; taskkill /F /IM ksef-pdf.exe 2>nul"'
+                  Execute="immediate"
+                  Return="ignore" />
+
+    <InstallExecuteSequence>
+      <!-- Zabij procesy PRZED próbą zatrzymania usług i usunięcia plików -->
+      <Custom Action="KillKSeFPrinterProcesses" Before="StopServices" Condition="(NOT UPGRADINGPRODUCTCODE) AND (REMOVE=&quot;ALL&quot;)" />
+    </InstallExecuteSequence>
 
     <!-- Dodaj standardowy UI WiX -->
     <ui:WixUI Id="WixUI_FeatureTree" />
@@ -35,7 +51,10 @@
         <Directory Id="CLIINSTALLFOLDER" Name="CLI" />
 
         <!-- Aplikacja API -->
-        <Directory Id="APIINSTALLFOLDER" Name="API" />
+        <Directory Id="APIINSTALLFOLDER" Name="API">
+          <!-- Folder logów API -->
+          <Directory Id="APILOGSFOLDER" Name="logs" />
+        </Directory>
 
         <!-- Przykłady -->
         <Directory Id="EXAMPLESINSTALLFOLDER" Name="Examples">
@@ -47,6 +66,33 @@
         <Directory Id="DOCUMENTATIONINSTALLFOLDER" Name="Documentation" />
       </Directory>
     </StandardDirectory>
+
+    <!-- ✅ GŁÓWNY FOLDER - Komponenty do czyszczenia -->
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="INSTALLFOLDER_CleanupComponent" Guid="11111111-2222-3333-4444-555555555555" KeyPath="yes">
+        <CreateFolder />
+
+        <!-- ✅ USUŃ PLIKI KONFIGURACYJNE API (które mogą być modyfikowane) -->
+        <RemoveFile Id="RemoveApiAppSettingsJson" Directory="APIINSTALLFOLDER" On="uninstall" Name="appsettings.json" />
+        <RemoveFile Id="RemoveApiAppSettingsDev" Directory="APIINSTALLFOLDER" On="uninstall" Name="appsettings.Development.json" />
+
+        <!-- ✅ USUŃ PLIKI LICENCJI -->
+        <RemoveFile Id="RemoveLicenseFiles" Directory="INSTALLFOLDER" On="uninstall" Name="license*.lic" />
+        <RemoveFile Id="RemoveApiLicenseFiles" Directory="APIINSTALLFOLDER" On="uninstall" Name="license*.lic" />
+
+        <RemoveFolder Id="RemoveINSTALLFOLDER" On="uninstall"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- ✅ FOLDER LOGÓW API -->
+    <DirectoryRef Id="APILOGSFOLDER">
+      <Component Id="APILogsComponent" Guid="22222222-3333-4444-5555-666666666666" KeyPath="yes">
+        <CreateFolder />
+        <!-- Usuń wszystkie pliki logów -->
+        <RemoveFile Id="RemoveAPILogFiles" On="uninstall" Name="*.*" />
+        <RemoveFolder Id="RemoveAPILogsFolder" On="uninstall" />
+      </Component>
+    </DirectoryRef>
 
     <!-- Start Menu -->
     <StandardDirectory Id="ProgramMenuFolder">
@@ -101,6 +147,10 @@
 
       <ComponentGroupRef Id="APIComponents" />
       <ComponentGroupRef Id="APIServiceComponents" />
+
+      <!-- ✅ Komponenty czyszczące dla API -->
+      <ComponentRef Id="INSTALLFOLDER_CleanupComponent" />
+      <ComponentRef Id="APILogsComponent" />
 
       <!-- Skrót w Start Menu dla API -->
       <Component Id="APIShortcut" Directory="ApplicationProgramsFolder" Guid="C3D4E5F6-A7B8-4C5D-8E7F-9A0B1C2D3E4F">

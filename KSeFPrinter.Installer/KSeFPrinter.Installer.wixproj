@@ -4,6 +4,9 @@
     <OutputType>Package</OutputType>
     <Platform>x64</Platform>
     <InstallerPlatform>x64</InstallerPlatform>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Version>1.0.0</Version>
+    <Cultures>pl-PL</Cultures>
     <DefineConstants>CLIPublishDir=..\KSeFPrinter.CLI\bin\Release\net9.0\win-x64\publish\;APIPublishDir=..\KSeFPrinter.API\bin\Release\net9.0\win-x64\publish\</DefineConstants>
   </PropertyGroup>
 

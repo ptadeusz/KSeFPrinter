@@ -279,7 +279,8 @@ public class InvoiceController : ControllerBase
                 Certificate = certificate,
                 UseProduction = request.UseProduction,
                 IncludeQrCode1 = true,
-                IncludeQrCode2 = certificate != null
+                IncludeQrCode2 = certificate != null,
+                SourceFile = request.SourceFile // Przekaż metadata pliku źródłowego (opcjonalne)
             };
 
             // Generuj PDF jako bajty

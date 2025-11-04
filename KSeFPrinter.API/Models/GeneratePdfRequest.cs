@@ -1,3 +1,5 @@
+using KSeFPrinter.Models.Common;
+
 namespace KSeFPrinter.API.Models;
 
 /// <summary>
@@ -34,4 +36,10 @@ public class GeneratePdfRequest
     /// Format zwracania PDF: "file" (binary) lub "base64" (domyślnie: file)
     /// </summary>
     public string ReturnFormat { get; set; } = "file";
+
+    /// <summary>
+    /// Metadata pliku źródłowego (opcjonalne - dla audytu i śledzenia źródła faktury)
+    /// Jeśli podane, zostaną zapisane w metadanych PDF
+    /// </summary>
+    public SourceFileMetadata? SourceFile { get; set; }
 }
