@@ -31,7 +31,24 @@ public class LicenseValidator : ILicenseValidator
         // API: C:\Program Files\KSeF Printer\API\ -> C:\Program Files\KSeF Printer\license.lic
         // CLI: C:\Program Files\KSeF Printer\CLI\ -> C:\Program Files\KSeF Printer\license.lic
         var installRootDir = Directory.GetParent(AppContext.BaseDirectory)?.FullName ?? AppContext.BaseDirectory;
-        _licenseFilePath = licenseFilePath ?? Path.Combine(installRootDir, "license.lic");
+
+        // Jeśli licenseFilePath jest relatywną ścieżką, łącz z installRootDir
+        // Jeśli jest absolutną ścieżką, użyj jej bezpośrednio
+        if (string.IsNullOrEmpty(licenseFilePath))
+        {
+            _licenseFilePath = Path.Combine(installRootDir, "license.lic");
+        }
+        else if (Path.IsPathRooted(licenseFilePath))
+        {
+            // Absolutna ścieżka (np. "C:\Licenses\license.lic")
+            _licenseFilePath = licenseFilePath;
+        }
+        else
+        {
+            // Relatywna ścieżka (np. "license.lic") - łącz z installRootDir
+            _licenseFilePath = Path.Combine(installRootDir, licenseFilePath);
+        }
+
         _logger = logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger<LicenseValidator>.Instance;
     }
 
