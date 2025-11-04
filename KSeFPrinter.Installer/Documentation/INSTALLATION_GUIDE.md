@@ -84,13 +84,15 @@ Kliknij "Zainstaluj" i poczekaj na zakończenie.
 
 ### 1. Dodaj licencję ⚠️ KRYTYCZNE
 
-**Skopiuj plik `license.lic` do:**
+**Skopiuj plik `license.lic` do głównego folderu instalacji:**
 ```
-C:\Program Files\KSeF Printer\CLI\license.lic
-C:\Program Files\KSeF Printer\API\license.lic
+C:\Program Files\KSeF Printer\license.lic
 ```
 
-Bez licencji aplikacja NIE uruchomi się!
+⚠️ **Ważne:** Plik licencji musi znajdować się w głównym folderze instalacji!
+Obie aplikacje (CLI i API) odczytują licencję z tego samego miejsca.
+
+Bez licencji aplikacja API NIE uruchomi się!
 
 Szczegóły: Zobacz `LICENSE_GUIDE.md`
 

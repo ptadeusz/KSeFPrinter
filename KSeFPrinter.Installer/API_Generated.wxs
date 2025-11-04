@@ -2,131 +2,1148 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
     <ComponentGroup Id="APIComponents" Directory="APIINSTALLFOLDER">
-      <Component Id="API_appsettings_Development_json_1" Guid="EB1EAB6C-13CB-4B36-9178-FD5A5CAF42FA">
+      <Component Id="API_appsettings_Development_json_1" Guid="0968E8C3-FA5E-4413-9D09-9369012A3947">
         <File Id="API_File_1" Source="$(var.APIPublishDir)appsettings.Development.json" />
       </Component>
-      <Component Id="API_appsettings_json_2" Guid="B6390784-28B9-4417-926B-1D344E0F37CF">
+      <Component Id="API_appsettings_json_2" Guid="9743DB2A-B755-4D3F-BC1C-C97CF69D1739">
         <File Id="API_File_2" Source="$(var.APIPublishDir)appsettings.json" />
       </Component>
-      <Component Id="API_Azure_Core_dll_3" Guid="69176C32-E4E2-4309-B3CB-D59CCBB849E9">
-        <File Id="API_File_3" Source="$(var.APIPublishDir)Azure.Core.dll" />
+      <Component Id="API_aspnetcorev2_inprocess_dll_3" Guid="A2116A27-080A-454D-A959-5041385C3EA4">
+        <File Id="API_File_3" Source="$(var.APIPublishDir)aspnetcorev2_inprocess.dll" />
       </Component>
-      <Component Id="API_Azure_Identity_dll_4" Guid="1F14E075-49A0-43D3-89E7-16F78A4F94CC">
-        <File Id="API_File_4" Source="$(var.APIPublishDir)Azure.Identity.dll" />
+      <Component Id="API_Azure_Core_dll_4" Guid="70D71427-4A10-4E3E-93C9-B42FB7C6D7BD">
+        <File Id="API_File_4" Source="$(var.APIPublishDir)Azure.Core.dll" />
       </Component>
-      <Component Id="API_Azure_Security_KeyVault_Certificates_dll_5" Guid="259091A9-5653-4F32-BC0A-F38FC5231628">
-        <File Id="API_File_5" Source="$(var.APIPublishDir)Azure.Security.KeyVault.Certificates.dll" />
+      <Component Id="API_Azure_Identity_dll_5" Guid="1D690E6C-FAEE-4531-99BB-2D8FCE216E57">
+        <File Id="API_File_5" Source="$(var.APIPublishDir)Azure.Identity.dll" />
       </Component>
-      <Component Id="API_Azure_Security_KeyVault_Secrets_dll_6" Guid="0150B1B4-DA81-4429-B006-13C99CE27A47">
-        <File Id="API_File_6" Source="$(var.APIPublishDir)Azure.Security.KeyVault.Secrets.dll" />
+      <Component Id="API_Azure_Security_KeyVault_Certificates_dll_6" Guid="A55F5788-353B-4513-957B-752DFE73F3A7">
+        <File Id="API_File_6" Source="$(var.APIPublishDir)Azure.Security.KeyVault.Certificates.dll" />
       </Component>
-      <Component Id="API_KSeFPrinter_API_deps_json_7" Guid="45C8AD12-2E74-402A-B5F6-4CD656D0F79F">
-        <File Id="API_File_7" Source="$(var.APIPublishDir)KSeFPrinter.API.deps.json" />
+      <Component Id="API_Azure_Security_KeyVault_Secrets_dll_7" Guid="D1D2C438-7041-4685-864F-4076CD0E1EC8">
+        <File Id="API_File_7" Source="$(var.APIPublishDir)Azure.Security.KeyVault.Secrets.dll" />
       </Component>
-      <Component Id="API_KSeFPrinter_API_dll_8" Guid="8D6C7051-FBDF-4EC4-96AF-5D89E3435775">
-        <File Id="API_File_8" Source="$(var.APIPublishDir)KSeFPrinter.API.dll" />
+      <Component Id="API_clretwrc_dll_8" Guid="B4D77D00-0831-44E1-9430-1553832583D4">
+        <File Id="API_File_8" Source="$(var.APIPublishDir)clretwrc.dll" />
       </Component>
-      <Component Id="API_KSeFPrinter_API_pdb_9" Guid="0B1CD2D2-58DE-4CA8-9D9F-2386EEFF6B95">
-        <File Id="API_File_9" Source="$(var.APIPublishDir)KSeFPrinter.API.pdb" />
+      <Component Id="API_clrgc_dll_9" Guid="13B95397-F4FB-43E9-934A-881A53487CA6">
+        <File Id="API_File_9" Source="$(var.APIPublishDir)clrgc.dll" />
       </Component>
-      <Component Id="API_KSeFPrinter_API_runtimeconfig_json_10" Guid="E79D5D4B-8513-4284-8549-94AA07FD6C78">
-        <File Id="API_File_10" Source="$(var.APIPublishDir)KSeFPrinter.API.runtimeconfig.json" />
+      <Component Id="API_clrgcexp_dll_10" Guid="1094A372-6E0E-427D-AC11-C5C7D7715916">
+        <File Id="API_File_10" Source="$(var.APIPublishDir)clrgcexp.dll" />
       </Component>
-      <Component Id="API_KSeFPrinter_API_staticwebassets_endpoints_json_11" Guid="BA2E558F-E925-4144-8216-ED2BAF0EF644">
-        <File Id="API_File_11" Source="$(var.APIPublishDir)KSeFPrinter.API.staticwebassets.endpoints.json" />
+      <Component Id="API_clrjit_dll_11" Guid="AC210F48-DE82-4272-B6F5-2D05A2507236">
+        <File Id="API_File_11" Source="$(var.APIPublishDir)clrjit.dll" />
       </Component>
-      <Component Id="API_KSeFPrinter_API_xml_12" Guid="7BF3FB45-75F8-4A18-B643-DC41CD7DDA63">
-        <File Id="API_File_12" Source="$(var.APIPublishDir)KSeFPrinter.API.xml" />
+      <Component Id="API_coreclr_dll_12" Guid="4726A424-4F4D-4305-AFD8-9CA386A44240">
+        <File Id="API_File_12" Source="$(var.APIPublishDir)coreclr.dll" />
       </Component>
-      <Component Id="API_KSeFPrinter_dll_13" Guid="261A145F-3703-47ED-8BDC-C09A5635387A">
-        <File Id="API_File_13" Source="$(var.APIPublishDir)KSeFPrinter.dll" />
+      <Component Id="API_createdump_exe_13" Guid="334B2EA9-0B03-4420-82B9-15329799DF33">
+        <File Id="API_File_13" Source="$(var.APIPublishDir)createdump.exe" />
       </Component>
-      <Component Id="API_KSeFPrinter_pdb_14" Guid="CBF2EB03-ED81-48ED-A8DE-02C8C6C81036">
-        <File Id="API_File_14" Source="$(var.APIPublishDir)KSeFPrinter.pdb" />
+      <Component Id="API_FluentValidation_AspNetCore_dll_14" Guid="7B87A87D-D42B-4F21-98EF-217DC5554368">
+        <File Id="API_File_14" Source="$(var.APIPublishDir)FluentValidation.AspNetCore.dll" />
       </Component>
-      <Component Id="API_KSeFPrinter_xml_15" Guid="942A83D0-A99B-44C1-9998-1E8D3031E657">
-        <File Id="API_File_15" Source="$(var.APIPublishDir)KSeFPrinter.xml" />
+      <Component Id="API_FluentValidation_DependencyInjectionExtensions_dll_15" Guid="0096270C-4ADE-4A85-B400-47AF048722A6">
+        <File Id="API_File_15" Source="$(var.APIPublishDir)FluentValidation.DependencyInjectionExtensions.dll" />
       </Component>
-      <Component Id="API_libgcc_s_seh_1_dll_16" Guid="5BAB481B-A9B9-4C6B-9A23-9997268BCE89">
-        <File Id="API_File_16" Source="$(var.APIPublishDir)libgcc_s_seh-1.dll" />
+      <Component Id="API_FluentValidation_dll_16" Guid="E0E67FC9-B541-4D53-A69E-DCBB588C5E38">
+        <File Id="API_File_16" Source="$(var.APIPublishDir)FluentValidation.dll" />
       </Component>
-      <Component Id="API_libstdc___6_dll_17" Guid="A62E32F2-1CDD-4C72-81EF-22906148D768">
-        <File Id="API_File_17" Source="$(var.APIPublishDir)libstdc++-6.dll" />
+      <Component Id="API_hostfxr_dll_17" Guid="B1F386F9-91ED-4777-8131-7F88C8AE423F">
+        <File Id="API_File_17" Source="$(var.APIPublishDir)hostfxr.dll" />
       </Component>
-      <Component Id="API_libwinpthread_1_dll_18" Guid="0DDCE8AC-4F80-433D-9161-8D976AC0163B">
-        <File Id="API_File_18" Source="$(var.APIPublishDir)libwinpthread-1.dll" />
+      <Component Id="API_hostpolicy_dll_18" Guid="2B51C75C-92DF-444B-9FBD-94FDD1ADFEC2">
+        <File Id="API_File_18" Source="$(var.APIPublishDir)hostpolicy.dll" />
       </Component>
-      <Component Id="API_Microsoft_AspNetCore_OpenApi_dll_19" Guid="00B802A2-1B4A-4EA6-81DD-DB1EB974481B">
-        <File Id="API_File_19" Source="$(var.APIPublishDir)Microsoft.AspNetCore.OpenApi.dll" />
+      <Component Id="API_KSeFPrinter_API_deps_json_19" Guid="C8339FC1-34B3-460C-A2EB-0C5AC12B2984">
+        <File Id="API_File_19" Source="$(var.APIPublishDir)KSeFPrinter.API.deps.json" />
       </Component>
-      <Component Id="API_Microsoft_Bcl_AsyncInterfaces_dll_20" Guid="36C19BF9-8036-468A-BAD7-F87AF9999320">
-        <File Id="API_File_20" Source="$(var.APIPublishDir)Microsoft.Bcl.AsyncInterfaces.dll" />
+      <Component Id="API_KSeFPrinter_API_dll_20" Guid="ECAC17BF-1EAF-4E28-B559-21C71D2A8491">
+        <File Id="API_File_20" Source="$(var.APIPublishDir)KSeFPrinter.API.dll" />
       </Component>
-      <Component Id="API_Microsoft_Extensions_DependencyInjection_Abstractions_dll_21" Guid="107F94EA-2132-400F-8281-930B48278026">
-        <File Id="API_File_21" Source="$(var.APIPublishDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+      <Component Id="API_KSeFPrinter_API_pdb_21" Guid="E18CEF3A-8020-40E2-918B-EB34BC8B24FD">
+        <File Id="API_File_21" Source="$(var.APIPublishDir)KSeFPrinter.API.pdb" />
       </Component>
-      <Component Id="API_Microsoft_Extensions_Hosting_WindowsServices_dll_22" Guid="F720C0CC-2D60-4AE3-BDA3-126D2F40F530">
-        <File Id="API_File_22" Source="$(var.APIPublishDir)Microsoft.Extensions.Hosting.WindowsServices.dll" />
+      <Component Id="API_KSeFPrinter_API_runtimeconfig_json_22" Guid="C10F09EE-704F-46BE-B412-BBC4D14A3980">
+        <File Id="API_File_22" Source="$(var.APIPublishDir)KSeFPrinter.API.runtimeconfig.json" />
       </Component>
-      <Component Id="API_Microsoft_Extensions_Logging_Abstractions_dll_23" Guid="336A1F31-DF35-4EED-867E-98023D0592C4">
-        <File Id="API_File_23" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.Abstractions.dll" />
+      <Component Id="API_KSeFPrinter_API_staticwebassets_endpoints_json_23" Guid="4C985BAE-5906-497F-8743-EC2131480B0F">
+        <File Id="API_File_23" Source="$(var.APIPublishDir)KSeFPrinter.API.staticwebassets.endpoints.json" />
       </Component>
-      <Component Id="API_Microsoft_Identity_Client_dll_24" Guid="A5B1D493-6F9B-4A14-AE44-494412A6336E">
-        <File Id="API_File_24" Source="$(var.APIPublishDir)Microsoft.Identity.Client.dll" />
+      <Component Id="API_KSeFPrinter_API_xml_24" Guid="AD9D0080-03CC-4948-9079-07A3B6DBF1E8">
+        <File Id="API_File_24" Source="$(var.APIPublishDir)KSeFPrinter.API.xml" />
       </Component>
-      <Component Id="API_Microsoft_Identity_Client_Extensions_Msal_dll_25" Guid="4AD934D1-24C5-4F91-A36C-23B408D97575">
-        <File Id="API_File_25" Source="$(var.APIPublishDir)Microsoft.Identity.Client.Extensions.Msal.dll" />
+      <Component Id="API_KSeFPrinter_dll_25" Guid="FB7F586C-5CBC-495F-B299-BE63386DD380">
+        <File Id="API_File_25" Source="$(var.APIPublishDir)KSeFPrinter.dll" />
       </Component>
-      <Component Id="API_Microsoft_IdentityModel_Abstractions_dll_26" Guid="0F3B9909-50D6-401E-8E86-361166992476">
-        <File Id="API_File_26" Source="$(var.APIPublishDir)Microsoft.IdentityModel.Abstractions.dll" />
+      <Component Id="API_KSeFPrinter_pdb_26" Guid="405A7CDF-08EA-45E7-93F7-28EFCE005444">
+        <File Id="API_File_26" Source="$(var.APIPublishDir)KSeFPrinter.pdb" />
       </Component>
-      <Component Id="API_Microsoft_OpenApi_dll_27" Guid="2BC07CDB-A7AC-4AD9-82F4-6BFE846C4678">
-        <File Id="API_File_27" Source="$(var.APIPublishDir)Microsoft.OpenApi.dll" />
+      <Component Id="API_KSeFPrinter_xml_27" Guid="DBD1034F-54E7-4107-BEAF-0BDE71E4FA81">
+        <File Id="API_File_27" Source="$(var.APIPublishDir)KSeFPrinter.xml" />
       </Component>
-      <Component Id="API_Microsoft_Win32_SystemEvents_dll_28" Guid="E087C62A-D212-4C76-97F7-E061C462F9E4">
-        <File Id="API_File_28" Source="$(var.APIPublishDir)Microsoft.Win32.SystemEvents.dll" />
+      <Component Id="API_libgcc_s_seh_1_dll_28" Guid="6C652A2B-F87F-4B17-B5FE-E86196B2C5F7">
+        <File Id="API_File_28" Source="$(var.APIPublishDir)libgcc_s_seh-1.dll" />
       </Component>
-      <Component Id="API_qpdf_dll_29" Guid="81AB0E91-3724-4AB2-AC1F-C4E2261C2252">
-        <File Id="API_File_29" Source="$(var.APIPublishDir)qpdf.dll" />
+      <Component Id="API_libstdc___6_dll_29" Guid="380ACE42-4AF5-4967-B6BC-FE55F4BB5842">
+        <File Id="API_File_29" Source="$(var.APIPublishDir)libstdc++-6.dll" />
       </Component>
-      <Component Id="API_QRCoder_dll_30" Guid="0762255B-0C7E-431F-8A07-F5FA6DA14C22">
-        <File Id="API_File_30" Source="$(var.APIPublishDir)QRCoder.dll" />
+      <Component Id="API_libwinpthread_1_dll_30" Guid="6C34ED49-E06A-418B-9A4A-B285A55330D0">
+        <File Id="API_File_30" Source="$(var.APIPublishDir)libwinpthread-1.dll" />
       </Component>
-      <Component Id="API_QuestPDF_dll_31" Guid="ABAFAC86-5601-43F2-AB8E-C1D460D507C2">
-        <File Id="API_File_31" Source="$(var.APIPublishDir)QuestPDF.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Antiforgery_dll_31" Guid="D12D3840-CFD3-4CB7-9A88-AC225514985B">
+        <File Id="API_File_31" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Antiforgery.dll" />
       </Component>
-      <Component Id="API_QuestPdfSkia_dll_32" Guid="18D6C7C1-B447-46E0-9890-543F67A5BEF0">
-        <File Id="API_File_32" Source="$(var.APIPublishDir)QuestPdfSkia.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Authentication_Abstractions_dll_32" Guid="3FAF8DA7-B1A5-4C01-A08C-412971567F2C">
+        <File Id="API_File_32" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Authentication.Abstractions.dll" />
       </Component>
-      <Component Id="API_Swashbuckle_AspNetCore_Swagger_dll_33" Guid="A86777F3-439F-46EF-A88D-9DB2FC02BEF0">
-        <File Id="API_File_33" Source="$(var.APIPublishDir)Swashbuckle.AspNetCore.Swagger.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Authentication_BearerToken_dll_33" Guid="C952C7ED-35B5-40B2-A23C-9D56D1E85B9B">
+        <File Id="API_File_33" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Authentication.BearerToken.dll" />
       </Component>
-      <Component Id="API_Swashbuckle_AspNetCore_SwaggerGen_dll_34" Guid="FF1FCB63-FF3E-431F-A64A-98656E38040F">
-        <File Id="API_File_34" Source="$(var.APIPublishDir)Swashbuckle.AspNetCore.SwaggerGen.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Authentication_Cookies_dll_34" Guid="B513B076-5600-4330-89C0-527D52CBA581">
+        <File Id="API_File_34" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Authentication.Cookies.dll" />
       </Component>
-      <Component Id="API_Swashbuckle_AspNetCore_SwaggerUI_dll_35" Guid="18D4A0BD-9F67-4FFE-B68B-4903B4E62328">
-        <File Id="API_File_35" Source="$(var.APIPublishDir)Swashbuckle.AspNetCore.SwaggerUI.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Authentication_Core_dll_35" Guid="115BDAD4-436E-4688-94F3-2CE676460EDC">
+        <File Id="API_File_35" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Authentication.Core.dll" />
       </Component>
-      <Component Id="API_System_ClientModel_dll_36" Guid="08632BCB-F595-45DF-B018-BE61A2190DA5">
-        <File Id="API_File_36" Source="$(var.APIPublishDir)System.ClientModel.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Authentication_dll_36" Guid="A28D8AB3-2E01-490D-BEA2-CF3FD604308E">
+        <File Id="API_File_36" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Authentication.dll" />
       </Component>
-      <Component Id="API_System_Drawing_Common_dll_37" Guid="0BD39CF1-D417-4AFA-94EB-9250811C7D80">
-        <File Id="API_File_37" Source="$(var.APIPublishDir)System.Drawing.Common.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Authentication_OAuth_dll_37" Guid="D45DC1CE-30D3-452C-985B-B96323938371">
+        <File Id="API_File_37" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Authentication.OAuth.dll" />
       </Component>
-      <Component Id="API_System_Memory_Data_dll_38" Guid="5DFC5EB4-8CBB-4797-9746-D2B8790E2C15">
-        <File Id="API_File_38" Source="$(var.APIPublishDir)System.Memory.Data.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Authorization_dll_38" Guid="3D5F9019-7856-452F-B5AE-4D3D1F870D22">
+        <File Id="API_File_38" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Authorization.dll" />
       </Component>
-      <Component Id="API_System_Security_Cryptography_ProtectedData_dll_39" Guid="36727B6F-0A31-40F4-B814-176CCDD4815E">
-        <File Id="API_File_39" Source="$(var.APIPublishDir)System.Security.Cryptography.ProtectedData.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Authorization_Policy_dll_39" Guid="41A23EA2-E696-4300-B23C-7F4DCC70DE19">
+        <File Id="API_File_39" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Authorization.Policy.dll" />
       </Component>
-      <Component Id="API_System_ServiceProcess_ServiceController_dll_40" Guid="6C1A853F-50D5-4BEA-B3EA-F9FE5BC2BD24">
-        <File Id="API_File_40" Source="$(var.APIPublishDir)System.ServiceProcess.ServiceController.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Components_Authorization_dll_40" Guid="68418DA7-EACF-4BAC-8BE1-6FDA2A7DF90C">
+        <File Id="API_File_40" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Components.Authorization.dll" />
       </Component>
-      <Component Id="API_web_config_41" Guid="0AEE4DEB-B891-458B-8B7A-D2BDDE74433E">
-        <File Id="API_File_41" Source="$(var.APIPublishDir)web.config" />
+      <Component Id="API_Microsoft_AspNetCore_Components_dll_41" Guid="6286AED9-60D7-41E3-B776-3BDBFC44E50B">
+        <File Id="API_File_41" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Components.dll" />
       </Component>
-      <Component Id="API_zlib1_dll_42" Guid="F381ADFB-01F5-47F4-A302-F77E30540E71">
-        <File Id="API_File_42" Source="$(var.APIPublishDir)zlib1.dll" />
+      <Component Id="API_Microsoft_AspNetCore_Components_Endpoints_dll_42" Guid="57A58C5E-E134-4186-B18F-6FB96EA99387">
+        <File Id="API_File_42" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Components.Endpoints.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Components_Forms_dll_43" Guid="CCCC67C5-DD5C-4F41-AB91-A750A655276E">
+        <File Id="API_File_43" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Components.Forms.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Components_Server_dll_44" Guid="11D555BF-9308-49FC-8315-6E77C365D811">
+        <File Id="API_File_44" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Components.Server.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Components_Web_dll_45" Guid="A10C31E4-E73B-438C-88CF-C7C79708DCB1">
+        <File Id="API_File_45" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Components.Web.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Connections_Abstractions_dll_46" Guid="9A3158BB-DA8F-48DB-B6FA-604DE1AA3F2D">
+        <File Id="API_File_46" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Connections.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_CookiePolicy_dll_47" Guid="32C860F4-67FF-4E2F-B881-EE0508B6A34A">
+        <File Id="API_File_47" Source="$(var.APIPublishDir)Microsoft.AspNetCore.CookiePolicy.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Cors_dll_48" Guid="EA7848BB-4B1F-411E-B3FD-782E85E5C7B2">
+        <File Id="API_File_48" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Cors.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Cryptography_Internal_dll_49" Guid="1A2647AA-3EA5-4FF0-B70E-8EE4A08A74D8">
+        <File Id="API_File_49" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Cryptography.Internal.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Cryptography_KeyDerivation_dll_50" Guid="C36180E2-4EF6-410B-99F1-9B32A804C68C">
+        <File Id="API_File_50" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Cryptography.KeyDerivation.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_DataProtection_Abstractions_dll_51" Guid="B18A7B8E-C65B-4C8B-9F41-1A64A851B2E2">
+        <File Id="API_File_51" Source="$(var.APIPublishDir)Microsoft.AspNetCore.DataProtection.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_DataProtection_dll_52" Guid="9F309FBC-E228-4AE0-97A3-4EF8809919AF">
+        <File Id="API_File_52" Source="$(var.APIPublishDir)Microsoft.AspNetCore.DataProtection.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_DataProtection_Extensions_dll_53" Guid="0409CC2B-C768-464C-85CE-6A551BF7E470">
+        <File Id="API_File_53" Source="$(var.APIPublishDir)Microsoft.AspNetCore.DataProtection.Extensions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Diagnostics_Abstractions_dll_54" Guid="59B68463-7DA7-448F-B59E-47D46A6F4ADE">
+        <File Id="API_File_54" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Diagnostics.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Diagnostics_dll_55" Guid="89324670-A5FF-416A-B85A-D33C308B8A90">
+        <File Id="API_File_55" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Diagnostics.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Diagnostics_HealthChecks_dll_56" Guid="7FB9E663-DB7B-46C9-982B-BFD6862CBFEA">
+        <File Id="API_File_56" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Diagnostics.HealthChecks.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_dll_57" Guid="FEE1F41F-1E88-4050-8523-02BD000B4696">
+        <File Id="API_File_57" Source="$(var.APIPublishDir)Microsoft.AspNetCore.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_HostFiltering_dll_58" Guid="5A158FF9-1851-4A7C-93BA-8F7F32673236">
+        <File Id="API_File_58" Source="$(var.APIPublishDir)Microsoft.AspNetCore.HostFiltering.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Hosting_Abstractions_dll_59" Guid="F41C022F-D19B-4BEB-B341-A2390C0C8276">
+        <File Id="API_File_59" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Hosting.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Hosting_dll_60" Guid="452B0702-B1D2-4A9D-8220-73EE31106508">
+        <File Id="API_File_60" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Hosting.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Hosting_Server_Abstractions_dll_61" Guid="6F438157-6C60-4A7D-BAF6-7971814D125B">
+        <File Id="API_File_61" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Html_Abstractions_dll_62" Guid="F32C148B-55F9-478A-BC0E-8D7D48907ED3">
+        <File Id="API_File_62" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Html.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Http_Abstractions_dll_63" Guid="05007993-9A08-4CFB-94F4-2C82C553FDB5">
+        <File Id="API_File_63" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Http.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Http_Connections_Common_dll_64" Guid="F1CE5974-3DE3-4965-B031-DC1BC9BDA397">
+        <File Id="API_File_64" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Http.Connections.Common.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Http_Connections_dll_65" Guid="141D52B4-8566-45A9-9C8D-4937D68F5FF1">
+        <File Id="API_File_65" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Http.Connections.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Http_dll_66" Guid="BA7C523D-00E2-42BB-B1BE-80904B2F98CF">
+        <File Id="API_File_66" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Http.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Http_Extensions_dll_67" Guid="2B0A0270-F265-4C89-8698-BB11BA2FF9ED">
+        <File Id="API_File_67" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Http.Extensions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Http_Features_dll_68" Guid="ADF81EDB-FDFF-49C6-8B9F-01D7F2538487">
+        <File Id="API_File_68" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Http.Features.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Http_Results_dll_69" Guid="10E5C353-8AA5-4ECD-BBF8-98AE3A6535AB">
+        <File Id="API_File_69" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Http.Results.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_HttpLogging_dll_70" Guid="499190C1-8036-4AC6-ABCE-6DDFDCD37CB9">
+        <File Id="API_File_70" Source="$(var.APIPublishDir)Microsoft.AspNetCore.HttpLogging.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_HttpOverrides_dll_71" Guid="4E1CDCDC-BB46-4D29-B22B-A43056FFD829">
+        <File Id="API_File_71" Source="$(var.APIPublishDir)Microsoft.AspNetCore.HttpOverrides.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_HttpsPolicy_dll_72" Guid="BE29F8E8-8ADE-4CCE-A785-549AE14843C3">
+        <File Id="API_File_72" Source="$(var.APIPublishDir)Microsoft.AspNetCore.HttpsPolicy.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Identity_dll_73" Guid="52217A25-E270-49B0-A979-24E9809C15A7">
+        <File Id="API_File_73" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Identity.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Localization_dll_74" Guid="9FCCA53B-FB85-4874-854B-823E845C68DA">
+        <File Id="API_File_74" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Localization.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Localization_Routing_dll_75" Guid="101AF66D-6249-4B8F-9189-2712861E0F28">
+        <File Id="API_File_75" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Localization.Routing.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Metadata_dll_76" Guid="4B3EC1BB-9992-4F9B-95E9-7FC204AC1258">
+        <File Id="API_File_76" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Metadata.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_Abstractions_dll_77" Guid="40DC7503-85B4-48F8-AEB0-6B7223526A56">
+        <File Id="API_File_77" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_ApiExplorer_dll_78" Guid="A84308C8-BF80-4F2A-849A-A65DF61F30BB">
+        <File Id="API_File_78" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.ApiExplorer.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_Core_dll_79" Guid="C61A256F-EA16-47E0-ACC5-544096AF16FB">
+        <File Id="API_File_79" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.Core.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_Cors_dll_80" Guid="10E5F040-9CA1-424B-9521-A86F037B95E1">
+        <File Id="API_File_80" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.Cors.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_DataAnnotations_dll_81" Guid="4C81498E-DF17-499E-B8FE-24D0A7E7A3C4">
+        <File Id="API_File_81" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.DataAnnotations.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_dll_82" Guid="07CED0D0-48E4-456F-923E-DF040AF0F59B">
+        <File Id="API_File_82" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_Formatters_Json_dll_83" Guid="143DD326-2231-44A1-B23C-A0C0FC1A41CB">
+        <File Id="API_File_83" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.Formatters.Json.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_Formatters_Xml_dll_84" Guid="424E2AF4-CAA1-4AE4-B256-1B963CC91830">
+        <File Id="API_File_84" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.Formatters.Xml.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_Localization_dll_85" Guid="357F690D-0008-4384-92E9-320EF89A0ED4">
+        <File Id="API_File_85" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.Localization.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_Razor_dll_86" Guid="D88CEA08-9DA8-4C27-806D-2C8903EBC920">
+        <File Id="API_File_86" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.Razor.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_RazorPages_dll_87" Guid="5805C8CF-0B9C-4019-B13B-08042BACF752">
+        <File Id="API_File_87" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.RazorPages.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_TagHelpers_dll_88" Guid="DCACEDBD-5D0E-4F1F-9412-8470C5E32F4E">
+        <File Id="API_File_88" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.TagHelpers.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Mvc_ViewFeatures_dll_89" Guid="7B478225-A454-4E13-898B-8EAE0FCE749D">
+        <File Id="API_File_89" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Mvc.ViewFeatures.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_OpenApi_dll_90" Guid="0B5A6408-60A4-4F6C-A8BC-97044123B251">
+        <File Id="API_File_90" Source="$(var.APIPublishDir)Microsoft.AspNetCore.OpenApi.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_OutputCaching_dll_91" Guid="7337F68B-1FF5-470A-A124-EE818BE808F9">
+        <File Id="API_File_91" Source="$(var.APIPublishDir)Microsoft.AspNetCore.OutputCaching.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_RateLimiting_dll_92" Guid="63FBF45F-9246-4913-B90A-274D1B35124E">
+        <File Id="API_File_92" Source="$(var.APIPublishDir)Microsoft.AspNetCore.RateLimiting.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Razor_dll_93" Guid="754BBB17-D8F0-4F89-B86D-BC3E7685680B">
+        <File Id="API_File_93" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Razor.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Razor_Runtime_dll_94" Guid="42B196E2-DB3E-4B9E-9028-2DE7ADEDD01F">
+        <File Id="API_File_94" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Razor.Runtime.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_RequestDecompression_dll_95" Guid="24965FB9-31E0-474A-85FE-2B825294B374">
+        <File Id="API_File_95" Source="$(var.APIPublishDir)Microsoft.AspNetCore.RequestDecompression.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_ResponseCaching_Abstractions_dll_96" Guid="90BE99FC-784E-408B-BF5B-EBD714AC457A">
+        <File Id="API_File_96" Source="$(var.APIPublishDir)Microsoft.AspNetCore.ResponseCaching.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_ResponseCaching_dll_97" Guid="AA2AD1DF-3C3B-403E-8CCF-9F7AD6AA7FBB">
+        <File Id="API_File_97" Source="$(var.APIPublishDir)Microsoft.AspNetCore.ResponseCaching.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_ResponseCompression_dll_98" Guid="AEC0B038-5B55-4AB3-821E-FB50B5291319">
+        <File Id="API_File_98" Source="$(var.APIPublishDir)Microsoft.AspNetCore.ResponseCompression.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Rewrite_dll_99" Guid="2BE96E92-25E8-46FF-98DB-7D4AC98031F0">
+        <File Id="API_File_99" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Rewrite.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Routing_Abstractions_dll_100" Guid="0319A4A0-3A5B-4313-A608-4BB3455482B0">
+        <File Id="API_File_100" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Routing.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Routing_dll_101" Guid="71FCCE9A-C5B0-4742-8222-53244A0A99BF">
+        <File Id="API_File_101" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Routing.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Server_HttpSys_dll_102" Guid="C81D3C95-75A3-49C5-A8BF-8C6B655888C4">
+        <File Id="API_File_102" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Server.HttpSys.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Server_IIS_dll_103" Guid="6A53948E-649D-401B-8994-916F65FD2576">
+        <File Id="API_File_103" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Server.IIS.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Server_IISIntegration_dll_104" Guid="47D18495-5765-4B40-AEBA-984A06279B3D">
+        <File Id="API_File_104" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Server.IISIntegration.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Server_Kestrel_Core_dll_105" Guid="3625FB37-D53D-4579-A568-5F634E860CF6">
+        <File Id="API_File_105" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Server.Kestrel.Core.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Server_Kestrel_dll_106" Guid="2FAF5EE9-A38D-4845-A703-68AA9DE382DA">
+        <File Id="API_File_106" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Server.Kestrel.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Server_Kestrel_Transport_NamedPipes_dll_107" Guid="9C370CFF-2236-4DE6-AB40-FD89172406DC">
+        <File Id="API_File_107" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Server_Kestrel_Transport_Quic_dll_108" Guid="0E5D8A89-60FD-4049-8D45-9354EF97BEDC">
+        <File Id="API_File_108" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Server.Kestrel.Transport.Quic.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Server_Kestrel_Transport_Sockets_dll_109" Guid="C39E2723-D6F8-4826-9F4F-E10200B63E56">
+        <File Id="API_File_109" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_Session_dll_110" Guid="D2A2151F-CBC8-4BD6-91E4-56B7FAD39E14">
+        <File Id="API_File_110" Source="$(var.APIPublishDir)Microsoft.AspNetCore.Session.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_SignalR_Common_dll_111" Guid="5C82E09E-2FF9-465B-B667-3F6BA38715E9">
+        <File Id="API_File_111" Source="$(var.APIPublishDir)Microsoft.AspNetCore.SignalR.Common.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_SignalR_Core_dll_112" Guid="BEBA399F-C71A-4CE4-99F7-381322EC535E">
+        <File Id="API_File_112" Source="$(var.APIPublishDir)Microsoft.AspNetCore.SignalR.Core.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_SignalR_dll_113" Guid="499E7003-7CA8-4BEE-9C24-41956E2A87C4">
+        <File Id="API_File_113" Source="$(var.APIPublishDir)Microsoft.AspNetCore.SignalR.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_SignalR_Protocols_Json_dll_114" Guid="BD7890A5-E0E4-4D26-BB92-D03E7D16F904">
+        <File Id="API_File_114" Source="$(var.APIPublishDir)Microsoft.AspNetCore.SignalR.Protocols.Json.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_StaticAssets_dll_115" Guid="5B2E26C9-DFB2-4FC3-8B5B-6484AB741759">
+        <File Id="API_File_115" Source="$(var.APIPublishDir)Microsoft.AspNetCore.StaticAssets.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_StaticFiles_dll_116" Guid="4E538699-314C-4FD7-ABFB-AC5BF63A9880">
+        <File Id="API_File_116" Source="$(var.APIPublishDir)Microsoft.AspNetCore.StaticFiles.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_WebSockets_dll_117" Guid="7AA26B74-DAAC-43A0-B06B-1A67B2BCD5B3">
+        <File Id="API_File_117" Source="$(var.APIPublishDir)Microsoft.AspNetCore.WebSockets.dll" />
+      </Component>
+      <Component Id="API_Microsoft_AspNetCore_WebUtilities_dll_118" Guid="E04D009F-7C2E-4453-A654-852C4B2C2662">
+        <File Id="API_File_118" Source="$(var.APIPublishDir)Microsoft.AspNetCore.WebUtilities.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Bcl_AsyncInterfaces_dll_119" Guid="09065C41-4EF9-4EAB-A5F7-40CD8F032CA6">
+        <File Id="API_File_119" Source="$(var.APIPublishDir)Microsoft.Bcl.AsyncInterfaces.dll" />
+      </Component>
+      <Component Id="API_Microsoft_CSharp_dll_120" Guid="7B945F99-4B88-4F48-8BF9-941F3D58B7BA">
+        <File Id="API_File_120" Source="$(var.APIPublishDir)Microsoft.CSharp.dll" />
+      </Component>
+      <Component Id="API_Microsoft_DiaSymReader_Native_amd64_dll_121" Guid="71C0B6EB-054F-4FC5-B419-C9F41510907F">
+        <File Id="API_File_121" Source="$(var.APIPublishDir)Microsoft.DiaSymReader.Native.amd64.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Caching_Abstractions_dll_122" Guid="9728B94A-5C37-4743-B92A-F9E28376654C">
+        <File Id="API_File_122" Source="$(var.APIPublishDir)Microsoft.Extensions.Caching.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Caching_Memory_dll_123" Guid="2DDB1DE0-A8B7-40E4-ADAF-B4EE409F2ED3">
+        <File Id="API_File_123" Source="$(var.APIPublishDir)Microsoft.Extensions.Caching.Memory.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_Abstractions_dll_124" Guid="6AD4EE15-F4CF-402F-B015-7BA4D21E47CA">
+        <File Id="API_File_124" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_Binder_dll_125" Guid="2CA5D50E-60C4-48AD-AA58-77FDF2DD21A9">
+        <File Id="API_File_125" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.Binder.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_CommandLine_dll_126" Guid="8B0FA1D1-09EE-4A1E-84B3-8CA17A1AB0EB">
+        <File Id="API_File_126" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.CommandLine.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_dll_127" Guid="D65C7FA0-73D4-449B-A6F3-1269E46445C0">
+        <File Id="API_File_127" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_EnvironmentVariables_dll_128" Guid="CB8C2FB5-D592-4D42-B417-B3D28DF1EE0A">
+        <File Id="API_File_128" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.EnvironmentVariables.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_FileExtensions_dll_129" Guid="0A4D3D26-E3D9-4765-8808-499D201472C3">
+        <File Id="API_File_129" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.FileExtensions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_Ini_dll_130" Guid="FEC0DBE7-07C6-494C-AADF-4D28773FFC4F">
+        <File Id="API_File_130" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.Ini.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_Json_dll_131" Guid="AE75AFCB-D6A1-4D96-8F05-FC796F6A1BF2">
+        <File Id="API_File_131" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.Json.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_KeyPerFile_dll_132" Guid="641D7B86-5D26-4044-ABF6-CFF255E34BE8">
+        <File Id="API_File_132" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.KeyPerFile.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_UserSecrets_dll_133" Guid="257C91BE-6AC5-4C02-93FD-BA0180FE6FF5">
+        <File Id="API_File_133" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.UserSecrets.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Configuration_Xml_dll_134" Guid="50ECEF1F-1033-47C8-A3C0-A2FF8240942F">
+        <File Id="API_File_134" Source="$(var.APIPublishDir)Microsoft.Extensions.Configuration.Xml.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_DependencyInjection_Abstractions_dll_135" Guid="6CFD166A-1937-44BA-8E1B-3A4A5CABD823">
+        <File Id="API_File_135" Source="$(var.APIPublishDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_DependencyInjection_dll_136" Guid="32BBF007-AC8C-46AB-8458-BA23FFB0B185">
+        <File Id="API_File_136" Source="$(var.APIPublishDir)Microsoft.Extensions.DependencyInjection.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_DependencyModel_dll_137" Guid="6B22716F-514C-4359-8A9D-CD67F1F3E0AB">
+        <File Id="API_File_137" Source="$(var.APIPublishDir)Microsoft.Extensions.DependencyModel.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Diagnostics_Abstractions_dll_138" Guid="D7A8B5C6-E1E8-4E85-99F6-4CDC83604B77">
+        <File Id="API_File_138" Source="$(var.APIPublishDir)Microsoft.Extensions.Diagnostics.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Diagnostics_dll_139" Guid="7B7F023B-2CA2-4084-9BBD-3B61D435EBF9">
+        <File Id="API_File_139" Source="$(var.APIPublishDir)Microsoft.Extensions.Diagnostics.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Diagnostics_HealthChecks_Abstractions_dll_140" Guid="CC84154E-1EF9-4991-BF52-C3326172B21A">
+        <File Id="API_File_140" Source="$(var.APIPublishDir)Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Diagnostics_HealthChecks_dll_141" Guid="27DB4C4F-2D08-420E-AD1D-FF5626C68DB2">
+        <File Id="API_File_141" Source="$(var.APIPublishDir)Microsoft.Extensions.Diagnostics.HealthChecks.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Features_dll_142" Guid="06E31F0C-57F8-4077-AB8A-D1A888E1C292">
+        <File Id="API_File_142" Source="$(var.APIPublishDir)Microsoft.Extensions.Features.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_FileProviders_Abstractions_dll_143" Guid="42F03CAA-8C4A-4F47-8968-112D548A9B5C">
+        <File Id="API_File_143" Source="$(var.APIPublishDir)Microsoft.Extensions.FileProviders.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_FileProviders_Composite_dll_144" Guid="20883B5A-0BB0-40D4-939B-3B39261D2493">
+        <File Id="API_File_144" Source="$(var.APIPublishDir)Microsoft.Extensions.FileProviders.Composite.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_FileProviders_Embedded_dll_145" Guid="02C30F2B-893D-415E-823B-CDBA911150A6">
+        <File Id="API_File_145" Source="$(var.APIPublishDir)Microsoft.Extensions.FileProviders.Embedded.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_FileProviders_Physical_dll_146" Guid="BF9F1CAA-EE58-46A9-8988-E9952F9347B8">
+        <File Id="API_File_146" Source="$(var.APIPublishDir)Microsoft.Extensions.FileProviders.Physical.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_FileSystemGlobbing_dll_147" Guid="CDD70393-BC52-463B-AD08-D90DDAA19C19">
+        <File Id="API_File_147" Source="$(var.APIPublishDir)Microsoft.Extensions.FileSystemGlobbing.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Hosting_Abstractions_dll_148" Guid="AF37433F-B261-4FB8-870C-27E135693112">
+        <File Id="API_File_148" Source="$(var.APIPublishDir)Microsoft.Extensions.Hosting.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Hosting_dll_149" Guid="678659C4-8F89-4095-A01D-41256A10BCB6">
+        <File Id="API_File_149" Source="$(var.APIPublishDir)Microsoft.Extensions.Hosting.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Hosting_WindowsServices_dll_150" Guid="D1A51169-A3BD-418C-BCB5-3945FB3E7A28">
+        <File Id="API_File_150" Source="$(var.APIPublishDir)Microsoft.Extensions.Hosting.WindowsServices.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Http_dll_151" Guid="D4105A2F-CD45-4056-AAC0-2B5EAFB0D7EA">
+        <File Id="API_File_151" Source="$(var.APIPublishDir)Microsoft.Extensions.Http.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Identity_Core_dll_152" Guid="D7F22F25-6061-407A-B7A8-6F1B75E98340">
+        <File Id="API_File_152" Source="$(var.APIPublishDir)Microsoft.Extensions.Identity.Core.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Identity_Stores_dll_153" Guid="399247E5-6D11-4A53-A386-15D13E1B6A63">
+        <File Id="API_File_153" Source="$(var.APIPublishDir)Microsoft.Extensions.Identity.Stores.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Localization_Abstractions_dll_154" Guid="B0E9A1C3-FB33-4BD6-B805-A0B2AF9CCE13">
+        <File Id="API_File_154" Source="$(var.APIPublishDir)Microsoft.Extensions.Localization.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Localization_dll_155" Guid="07F5648F-DD9B-4DE1-9B16-E6FC8F09DA86">
+        <File Id="API_File_155" Source="$(var.APIPublishDir)Microsoft.Extensions.Localization.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Logging_Abstractions_dll_156" Guid="D39DA5D2-5C2C-4E95-AB28-B71E4227E455">
+        <File Id="API_File_156" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Logging_Configuration_dll_157" Guid="515CCD31-24CC-4B98-8D81-E93960900DEF">
+        <File Id="API_File_157" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.Configuration.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Logging_Console_dll_158" Guid="5803435F-5274-46E7-8F30-5969ED2DC949">
+        <File Id="API_File_158" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.Console.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Logging_Debug_dll_159" Guid="7ECE14E5-1461-4D71-AD31-85CA1B2D77EC">
+        <File Id="API_File_159" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.Debug.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Logging_dll_160" Guid="E04DC265-7087-43B7-A50F-2D71CB710535">
+        <File Id="API_File_160" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Logging_EventLog_dll_161" Guid="7C7D3298-A892-4950-8142-BDFBAC9BD59B">
+        <File Id="API_File_161" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.EventLog.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Logging_EventSource_dll_162" Guid="6F0A19A4-DDDF-40F5-AA45-F11462E7B6E1">
+        <File Id="API_File_162" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.EventSource.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Logging_TraceSource_dll_163" Guid="76D7B8C7-3A9E-4012-B118-88A6E4540B86">
+        <File Id="API_File_163" Source="$(var.APIPublishDir)Microsoft.Extensions.Logging.TraceSource.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_ObjectPool_dll_164" Guid="E8A7EDD3-4483-4362-AC4B-6D88F83C5DB6">
+        <File Id="API_File_164" Source="$(var.APIPublishDir)Microsoft.Extensions.ObjectPool.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Options_ConfigurationExtensions_dll_165" Guid="11397222-1823-4CFD-9A73-720FC80DC2B6">
+        <File Id="API_File_165" Source="$(var.APIPublishDir)Microsoft.Extensions.Options.ConfigurationExtensions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Options_DataAnnotations_dll_166" Guid="6B7FF583-A1EB-4272-B88B-26AD731D5567">
+        <File Id="API_File_166" Source="$(var.APIPublishDir)Microsoft.Extensions.Options.DataAnnotations.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Options_dll_167" Guid="39843058-1BAC-426B-AC31-9093DC10188A">
+        <File Id="API_File_167" Source="$(var.APIPublishDir)Microsoft.Extensions.Options.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_Primitives_dll_168" Guid="D3A4CD4D-B3AE-4155-9004-ACC03978A295">
+        <File Id="API_File_168" Source="$(var.APIPublishDir)Microsoft.Extensions.Primitives.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Extensions_WebEncoders_dll_169" Guid="DB1F1789-19F8-4F89-A431-38EBE98DD7EE">
+        <File Id="API_File_169" Source="$(var.APIPublishDir)Microsoft.Extensions.WebEncoders.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Identity_Client_dll_170" Guid="64BC4427-54DB-4B33-A61B-2D1FA3D363D9">
+        <File Id="API_File_170" Source="$(var.APIPublishDir)Microsoft.Identity.Client.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Identity_Client_Extensions_Msal_dll_171" Guid="523BAE2B-E071-42C0-A9EE-2A293EE82E8B">
+        <File Id="API_File_171" Source="$(var.APIPublishDir)Microsoft.Identity.Client.Extensions.Msal.dll" />
+      </Component>
+      <Component Id="API_Microsoft_IdentityModel_Abstractions_dll_172" Guid="1535CE77-B43C-4034-A949-DDABB1CB5BDD">
+        <File Id="API_File_172" Source="$(var.APIPublishDir)Microsoft.IdentityModel.Abstractions.dll" />
+      </Component>
+      <Component Id="API_Microsoft_JSInterop_dll_173" Guid="B2AA393B-DF9C-4243-936F-411502A4F681">
+        <File Id="API_File_173" Source="$(var.APIPublishDir)Microsoft.JSInterop.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Net_Http_Headers_dll_174" Guid="6C56A6BA-4144-4906-952D-89102D32D9DE">
+        <File Id="API_File_174" Source="$(var.APIPublishDir)Microsoft.Net.Http.Headers.dll" />
+      </Component>
+      <Component Id="API_Microsoft_OpenApi_dll_175" Guid="94BA4B48-6825-4BD4-AEBE-1E2406C16B24">
+        <File Id="API_File_175" Source="$(var.APIPublishDir)Microsoft.OpenApi.dll" />
+      </Component>
+      <Component Id="API_Microsoft_VisualBasic_Core_dll_176" Guid="258E5291-F9CB-4E49-8FC8-72292D3C0E2A">
+        <File Id="API_File_176" Source="$(var.APIPublishDir)Microsoft.VisualBasic.Core.dll" />
+      </Component>
+      <Component Id="API_Microsoft_VisualBasic_dll_177" Guid="D40CA945-5A76-4A04-BB67-DB54D47197A8">
+        <File Id="API_File_177" Source="$(var.APIPublishDir)Microsoft.VisualBasic.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Win32_Primitives_dll_178" Guid="A5C0AB74-C4B4-42CE-9333-F40E01BCEB38">
+        <File Id="API_File_178" Source="$(var.APIPublishDir)Microsoft.Win32.Primitives.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Win32_Registry_dll_179" Guid="2B60B5C0-B838-4E8F-BB85-CD3512921AFE">
+        <File Id="API_File_179" Source="$(var.APIPublishDir)Microsoft.Win32.Registry.dll" />
+      </Component>
+      <Component Id="API_Microsoft_Win32_SystemEvents_dll_180" Guid="E842109D-2C14-4B56-9893-9AD01D8E7153">
+        <File Id="API_File_180" Source="$(var.APIPublishDir)Microsoft.Win32.SystemEvents.dll" />
+      </Component>
+      <Component Id="API_mscordaccore_dll_181" Guid="86CAF781-A041-4E4B-BDBA-F11987FEAE0F">
+        <File Id="API_File_181" Source="$(var.APIPublishDir)mscordaccore.dll" />
+      </Component>
+      <Component Id="API_mscordaccore_amd64_amd64_9_0_925_41916_dll_182" Guid="0C151598-6581-4F4B-80AE-13CB66DA8014">
+        <File Id="API_File_182" Source="$(var.APIPublishDir)mscordaccore_amd64_amd64_9.0.925.41916.dll" />
+      </Component>
+      <Component Id="API_mscordbi_dll_183" Guid="1DD54D98-65F1-4452-9705-01EB8E6A95DD">
+        <File Id="API_File_183" Source="$(var.APIPublishDir)mscordbi.dll" />
+      </Component>
+      <Component Id="API_mscorlib_dll_184" Guid="E99AB0D7-9847-449B-BE82-925665A2B429">
+        <File Id="API_File_184" Source="$(var.APIPublishDir)mscorlib.dll" />
+      </Component>
+      <Component Id="API_mscorrc_dll_185" Guid="A2585A6E-95D3-4F0D-8B92-52B070E426DF">
+        <File Id="API_File_185" Source="$(var.APIPublishDir)mscorrc.dll" />
+      </Component>
+      <Component Id="API_msquic_dll_186" Guid="46830D41-942F-4926-9905-A675DC5B6EE3">
+        <File Id="API_File_186" Source="$(var.APIPublishDir)msquic.dll" />
+      </Component>
+      <Component Id="API_netstandard_dll_187" Guid="DFF18951-CDA4-4DA7-B2EB-9309BAADA3CC">
+        <File Id="API_File_187" Source="$(var.APIPublishDir)netstandard.dll" />
+      </Component>
+      <Component Id="API_qpdf_dll_188" Guid="A144DD5E-92D7-4861-A245-9645B5BA7589">
+        <File Id="API_File_188" Source="$(var.APIPublishDir)qpdf.dll" />
+      </Component>
+      <Component Id="API_QRCoder_dll_189" Guid="AA23EA19-9FB4-4CF3-B63B-97D2FF74098A">
+        <File Id="API_File_189" Source="$(var.APIPublishDir)QRCoder.dll" />
+      </Component>
+      <Component Id="API_QuestPDF_dll_190" Guid="011A9CDB-1005-45BB-BAE2-4FD5A96B4EC7">
+        <File Id="API_File_190" Source="$(var.APIPublishDir)QuestPDF.dll" />
+      </Component>
+      <Component Id="API_QuestPdfSkia_dll_191" Guid="746B8750-FF44-40ED-AB95-0E691C4E818A">
+        <File Id="API_File_191" Source="$(var.APIPublishDir)QuestPdfSkia.dll" />
+      </Component>
+      <Component Id="API_Serilog_AspNetCore_dll_192" Guid="E73BA0D6-5FAB-40BD-BE3C-F207DF1AEC80">
+        <File Id="API_File_192" Source="$(var.APIPublishDir)Serilog.AspNetCore.dll" />
+      </Component>
+      <Component Id="API_Serilog_dll_193" Guid="E7949C0F-4BEB-439A-A916-CB2C0E21612C">
+        <File Id="API_File_193" Source="$(var.APIPublishDir)Serilog.dll" />
+      </Component>
+      <Component Id="API_Serilog_Enrichers_Environment_dll_194" Guid="B8FEF52E-A08C-455B-A900-3B5E265E3622">
+        <File Id="API_File_194" Source="$(var.APIPublishDir)Serilog.Enrichers.Environment.dll" />
+      </Component>
+      <Component Id="API_Serilog_Enrichers_Thread_dll_195" Guid="095E5E3A-DC14-4781-A4E8-5E0D49624615">
+        <File Id="API_File_195" Source="$(var.APIPublishDir)Serilog.Enrichers.Thread.dll" />
+      </Component>
+      <Component Id="API_Serilog_Extensions_Hosting_dll_196" Guid="B37742A8-2226-4B70-8B7A-09F94FF36B86">
+        <File Id="API_File_196" Source="$(var.APIPublishDir)Serilog.Extensions.Hosting.dll" />
+      </Component>
+      <Component Id="API_Serilog_Extensions_Logging_dll_197" Guid="F8539B77-245C-4527-92E0-D219089576E2">
+        <File Id="API_File_197" Source="$(var.APIPublishDir)Serilog.Extensions.Logging.dll" />
+      </Component>
+      <Component Id="API_Serilog_Formatting_Compact_dll_198" Guid="0D7B7225-9BE4-4595-80F7-7E3408172977">
+        <File Id="API_File_198" Source="$(var.APIPublishDir)Serilog.Formatting.Compact.dll" />
+      </Component>
+      <Component Id="API_Serilog_Settings_Configuration_dll_199" Guid="481B691D-1553-473F-9DAD-0E178447B1D5">
+        <File Id="API_File_199" Source="$(var.APIPublishDir)Serilog.Settings.Configuration.dll" />
+      </Component>
+      <Component Id="API_Serilog_Sinks_Console_dll_200" Guid="2BF6851B-E84D-40D0-A329-307A34D0BA4F">
+        <File Id="API_File_200" Source="$(var.APIPublishDir)Serilog.Sinks.Console.dll" />
+      </Component>
+      <Component Id="API_Serilog_Sinks_Debug_dll_201" Guid="E4DC7F54-4E83-4744-8B9E-1D0C87263B5D">
+        <File Id="API_File_201" Source="$(var.APIPublishDir)Serilog.Sinks.Debug.dll" />
+      </Component>
+      <Component Id="API_Serilog_Sinks_EventLog_dll_202" Guid="A07BE5DB-B656-454D-8E02-2583B6ED960A">
+        <File Id="API_File_202" Source="$(var.APIPublishDir)Serilog.Sinks.EventLog.dll" />
+      </Component>
+      <Component Id="API_Serilog_Sinks_File_dll_203" Guid="DA5B960D-ECA5-45EE-9A61-0F03ABF57156">
+        <File Id="API_File_203" Source="$(var.APIPublishDir)Serilog.Sinks.File.dll" />
+      </Component>
+      <Component Id="API_Swashbuckle_AspNetCore_Swagger_dll_204" Guid="256CAC2C-24CD-4599-B6B8-510F689A1718">
+        <File Id="API_File_204" Source="$(var.APIPublishDir)Swashbuckle.AspNetCore.Swagger.dll" />
+      </Component>
+      <Component Id="API_Swashbuckle_AspNetCore_SwaggerGen_dll_205" Guid="945DC39A-81D7-4C3D-98BF-01124F11A81A">
+        <File Id="API_File_205" Source="$(var.APIPublishDir)Swashbuckle.AspNetCore.SwaggerGen.dll" />
+      </Component>
+      <Component Id="API_Swashbuckle_AspNetCore_SwaggerUI_dll_206" Guid="4684FCB0-D546-4E4B-9DA7-12064E9163BC">
+        <File Id="API_File_206" Source="$(var.APIPublishDir)Swashbuckle.AspNetCore.SwaggerUI.dll" />
+      </Component>
+      <Component Id="API_System_AppContext_dll_207" Guid="A68EB2DC-3D0D-49CF-A03E-4E8331A6693D">
+        <File Id="API_File_207" Source="$(var.APIPublishDir)System.AppContext.dll" />
+      </Component>
+      <Component Id="API_System_Buffers_dll_208" Guid="5DE94148-42B9-41AE-B9D5-877139AD8550">
+        <File Id="API_File_208" Source="$(var.APIPublishDir)System.Buffers.dll" />
+      </Component>
+      <Component Id="API_System_ClientModel_dll_209" Guid="6E0F0E23-5CF8-432D-86D2-2520017E22A8">
+        <File Id="API_File_209" Source="$(var.APIPublishDir)System.ClientModel.dll" />
+      </Component>
+      <Component Id="API_System_Collections_Concurrent_dll_210" Guid="5503437F-A2CE-4779-AF93-CE8CCD983602">
+        <File Id="API_File_210" Source="$(var.APIPublishDir)System.Collections.Concurrent.dll" />
+      </Component>
+      <Component Id="API_System_Collections_dll_211" Guid="B488238D-DB4F-4242-BE54-D2077780B489">
+        <File Id="API_File_211" Source="$(var.APIPublishDir)System.Collections.dll" />
+      </Component>
+      <Component Id="API_System_Collections_Immutable_dll_212" Guid="9AE7290B-7CA4-428B-B56D-37B7BCE31839">
+        <File Id="API_File_212" Source="$(var.APIPublishDir)System.Collections.Immutable.dll" />
+      </Component>
+      <Component Id="API_System_Collections_NonGeneric_dll_213" Guid="8B6D7BDE-A9EC-4DBC-B11A-42EC63C48E9C">
+        <File Id="API_File_213" Source="$(var.APIPublishDir)System.Collections.NonGeneric.dll" />
+      </Component>
+      <Component Id="API_System_Collections_Specialized_dll_214" Guid="B2C4A869-9E09-43AB-81E9-348008048727">
+        <File Id="API_File_214" Source="$(var.APIPublishDir)System.Collections.Specialized.dll" />
+      </Component>
+      <Component Id="API_System_ComponentModel_Annotations_dll_215" Guid="DA7F675C-6303-49EC-A009-D40D402B9268">
+        <File Id="API_File_215" Source="$(var.APIPublishDir)System.ComponentModel.Annotations.dll" />
+      </Component>
+      <Component Id="API_System_ComponentModel_DataAnnotations_dll_216" Guid="B663E66D-E95B-462A-8AED-4067C488E9FF">
+        <File Id="API_File_216" Source="$(var.APIPublishDir)System.ComponentModel.DataAnnotations.dll" />
+      </Component>
+      <Component Id="API_System_ComponentModel_dll_217" Guid="FD11254D-728E-44F5-92AA-E4540E39930F">
+        <File Id="API_File_217" Source="$(var.APIPublishDir)System.ComponentModel.dll" />
+      </Component>
+      <Component Id="API_System_ComponentModel_EventBasedAsync_dll_218" Guid="25B3639C-C550-4143-9290-5272B4502055">
+        <File Id="API_File_218" Source="$(var.APIPublishDir)System.ComponentModel.EventBasedAsync.dll" />
+      </Component>
+      <Component Id="API_System_ComponentModel_Primitives_dll_219" Guid="F8CE8870-57F3-49B8-837F-41BBFFFE4107">
+        <File Id="API_File_219" Source="$(var.APIPublishDir)System.ComponentModel.Primitives.dll" />
+      </Component>
+      <Component Id="API_System_ComponentModel_TypeConverter_dll_220" Guid="FB438ABA-AE4A-4C14-A1A2-D0292A7C4642">
+        <File Id="API_File_220" Source="$(var.APIPublishDir)System.ComponentModel.TypeConverter.dll" />
+      </Component>
+      <Component Id="API_System_Configuration_dll_221" Guid="E88DA95A-7B92-4A09-AB5E-79FB54C466EE">
+        <File Id="API_File_221" Source="$(var.APIPublishDir)System.Configuration.dll" />
+      </Component>
+      <Component Id="API_System_Console_dll_222" Guid="E509944D-1646-4082-99E5-EF63C9110083">
+        <File Id="API_File_222" Source="$(var.APIPublishDir)System.Console.dll" />
+      </Component>
+      <Component Id="API_System_Core_dll_223" Guid="57DCE683-D4C0-4547-A177-C583D9D8166A">
+        <File Id="API_File_223" Source="$(var.APIPublishDir)System.Core.dll" />
+      </Component>
+      <Component Id="API_System_Data_Common_dll_224" Guid="0D0E64DF-66ED-4B5C-ADE7-913284374FFA">
+        <File Id="API_File_224" Source="$(var.APIPublishDir)System.Data.Common.dll" />
+      </Component>
+      <Component Id="API_System_Data_DataSetExtensions_dll_225" Guid="74CC2910-F11E-4C63-89D6-1CE155EFFB7A">
+        <File Id="API_File_225" Source="$(var.APIPublishDir)System.Data.DataSetExtensions.dll" />
+      </Component>
+      <Component Id="API_System_Data_dll_226" Guid="9344E06A-1F1B-4B5D-A1BF-DAFB675184DE">
+        <File Id="API_File_226" Source="$(var.APIPublishDir)System.Data.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_Contracts_dll_227" Guid="2442AA98-4A1E-4EF3-B652-7D7BB8D7930D">
+        <File Id="API_File_227" Source="$(var.APIPublishDir)System.Diagnostics.Contracts.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_Debug_dll_228" Guid="5B9B5AC6-5B9A-4970-81ED-D381155008EF">
+        <File Id="API_File_228" Source="$(var.APIPublishDir)System.Diagnostics.Debug.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_DiagnosticSource_dll_229" Guid="A69491D9-5F23-4C5B-B2A7-64133D585195">
+        <File Id="API_File_229" Source="$(var.APIPublishDir)System.Diagnostics.DiagnosticSource.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_EventLog_dll_230" Guid="809B52EF-7474-4973-9AC6-ECA5A1800079">
+        <File Id="API_File_230" Source="$(var.APIPublishDir)System.Diagnostics.EventLog.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_EventLog_Messages_dll_231" Guid="76374310-6E00-4A64-B010-5BB43B6F1424">
+        <File Id="API_File_231" Source="$(var.APIPublishDir)System.Diagnostics.EventLog.Messages.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_FileVersionInfo_dll_232" Guid="4A250D1B-C495-4738-B7E9-1398C35866B6">
+        <File Id="API_File_232" Source="$(var.APIPublishDir)System.Diagnostics.FileVersionInfo.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_Process_dll_233" Guid="9C248328-CD2D-4946-8322-65E0AF9A0FDA">
+        <File Id="API_File_233" Source="$(var.APIPublishDir)System.Diagnostics.Process.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_StackTrace_dll_234" Guid="6B4C2CA2-B507-4C2D-9A08-A0B9B4173B1C">
+        <File Id="API_File_234" Source="$(var.APIPublishDir)System.Diagnostics.StackTrace.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_TextWriterTraceListener_dll_235" Guid="91CF2F7C-A9A1-43C8-B136-A474C895F1F3">
+        <File Id="API_File_235" Source="$(var.APIPublishDir)System.Diagnostics.TextWriterTraceListener.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_Tools_dll_236" Guid="875A609C-8B68-4F0C-9211-E2F361461975">
+        <File Id="API_File_236" Source="$(var.APIPublishDir)System.Diagnostics.Tools.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_TraceSource_dll_237" Guid="182DAC0E-3850-4308-9781-5D408B70DE72">
+        <File Id="API_File_237" Source="$(var.APIPublishDir)System.Diagnostics.TraceSource.dll" />
+      </Component>
+      <Component Id="API_System_Diagnostics_Tracing_dll_238" Guid="1CBB38DB-226D-41F3-B5AB-45C2E1FE22E6">
+        <File Id="API_File_238" Source="$(var.APIPublishDir)System.Diagnostics.Tracing.dll" />
+      </Component>
+      <Component Id="API_System_dll_239" Guid="B9E3BB9B-F696-4E72-9B39-A2AC73DFCB15">
+        <File Id="API_File_239" Source="$(var.APIPublishDir)System.dll" />
+      </Component>
+      <Component Id="API_System_Drawing_Common_dll_240" Guid="166F6755-7FEC-45CF-8AB0-114FBE11A465">
+        <File Id="API_File_240" Source="$(var.APIPublishDir)System.Drawing.Common.dll" />
+      </Component>
+      <Component Id="API_System_Drawing_dll_241" Guid="3A2B756B-CDB9-412F-A911-6023A89D6F55">
+        <File Id="API_File_241" Source="$(var.APIPublishDir)System.Drawing.dll" />
+      </Component>
+      <Component Id="API_System_Drawing_Primitives_dll_242" Guid="BD2A9893-8B03-49BE-A72B-E9C66C532C9F">
+        <File Id="API_File_242" Source="$(var.APIPublishDir)System.Drawing.Primitives.dll" />
+      </Component>
+      <Component Id="API_System_Dynamic_Runtime_dll_243" Guid="38BE5410-2324-4031-B9BE-5B789996245D">
+        <File Id="API_File_243" Source="$(var.APIPublishDir)System.Dynamic.Runtime.dll" />
+      </Component>
+      <Component Id="API_System_Formats_Asn1_dll_244" Guid="332B96B4-CB5D-42BF-B961-C803CCAD29F2">
+        <File Id="API_File_244" Source="$(var.APIPublishDir)System.Formats.Asn1.dll" />
+      </Component>
+      <Component Id="API_System_Formats_Tar_dll_245" Guid="A2C8E6FA-D178-47CF-87B7-79A55D6D0E01">
+        <File Id="API_File_245" Source="$(var.APIPublishDir)System.Formats.Tar.dll" />
+      </Component>
+      <Component Id="API_System_Globalization_Calendars_dll_246" Guid="95397913-D851-43C9-AE39-599E7EEB9F15">
+        <File Id="API_File_246" Source="$(var.APIPublishDir)System.Globalization.Calendars.dll" />
+      </Component>
+      <Component Id="API_System_Globalization_dll_247" Guid="CD45CAB0-906B-412B-81F4-81D125652679">
+        <File Id="API_File_247" Source="$(var.APIPublishDir)System.Globalization.dll" />
+      </Component>
+      <Component Id="API_System_Globalization_Extensions_dll_248" Guid="B56FE590-F134-49D5-A27A-4FDA63C96703">
+        <File Id="API_File_248" Source="$(var.APIPublishDir)System.Globalization.Extensions.dll" />
+      </Component>
+      <Component Id="API_System_IO_Compression_Brotli_dll_249" Guid="EA6C67E6-C628-4282-BDED-7FD60603AE70">
+        <File Id="API_File_249" Source="$(var.APIPublishDir)System.IO.Compression.Brotli.dll" />
+      </Component>
+      <Component Id="API_System_IO_Compression_dll_250" Guid="FA504F16-BDF0-4F0A-84D7-096C1F7C30C7">
+        <File Id="API_File_250" Source="$(var.APIPublishDir)System.IO.Compression.dll" />
+      </Component>
+      <Component Id="API_System_IO_Compression_FileSystem_dll_251" Guid="53A947AF-2B95-484E-B061-A4B511283BE4">
+        <File Id="API_File_251" Source="$(var.APIPublishDir)System.IO.Compression.FileSystem.dll" />
+      </Component>
+      <Component Id="API_System_IO_Compression_Native_dll_252" Guid="6576BAA6-2EDA-4C31-B3F8-D3FC92BCF69C">
+        <File Id="API_File_252" Source="$(var.APIPublishDir)System.IO.Compression.Native.dll" />
+      </Component>
+      <Component Id="API_System_IO_Compression_ZipFile_dll_253" Guid="A2F99A55-84C4-460C-9386-F216676B58E5">
+        <File Id="API_File_253" Source="$(var.APIPublishDir)System.IO.Compression.ZipFile.dll" />
+      </Component>
+      <Component Id="API_System_IO_dll_254" Guid="2C7D6733-43B7-48B3-8148-427255B3B4BB">
+        <File Id="API_File_254" Source="$(var.APIPublishDir)System.IO.dll" />
+      </Component>
+      <Component Id="API_System_IO_FileSystem_AccessControl_dll_255" Guid="E602FE6A-9D22-48C7-ADDF-50001822897F">
+        <File Id="API_File_255" Source="$(var.APIPublishDir)System.IO.FileSystem.AccessControl.dll" />
+      </Component>
+      <Component Id="API_System_IO_FileSystem_dll_256" Guid="8DC27741-3FD9-4263-9C72-4AF525663119">
+        <File Id="API_File_256" Source="$(var.APIPublishDir)System.IO.FileSystem.dll" />
+      </Component>
+      <Component Id="API_System_IO_FileSystem_DriveInfo_dll_257" Guid="301B1895-74F7-4F2F-9B06-775E4AB141A1">
+        <File Id="API_File_257" Source="$(var.APIPublishDir)System.IO.FileSystem.DriveInfo.dll" />
+      </Component>
+      <Component Id="API_System_IO_FileSystem_Primitives_dll_258" Guid="843F0F67-DCE3-4E47-913F-8E48597556C0">
+        <File Id="API_File_258" Source="$(var.APIPublishDir)System.IO.FileSystem.Primitives.dll" />
+      </Component>
+      <Component Id="API_System_IO_FileSystem_Watcher_dll_259" Guid="8D01267C-CAE4-4A7C-91F0-38FD2DA7AAE7">
+        <File Id="API_File_259" Source="$(var.APIPublishDir)System.IO.FileSystem.Watcher.dll" />
+      </Component>
+      <Component Id="API_System_IO_IsolatedStorage_dll_260" Guid="3E60814C-E5CD-44E6-9753-6D83054162C2">
+        <File Id="API_File_260" Source="$(var.APIPublishDir)System.IO.IsolatedStorage.dll" />
+      </Component>
+      <Component Id="API_System_IO_MemoryMappedFiles_dll_261" Guid="0ACA2647-C2F7-4B29-88D0-22C6384D2C12">
+        <File Id="API_File_261" Source="$(var.APIPublishDir)System.IO.MemoryMappedFiles.dll" />
+      </Component>
+      <Component Id="API_System_IO_Pipelines_dll_262" Guid="7ACF72D4-58CD-44C7-986D-51530ADA7AE9">
+        <File Id="API_File_262" Source="$(var.APIPublishDir)System.IO.Pipelines.dll" />
+      </Component>
+      <Component Id="API_System_IO_Pipes_AccessControl_dll_263" Guid="8E320396-E707-4803-9F3C-0E89D614372C">
+        <File Id="API_File_263" Source="$(var.APIPublishDir)System.IO.Pipes.AccessControl.dll" />
+      </Component>
+      <Component Id="API_System_IO_Pipes_dll_264" Guid="02E3E8C6-8DE8-420A-97F5-0CC46C7EA69C">
+        <File Id="API_File_264" Source="$(var.APIPublishDir)System.IO.Pipes.dll" />
+      </Component>
+      <Component Id="API_System_IO_UnmanagedMemoryStream_dll_265" Guid="C0E3E4ED-76A5-4F8B-AD08-534D26954811">
+        <File Id="API_File_265" Source="$(var.APIPublishDir)System.IO.UnmanagedMemoryStream.dll" />
+      </Component>
+      <Component Id="API_System_Linq_dll_266" Guid="AD44233A-83DB-4814-94DB-059E8281FD7E">
+        <File Id="API_File_266" Source="$(var.APIPublishDir)System.Linq.dll" />
+      </Component>
+      <Component Id="API_System_Linq_Expressions_dll_267" Guid="C768C0F2-1AF4-4C5F-AC5E-5B29DD04D10F">
+        <File Id="API_File_267" Source="$(var.APIPublishDir)System.Linq.Expressions.dll" />
+      </Component>
+      <Component Id="API_System_Linq_Parallel_dll_268" Guid="C4084C36-EAD8-4DCF-B677-D637ADA1BCEE">
+        <File Id="API_File_268" Source="$(var.APIPublishDir)System.Linq.Parallel.dll" />
+      </Component>
+      <Component Id="API_System_Linq_Queryable_dll_269" Guid="FE667B9D-ADAD-49AA-B7DA-16F24571DF43">
+        <File Id="API_File_269" Source="$(var.APIPublishDir)System.Linq.Queryable.dll" />
+      </Component>
+      <Component Id="API_System_Memory_Data_dll_270" Guid="C6C7C308-6BEB-4E27-AE3E-095FA77512AB">
+        <File Id="API_File_270" Source="$(var.APIPublishDir)System.Memory.Data.dll" />
+      </Component>
+      <Component Id="API_System_Memory_dll_271" Guid="0FEE0ED2-55F5-4CFB-8FA6-C66C2D7B71EE">
+        <File Id="API_File_271" Source="$(var.APIPublishDir)System.Memory.dll" />
+      </Component>
+      <Component Id="API_System_Net_dll_272" Guid="D4FC1A23-E8A6-4B9E-AE93-489A3B3F18CF">
+        <File Id="API_File_272" Source="$(var.APIPublishDir)System.Net.dll" />
+      </Component>
+      <Component Id="API_System_Net_Http_dll_273" Guid="5E517FCD-3D34-47DF-B06D-77C1B10BE8F8">
+        <File Id="API_File_273" Source="$(var.APIPublishDir)System.Net.Http.dll" />
+      </Component>
+      <Component Id="API_System_Net_Http_Json_dll_274" Guid="9CDD537D-2123-4A5F-84BE-5E82382B8468">
+        <File Id="API_File_274" Source="$(var.APIPublishDir)System.Net.Http.Json.dll" />
+      </Component>
+      <Component Id="API_System_Net_HttpListener_dll_275" Guid="2E27A723-8E15-4B18-B3C5-95EDA27E1E1F">
+        <File Id="API_File_275" Source="$(var.APIPublishDir)System.Net.HttpListener.dll" />
+      </Component>
+      <Component Id="API_System_Net_Mail_dll_276" Guid="0A715B7E-4267-4451-B2EE-685F668895E6">
+        <File Id="API_File_276" Source="$(var.APIPublishDir)System.Net.Mail.dll" />
+      </Component>
+      <Component Id="API_System_Net_NameResolution_dll_277" Guid="29673B1E-8A2A-49F5-991E-7C07BAE482B0">
+        <File Id="API_File_277" Source="$(var.APIPublishDir)System.Net.NameResolution.dll" />
+      </Component>
+      <Component Id="API_System_Net_NetworkInformation_dll_278" Guid="7A053AA4-F47C-4F62-8ACA-9B281B278C51">
+        <File Id="API_File_278" Source="$(var.APIPublishDir)System.Net.NetworkInformation.dll" />
+      </Component>
+      <Component Id="API_System_Net_Ping_dll_279" Guid="0BF6AB24-2405-4314-BBA4-9432DDBF8D88">
+        <File Id="API_File_279" Source="$(var.APIPublishDir)System.Net.Ping.dll" />
+      </Component>
+      <Component Id="API_System_Net_Primitives_dll_280" Guid="7BA954E4-8ECD-4CEC-AD6E-4D9E26D81B04">
+        <File Id="API_File_280" Source="$(var.APIPublishDir)System.Net.Primitives.dll" />
+      </Component>
+      <Component Id="API_System_Net_Quic_dll_281" Guid="B0AC07EC-620F-4A65-852C-4A37720F3F52">
+        <File Id="API_File_281" Source="$(var.APIPublishDir)System.Net.Quic.dll" />
+      </Component>
+      <Component Id="API_System_Net_Requests_dll_282" Guid="2FFEDA8A-A872-4244-A8FA-4A3CDD7F4A07">
+        <File Id="API_File_282" Source="$(var.APIPublishDir)System.Net.Requests.dll" />
+      </Component>
+      <Component Id="API_System_Net_Security_dll_283" Guid="F3EF79EB-2267-4522-BAB2-3CA2E4B6E50D">
+        <File Id="API_File_283" Source="$(var.APIPublishDir)System.Net.Security.dll" />
+      </Component>
+      <Component Id="API_System_Net_ServicePoint_dll_284" Guid="A1FB4766-3CE1-4338-A255-554AC7F56909">
+        <File Id="API_File_284" Source="$(var.APIPublishDir)System.Net.ServicePoint.dll" />
+      </Component>
+      <Component Id="API_System_Net_Sockets_dll_285" Guid="AF5FC57A-E910-45FC-B9F3-634EF9FC641D">
+        <File Id="API_File_285" Source="$(var.APIPublishDir)System.Net.Sockets.dll" />
+      </Component>
+      <Component Id="API_System_Net_WebClient_dll_286" Guid="AB3F654B-2B8D-4D94-8CA0-D942C3053606">
+        <File Id="API_File_286" Source="$(var.APIPublishDir)System.Net.WebClient.dll" />
+      </Component>
+      <Component Id="API_System_Net_WebHeaderCollection_dll_287" Guid="8BAF3014-4508-4865-A172-E8B64B8949A7">
+        <File Id="API_File_287" Source="$(var.APIPublishDir)System.Net.WebHeaderCollection.dll" />
+      </Component>
+      <Component Id="API_System_Net_WebProxy_dll_288" Guid="202A2EF3-AA68-4C5F-9ACD-5532C9DE7E0A">
+        <File Id="API_File_288" Source="$(var.APIPublishDir)System.Net.WebProxy.dll" />
+      </Component>
+      <Component Id="API_System_Net_WebSockets_Client_dll_289" Guid="424C8BCF-363A-4A12-8C5D-A36F7186931F">
+        <File Id="API_File_289" Source="$(var.APIPublishDir)System.Net.WebSockets.Client.dll" />
+      </Component>
+      <Component Id="API_System_Net_WebSockets_dll_290" Guid="9EC44C81-55C8-46B4-8989-3740688AA748">
+        <File Id="API_File_290" Source="$(var.APIPublishDir)System.Net.WebSockets.dll" />
+      </Component>
+      <Component Id="API_System_Numerics_dll_291" Guid="8F9137A8-B451-45CA-8E29-FE27EB762705">
+        <File Id="API_File_291" Source="$(var.APIPublishDir)System.Numerics.dll" />
+      </Component>
+      <Component Id="API_System_Numerics_Vectors_dll_292" Guid="1E8CA7C9-C543-4B9F-8D7E-EB9C13DCD721">
+        <File Id="API_File_292" Source="$(var.APIPublishDir)System.Numerics.Vectors.dll" />
+      </Component>
+      <Component Id="API_System_ObjectModel_dll_293" Guid="0F9D8013-B5B5-4987-BC5D-903A167F4936">
+        <File Id="API_File_293" Source="$(var.APIPublishDir)System.ObjectModel.dll" />
+      </Component>
+      <Component Id="API_System_Private_CoreLib_dll_294" Guid="04D09A58-8303-4927-B5F6-C81F3BB49D82">
+        <File Id="API_File_294" Source="$(var.APIPublishDir)System.Private.CoreLib.dll" />
+      </Component>
+      <Component Id="API_System_Private_DataContractSerialization_dll_295" Guid="DE6CADA5-FB28-4C0A-B664-5F845871C42E">
+        <File Id="API_File_295" Source="$(var.APIPublishDir)System.Private.DataContractSerialization.dll" />
+      </Component>
+      <Component Id="API_System_Private_Uri_dll_296" Guid="C5373D5B-0EE5-4F7A-AD90-C35CCC91FC83">
+        <File Id="API_File_296" Source="$(var.APIPublishDir)System.Private.Uri.dll" />
+      </Component>
+      <Component Id="API_System_Private_Xml_dll_297" Guid="FB0C4FA0-FCD2-4A8A-922A-8F28DBA4F145">
+        <File Id="API_File_297" Source="$(var.APIPublishDir)System.Private.Xml.dll" />
+      </Component>
+      <Component Id="API_System_Private_Xml_Linq_dll_298" Guid="27A4029B-83C6-4EEE-841E-16107B05968D">
+        <File Id="API_File_298" Source="$(var.APIPublishDir)System.Private.Xml.Linq.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_DispatchProxy_dll_299" Guid="E080ACF7-EB60-4E31-8B1B-E4CE3FFABE64">
+        <File Id="API_File_299" Source="$(var.APIPublishDir)System.Reflection.DispatchProxy.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_dll_300" Guid="097DC095-9EE4-4E6E-AABF-105158C4D881">
+        <File Id="API_File_300" Source="$(var.APIPublishDir)System.Reflection.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_Emit_dll_301" Guid="644F9E80-F656-40A9-8F37-AC37FBBD6127">
+        <File Id="API_File_301" Source="$(var.APIPublishDir)System.Reflection.Emit.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_Emit_ILGeneration_dll_302" Guid="7BF2E9F6-2AB7-4AA9-AC7A-57A715A6320D">
+        <File Id="API_File_302" Source="$(var.APIPublishDir)System.Reflection.Emit.ILGeneration.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_Emit_Lightweight_dll_303" Guid="DA7AB099-8B80-4974-BD58-0AA7145D37A1">
+        <File Id="API_File_303" Source="$(var.APIPublishDir)System.Reflection.Emit.Lightweight.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_Extensions_dll_304" Guid="40128622-937C-40BC-BE19-03FE7E274490">
+        <File Id="API_File_304" Source="$(var.APIPublishDir)System.Reflection.Extensions.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_Metadata_dll_305" Guid="C7A9B04D-7996-4437-B8DE-8F5FE5148217">
+        <File Id="API_File_305" Source="$(var.APIPublishDir)System.Reflection.Metadata.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_Primitives_dll_306" Guid="202DE6B7-56F6-46A6-974F-7222C0B6BEAF">
+        <File Id="API_File_306" Source="$(var.APIPublishDir)System.Reflection.Primitives.dll" />
+      </Component>
+      <Component Id="API_System_Reflection_TypeExtensions_dll_307" Guid="815C424B-2D19-4956-814D-44A75CE2C86C">
+        <File Id="API_File_307" Source="$(var.APIPublishDir)System.Reflection.TypeExtensions.dll" />
+      </Component>
+      <Component Id="API_System_Resources_Reader_dll_308" Guid="D63632A5-44FE-4F01-9DA0-2441DC0FC5AA">
+        <File Id="API_File_308" Source="$(var.APIPublishDir)System.Resources.Reader.dll" />
+      </Component>
+      <Component Id="API_System_Resources_ResourceManager_dll_309" Guid="A5DC85B8-045E-4A6A-AA1B-77D82AC67E63">
+        <File Id="API_File_309" Source="$(var.APIPublishDir)System.Resources.ResourceManager.dll" />
+      </Component>
+      <Component Id="API_System_Resources_Writer_dll_310" Guid="2C71BB1A-E946-4B01-A023-CA9F4CFABA76">
+        <File Id="API_File_310" Source="$(var.APIPublishDir)System.Resources.Writer.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_CompilerServices_Unsafe_dll_311" Guid="0A7C60B0-A7BF-4895-B39C-CB8AA7F32DE3">
+        <File Id="API_File_311" Source="$(var.APIPublishDir)System.Runtime.CompilerServices.Unsafe.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_CompilerServices_VisualC_dll_312" Guid="5AE750DB-8858-4EDD-B7EB-AD56BEDDD50E">
+        <File Id="API_File_312" Source="$(var.APIPublishDir)System.Runtime.CompilerServices.VisualC.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_dll_313" Guid="4F50B59D-EC3B-484C-9FA8-B22275A8A41D">
+        <File Id="API_File_313" Source="$(var.APIPublishDir)System.Runtime.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Extensions_dll_314" Guid="FD4E28E5-5A56-47AA-B974-0203F0B7B3B2">
+        <File Id="API_File_314" Source="$(var.APIPublishDir)System.Runtime.Extensions.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Handles_dll_315" Guid="6E571AAC-C231-4F22-9CE7-718A1BFA814A">
+        <File Id="API_File_315" Source="$(var.APIPublishDir)System.Runtime.Handles.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_InteropServices_dll_316" Guid="F5798E85-1AFB-480A-AD40-F3ED81F3BC12">
+        <File Id="API_File_316" Source="$(var.APIPublishDir)System.Runtime.InteropServices.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_InteropServices_JavaScript_dll_317" Guid="315F12E9-1819-4FD6-8D6B-64AF28C71E02">
+        <File Id="API_File_317" Source="$(var.APIPublishDir)System.Runtime.InteropServices.JavaScript.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_InteropServices_RuntimeInformation_dll_318" Guid="FB76C84E-5AD7-49E3-B844-268C4A377AE4">
+        <File Id="API_File_318" Source="$(var.APIPublishDir)System.Runtime.InteropServices.RuntimeInformation.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Intrinsics_dll_319" Guid="73431813-3586-4B66-AE4B-724484CA4CD9">
+        <File Id="API_File_319" Source="$(var.APIPublishDir)System.Runtime.Intrinsics.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Loader_dll_320" Guid="3EEF70E5-FDEB-4D34-903B-CC283724A700">
+        <File Id="API_File_320" Source="$(var.APIPublishDir)System.Runtime.Loader.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Numerics_dll_321" Guid="4E83B9F0-734F-4AA3-BFF3-455DFF037F79">
+        <File Id="API_File_321" Source="$(var.APIPublishDir)System.Runtime.Numerics.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Serialization_dll_322" Guid="7FEF94AA-AA5F-458F-8C78-091FC8A07604">
+        <File Id="API_File_322" Source="$(var.APIPublishDir)System.Runtime.Serialization.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Serialization_Formatters_dll_323" Guid="320FB4D5-CE9F-4882-AFBC-493071384827">
+        <File Id="API_File_323" Source="$(var.APIPublishDir)System.Runtime.Serialization.Formatters.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Serialization_Json_dll_324" Guid="DBB8DA15-9356-4482-B655-23789524442F">
+        <File Id="API_File_324" Source="$(var.APIPublishDir)System.Runtime.Serialization.Json.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Serialization_Primitives_dll_325" Guid="90D7CD88-9237-49D0-A467-3FDDB841700E">
+        <File Id="API_File_325" Source="$(var.APIPublishDir)System.Runtime.Serialization.Primitives.dll" />
+      </Component>
+      <Component Id="API_System_Runtime_Serialization_Xml_dll_326" Guid="F90B1833-87F1-4042-B330-DB7CAF5CFC1E">
+        <File Id="API_File_326" Source="$(var.APIPublishDir)System.Runtime.Serialization.Xml.dll" />
+      </Component>
+      <Component Id="API_System_Security_AccessControl_dll_327" Guid="0D3FD90E-1643-43D6-B385-3FAA6109037D">
+        <File Id="API_File_327" Source="$(var.APIPublishDir)System.Security.AccessControl.dll" />
+      </Component>
+      <Component Id="API_System_Security_Claims_dll_328" Guid="96ED2F0A-E34F-4208-9E4C-92CC70972ADC">
+        <File Id="API_File_328" Source="$(var.APIPublishDir)System.Security.Claims.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_Algorithms_dll_329" Guid="FD596B74-4DE5-429F-97C6-75761150E448">
+        <File Id="API_File_329" Source="$(var.APIPublishDir)System.Security.Cryptography.Algorithms.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_Cng_dll_330" Guid="6C90E6AF-35FA-461F-85F8-D22408E72C64">
+        <File Id="API_File_330" Source="$(var.APIPublishDir)System.Security.Cryptography.Cng.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_Csp_dll_331" Guid="2362C0D6-27BD-4851-9B90-DEC623F90AD9">
+        <File Id="API_File_331" Source="$(var.APIPublishDir)System.Security.Cryptography.Csp.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_dll_332" Guid="E854DFD7-F735-4B5E-A9D2-8E1D87B69734">
+        <File Id="API_File_332" Source="$(var.APIPublishDir)System.Security.Cryptography.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_Encoding_dll_333" Guid="73173241-2BDC-4F5E-975C-9E941DA1A59E">
+        <File Id="API_File_333" Source="$(var.APIPublishDir)System.Security.Cryptography.Encoding.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_OpenSsl_dll_334" Guid="6650C209-7F0B-41E5-80CB-1F49F9F12E63">
+        <File Id="API_File_334" Source="$(var.APIPublishDir)System.Security.Cryptography.OpenSsl.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_Pkcs_dll_335" Guid="D10C7695-723E-4D5D-A7F5-4633AF4E0DFD">
+        <File Id="API_File_335" Source="$(var.APIPublishDir)System.Security.Cryptography.Pkcs.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_Primitives_dll_336" Guid="11BCC45D-0600-4FF3-8B8A-FF756B0D6C76">
+        <File Id="API_File_336" Source="$(var.APIPublishDir)System.Security.Cryptography.Primitives.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_ProtectedData_dll_337" Guid="E6EB908B-35A1-4259-8F59-A07759F2E531">
+        <File Id="API_File_337" Source="$(var.APIPublishDir)System.Security.Cryptography.ProtectedData.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_X509Certificates_dll_338" Guid="0C270AB8-7592-4534-929A-1050C595C953">
+        <File Id="API_File_338" Source="$(var.APIPublishDir)System.Security.Cryptography.X509Certificates.dll" />
+      </Component>
+      <Component Id="API_System_Security_Cryptography_Xml_dll_339" Guid="44E15A62-DD1A-4108-A64D-4C45390F24AD">
+        <File Id="API_File_339" Source="$(var.APIPublishDir)System.Security.Cryptography.Xml.dll" />
+      </Component>
+      <Component Id="API_System_Security_dll_340" Guid="FAB45197-C709-4124-A087-A4C0271A3673">
+        <File Id="API_File_340" Source="$(var.APIPublishDir)System.Security.dll" />
+      </Component>
+      <Component Id="API_System_Security_Principal_dll_341" Guid="88D45CDD-4639-45FC-93B3-16A72F00070C">
+        <File Id="API_File_341" Source="$(var.APIPublishDir)System.Security.Principal.dll" />
+      </Component>
+      <Component Id="API_System_Security_Principal_Windows_dll_342" Guid="1343F9A4-0950-4481-BCD7-91D64B79BE8B">
+        <File Id="API_File_342" Source="$(var.APIPublishDir)System.Security.Principal.Windows.dll" />
+      </Component>
+      <Component Id="API_System_Security_SecureString_dll_343" Guid="D9A845F1-5DE5-4100-84D4-AC9C386FCD3E">
+        <File Id="API_File_343" Source="$(var.APIPublishDir)System.Security.SecureString.dll" />
+      </Component>
+      <Component Id="API_System_ServiceModel_Web_dll_344" Guid="68C2C0F6-8756-46CA-B9C3-503102EBCDDA">
+        <File Id="API_File_344" Source="$(var.APIPublishDir)System.ServiceModel.Web.dll" />
+      </Component>
+      <Component Id="API_System_ServiceProcess_dll_345" Guid="B567F98F-6888-4916-BC7D-EA2CF802BCE1">
+        <File Id="API_File_345" Source="$(var.APIPublishDir)System.ServiceProcess.dll" />
+      </Component>
+      <Component Id="API_System_ServiceProcess_ServiceController_dll_346" Guid="92B6264A-FBB2-4D5F-94F9-EF71ACBA3176">
+        <File Id="API_File_346" Source="$(var.APIPublishDir)System.ServiceProcess.ServiceController.dll" />
+      </Component>
+      <Component Id="API_System_Text_Encoding_CodePages_dll_347" Guid="9243B2B9-948E-471F-8C37-5ABDD7C9D60E">
+        <File Id="API_File_347" Source="$(var.APIPublishDir)System.Text.Encoding.CodePages.dll" />
+      </Component>
+      <Component Id="API_System_Text_Encoding_dll_348" Guid="1B8F91A3-02F8-44FB-9355-E541445488AD">
+        <File Id="API_File_348" Source="$(var.APIPublishDir)System.Text.Encoding.dll" />
+      </Component>
+      <Component Id="API_System_Text_Encoding_Extensions_dll_349" Guid="CB7E11CC-AF22-4271-90ED-EEFCC78FA5EA">
+        <File Id="API_File_349" Source="$(var.APIPublishDir)System.Text.Encoding.Extensions.dll" />
+      </Component>
+      <Component Id="API_System_Text_Encodings_Web_dll_350" Guid="E476F9C5-E938-4A07-B23A-C7C74D3B05E1">
+        <File Id="API_File_350" Source="$(var.APIPublishDir)System.Text.Encodings.Web.dll" />
+      </Component>
+      <Component Id="API_System_Text_Json_dll_351" Guid="2BEAFE37-2934-4895-9B12-4DFBD85DEA55">
+        <File Id="API_File_351" Source="$(var.APIPublishDir)System.Text.Json.dll" />
+      </Component>
+      <Component Id="API_System_Text_RegularExpressions_dll_352" Guid="76315984-59EE-4CBC-BB30-77A6C9D078D1">
+        <File Id="API_File_352" Source="$(var.APIPublishDir)System.Text.RegularExpressions.dll" />
+      </Component>
+      <Component Id="API_System_Threading_Channels_dll_353" Guid="E219B4FA-8AE0-4761-8184-48A2056D1B9D">
+        <File Id="API_File_353" Source="$(var.APIPublishDir)System.Threading.Channels.dll" />
+      </Component>
+      <Component Id="API_System_Threading_dll_354" Guid="D386E827-CD9F-454A-BB7D-D224ADBC0097">
+        <File Id="API_File_354" Source="$(var.APIPublishDir)System.Threading.dll" />
+      </Component>
+      <Component Id="API_System_Threading_Overlapped_dll_355" Guid="3B7D9AF2-6E0D-4171-A543-CC27591A67CB">
+        <File Id="API_File_355" Source="$(var.APIPublishDir)System.Threading.Overlapped.dll" />
+      </Component>
+      <Component Id="API_System_Threading_RateLimiting_dll_356" Guid="09B9748F-C4B9-441D-BE94-5AC0B8136B3C">
+        <File Id="API_File_356" Source="$(var.APIPublishDir)System.Threading.RateLimiting.dll" />
+      </Component>
+      <Component Id="API_System_Threading_Tasks_Dataflow_dll_357" Guid="C34DC7C7-F903-4577-8579-36B7DB0BF879">
+        <File Id="API_File_357" Source="$(var.APIPublishDir)System.Threading.Tasks.Dataflow.dll" />
+      </Component>
+      <Component Id="API_System_Threading_Tasks_dll_358" Guid="6F60D8D1-9074-4631-BA07-05D6658CBD0F">
+        <File Id="API_File_358" Source="$(var.APIPublishDir)System.Threading.Tasks.dll" />
+      </Component>
+      <Component Id="API_System_Threading_Tasks_Extensions_dll_359" Guid="85DE7154-D3D7-4335-84E9-C6E1BEDC7404">
+        <File Id="API_File_359" Source="$(var.APIPublishDir)System.Threading.Tasks.Extensions.dll" />
+      </Component>
+      <Component Id="API_System_Threading_Tasks_Parallel_dll_360" Guid="ABE3D648-5452-4CF2-963C-99668475F817">
+        <File Id="API_File_360" Source="$(var.APIPublishDir)System.Threading.Tasks.Parallel.dll" />
+      </Component>
+      <Component Id="API_System_Threading_Thread_dll_361" Guid="9186A8B4-8685-4BAA-ACA4-B717E19A952B">
+        <File Id="API_File_361" Source="$(var.APIPublishDir)System.Threading.Thread.dll" />
+      </Component>
+      <Component Id="API_System_Threading_ThreadPool_dll_362" Guid="690F653B-65AE-4BD4-8E7B-B5D0C458F262">
+        <File Id="API_File_362" Source="$(var.APIPublishDir)System.Threading.ThreadPool.dll" />
+      </Component>
+      <Component Id="API_System_Threading_Timer_dll_363" Guid="0345E7DB-1A00-43CE-A6E0-8EF2ED1D8D30">
+        <File Id="API_File_363" Source="$(var.APIPublishDir)System.Threading.Timer.dll" />
+      </Component>
+      <Component Id="API_System_Transactions_dll_364" Guid="E9B3FED6-B266-4EAC-A8E5-9D6AEDC227A5">
+        <File Id="API_File_364" Source="$(var.APIPublishDir)System.Transactions.dll" />
+      </Component>
+      <Component Id="API_System_Transactions_Local_dll_365" Guid="E916F7D9-47A9-4436-9245-E54F1DCF8F5C">
+        <File Id="API_File_365" Source="$(var.APIPublishDir)System.Transactions.Local.dll" />
+      </Component>
+      <Component Id="API_System_ValueTuple_dll_366" Guid="F7B2068B-BB7C-4E10-85AB-DE811909E3F9">
+        <File Id="API_File_366" Source="$(var.APIPublishDir)System.ValueTuple.dll" />
+      </Component>
+      <Component Id="API_System_Web_dll_367" Guid="0A88FB2E-4C8F-43FA-8DA1-C447BBD164B5">
+        <File Id="API_File_367" Source="$(var.APIPublishDir)System.Web.dll" />
+      </Component>
+      <Component Id="API_System_Web_HttpUtility_dll_368" Guid="CAD557C4-1AD1-4E3D-B00C-94AA037A04A1">
+        <File Id="API_File_368" Source="$(var.APIPublishDir)System.Web.HttpUtility.dll" />
+      </Component>
+      <Component Id="API_System_Windows_dll_369" Guid="EC7B57BA-7C74-44BF-A1A9-64FD86599B51">
+        <File Id="API_File_369" Source="$(var.APIPublishDir)System.Windows.dll" />
+      </Component>
+      <Component Id="API_System_Xml_dll_370" Guid="B0C62058-BAE6-488F-A265-AD4E7ECE2001">
+        <File Id="API_File_370" Source="$(var.APIPublishDir)System.Xml.dll" />
+      </Component>
+      <Component Id="API_System_Xml_Linq_dll_371" Guid="C039BE30-5AD6-48BD-AA95-2AD4F6A75C30">
+        <File Id="API_File_371" Source="$(var.APIPublishDir)System.Xml.Linq.dll" />
+      </Component>
+      <Component Id="API_System_Xml_ReaderWriter_dll_372" Guid="39E9E446-EE86-4B89-84F8-C1BF473883D8">
+        <File Id="API_File_372" Source="$(var.APIPublishDir)System.Xml.ReaderWriter.dll" />
+      </Component>
+      <Component Id="API_System_Xml_Serialization_dll_373" Guid="A67305CA-9DC4-4056-A89A-72A91182292D">
+        <File Id="API_File_373" Source="$(var.APIPublishDir)System.Xml.Serialization.dll" />
+      </Component>
+      <Component Id="API_System_Xml_XDocument_dll_374" Guid="185CB01E-15AD-4CB1-97E1-856B4F3D58E0">
+        <File Id="API_File_374" Source="$(var.APIPublishDir)System.Xml.XDocument.dll" />
+      </Component>
+      <Component Id="API_System_Xml_XmlDocument_dll_375" Guid="CAB1F2FE-3927-4B60-83CA-90A0957C74F0">
+        <File Id="API_File_375" Source="$(var.APIPublishDir)System.Xml.XmlDocument.dll" />
+      </Component>
+      <Component Id="API_System_Xml_XmlSerializer_dll_376" Guid="6EA2FB7D-BADF-45A8-B637-D7B0A770CB2E">
+        <File Id="API_File_376" Source="$(var.APIPublishDir)System.Xml.XmlSerializer.dll" />
+      </Component>
+      <Component Id="API_System_Xml_XPath_dll_377" Guid="6B1EE1AB-9913-4D99-B03A-3AD171C487DC">
+        <File Id="API_File_377" Source="$(var.APIPublishDir)System.Xml.XPath.dll" />
+      </Component>
+      <Component Id="API_System_Xml_XPath_XDocument_dll_378" Guid="624BD676-1B9B-46A1-B552-2745E8DBB3E5">
+        <File Id="API_File_378" Source="$(var.APIPublishDir)System.Xml.XPath.XDocument.dll" />
+      </Component>
+      <Component Id="API_web_config_379" Guid="53866677-A3E4-4DC2-936C-68C474600C76">
+        <File Id="API_File_379" Source="$(var.APIPublishDir)web.config" />
+      </Component>
+      <Component Id="API_WindowsBase_dll_380" Guid="23E0B7DF-9FA4-493C-966C-B631CF04D08B">
+        <File Id="API_File_380" Source="$(var.APIPublishDir)WindowsBase.dll" />
+      </Component>
+      <Component Id="API_zlib1_dll_381" Guid="FE57EFE9-245D-4CD2-A4A3-5C946A11EDCA">
+        <File Id="API_File_381" Source="$(var.APIPublishDir)zlib1.dll" />
       </Component>
     </ComponentGroup>
   </Fragment>

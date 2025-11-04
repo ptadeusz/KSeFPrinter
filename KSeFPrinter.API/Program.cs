@@ -1,4 +1,8 @@
+using System.Threading.RateLimiting;
+using FluentValidation;
 using KSeFPrinter;
+using KSeFPrinter.API.Filters;
+using KSeFPrinter.API.Middleware;
 using KSeFPrinter.API.Services;
 using KSeFPrinter.Interfaces;
 using KSeFPrinter.Services.Cryptography;
@@ -7,83 +11,118 @@ using KSeFPrinter.Services.Parsers;
 using KSeFPrinter.Services.Pdf;
 using KSeFPrinter.Services.QrCode;
 using KSeFPrinter.Validators;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
 
-var builder = WebApplication.CreateBuilder(args);
+// === Serilog Configuration (early initialization) ===
+var baseDirectory = AppContext.BaseDirectory;
 
-// === Windows Service support ===
-builder.Host.UseWindowsService();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithMachineName()
+    .Enrich.WithThreadId()
+    .WriteTo.Console(
+        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File(
+        path: Path.Combine(baseDirectory, "logs", "ksef-printer-.log"),
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30,
+        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.EventLog(
+        source: "KSeF Printer API",
+        logName: "Application",
+        restrictedToMinimumLevel: LogEventLevel.Warning)
+    .CreateLogger();
 
-// === Konfiguracja serwisów ===
+Log.Information("=== Uruchamianie KSeF Printer API ===");
 
-// Logowanie
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
-builder.Logging.AddEventLog(); // Dodaj Event Log dla Windows Service
-
-// Kontrolery
-builder.Services.AddControllers();
-
-// KSeFPrinter serwisy (Singleton - bezstanowe, bezpieczne do reużycia)
-builder.Services.AddSingleton<IXmlInvoiceParser>(provider =>
-    new XmlInvoiceParser(provider.GetRequiredService<ILogger<XmlInvoiceParser>>()));
-
-builder.Services.AddSingleton<InvoiceValidator>(provider =>
-    new InvoiceValidator(provider.GetRequiredService<ILogger<InvoiceValidator>>()));
-
-builder.Services.AddSingleton<CryptographyService>(provider =>
-    new CryptographyService(provider.GetRequiredService<ILogger<CryptographyService>>()));
-
-builder.Services.AddSingleton<VerificationLinkService>(provider =>
-    new VerificationLinkService(
-        provider.GetRequiredService<CryptographyService>(),
-        provider.GetRequiredService<ILogger<VerificationLinkService>>()));
-
-builder.Services.AddSingleton<QrCodeService>(provider =>
-    new QrCodeService(provider.GetRequiredService<ILogger<QrCodeService>>()));
-
-builder.Services.AddSingleton<IPdfGeneratorService>(provider =>
-    new InvoicePdfGenerator(
-        provider.GetRequiredService<VerificationLinkService>(),
-        provider.GetRequiredService<QrCodeService>(),
-        provider.GetRequiredService<ILogger<InvoicePdfGenerator>>()));
-
-builder.Services.AddSingleton<InvoicePrinterService>();
-
-// API serwisy
-builder.Services.AddSingleton<CertificateService>();
-
-// Konfiguracja certyfikatów
-builder.Services.Configure<KSeFPrinter.API.Models.CertificatesConfiguration>(
-    builder.Configuration.GetSection("Certificates"));
-
-// Licencjonowanie
-builder.Services.AddSingleton<ILicenseValidator>(provider =>
+try
 {
-    var logger = provider.GetRequiredService<ILogger<LicenseValidator>>();
-    var configuration = provider.GetRequiredService<IConfiguration>();
-    var licenseFilePath = configuration["License:FilePath"];
-    return new LicenseValidator(licenseFilePath, logger);
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-// TODO: Wariant B - KSeF Connector integracja
-// builder.Services.AddHttpClient<IKSeFConnectorService, KSeFConnectorService>(client =>
-// {
-//     var baseUrl = builder.Configuration["KSeFConnector:BaseUrl"] ?? "http://localhost:5000";
-//     client.BaseAddress = new Uri(baseUrl);
-//     client.Timeout = TimeSpan.FromSeconds(30);
-// });
+    // === Windows Service support ===
+    builder.Host.UseWindowsService();
 
-// Swagger/OpenAPI
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
+    // === Serilog jako domyślny logger ===
+    builder.Host.UseSerilog();
+
+    // === Konfiguracja serwisów ===
+
+    // Kontrolery z automatyczną walidacją
+    builder.Services.AddControllers(options =>
     {
-        Title = "KSeF Printer API",
-        Version = "v1",
-        Description = @"API do generowania wydruków PDF z faktur XML w formacie KSeF FA(3).
+        options.Filters.Add<ValidationActionFilter>();
+    });
+
+    // FluentValidation - Automatyczna walidacja requestów
+    builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+    builder.Services.AddScoped<ValidationActionFilter>();
+
+    // KSeFPrinter serwisy (Singleton - bezstanowe, bezpieczne do reużycia)
+    builder.Services.AddSingleton<IXmlInvoiceParser>(provider =>
+        new XmlInvoiceParser(provider.GetRequiredService<ILogger<XmlInvoiceParser>>()));
+
+    builder.Services.AddSingleton<InvoiceValidator>(provider =>
+        new InvoiceValidator(provider.GetRequiredService<ILogger<InvoiceValidator>>()));
+
+    builder.Services.AddSingleton<CryptographyService>(provider =>
+        new CryptographyService(provider.GetRequiredService<ILogger<CryptographyService>>()));
+
+    builder.Services.AddSingleton<VerificationLinkService>(provider =>
+        new VerificationLinkService(
+            provider.GetRequiredService<CryptographyService>(),
+            provider.GetRequiredService<ILogger<VerificationLinkService>>()));
+
+    builder.Services.AddSingleton<QrCodeService>(provider =>
+        new QrCodeService(provider.GetRequiredService<ILogger<QrCodeService>>()));
+
+    builder.Services.AddSingleton<IPdfGeneratorService>(provider =>
+        new InvoicePdfGenerator(
+            provider.GetRequiredService<VerificationLinkService>(),
+            provider.GetRequiredService<QrCodeService>(),
+            provider.GetRequiredService<ILogger<InvoicePdfGenerator>>()));
+
+    builder.Services.AddSingleton<InvoicePrinterService>();
+
+    // API serwisy
+    builder.Services.AddSingleton<CertificateService>();
+
+    // Konfiguracja certyfikatów
+    builder.Services.Configure<KSeFPrinter.API.Models.CertificatesConfiguration>(
+        builder.Configuration.GetSection("Certificates"));
+
+    // Licencjonowanie
+    builder.Services.AddSingleton<ILicenseValidator>(provider =>
+    {
+        var logger = provider.GetRequiredService<ILogger<LicenseValidator>>();
+        var configuration = provider.GetRequiredService<IConfiguration>();
+        var licenseFilePath = configuration["License:FilePath"];
+        return new LicenseValidator(licenseFilePath, logger);
+    });
+
+    // TODO: Wariant B - KSeF Connector integracja
+    // builder.Services.AddHttpClient<IKSeFConnectorService, KSeFConnectorService>(client =>
+    // {
+    //     var baseUrl = builder.Configuration["KSeFConnector:BaseUrl"] ?? "http://localhost:5000";
+    //     client.BaseAddress = new Uri(baseUrl);
+    //     client.Timeout = TimeSpan.FromSeconds(30);
+    // });
+
+    // Swagger/OpenAPI
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "KSeF Printer API",
+            Version = "v1",
+            Description = @"API do generowania wydruków PDF z faktur XML w formacie KSeF FA(3).
 
 ## Funkcjonalności (Wariant A):
 - **Walidacja** faktury XML
@@ -103,132 +142,226 @@ builder.Services.AddSwaggerGen(options =>
 - Pobieranie faktur bezpośrednio z KSeF
 - Wysyłanie faktur do KSeF + generowanie PDF
 - Wsadowe przetwarzanie",
-        Contact = new OpenApiContact
+            Contact = new OpenApiContact
+            {
+                Name = "KSeF Printer",
+                Url = new Uri("https://github.com/")
+            }
+        });
+
+        // Załącz komentarze XML z kodu (jeśli dostępne)
+        var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        if (File.Exists(xmlPath))
         {
-            Name = "KSeF Printer",
-            Url = new Uri("https://github.com/")
+            options.IncludeXmlComments(xmlPath);
         }
     });
 
-    // Załącz komentarze XML z kodu (jeśli dostępne)
-    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-    {
-        options.IncludeXmlComments(xmlPath);
-    }
-});
+    // CORS - Bezpieczna konfiguracja
+    var corsAllowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
-// CORS (jeśli potrzebne dla frontendu)
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
+    builder.Services.AddCors(options =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        options.AddPolicy("KSeFPrinterPolicy", policy =>
+        {
+            if (builder.Environment.IsDevelopment())
+            {
+                // Development: Allow all dla testów lokalnych
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            }
+            else
+            {
+                // Production: Tylko specific origins z konfiguracji
+                if (corsAllowedOrigins.Length > 0)
+                {
+                    policy.WithOrigins(corsAllowedOrigins)
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
+                }
+                else
+                {
+                    // Brak konfiguracji - disable CORS w production
+                    policy.WithOrigins() // Pusty = brak dostępu
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                }
+            }
+        });
     });
-});
 
-var app = builder.Build();
-
-// === Walidacja licencji przy starcie ===
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-var licenseValidator = app.Services.GetRequiredService<ILicenseValidator>();
-
-logger.LogInformation("=== Sprawdzanie licencji ===");
-
-try
-{
-    var validationResult = await licenseValidator.ValidateLicenseAsync();
-
-    if (!validationResult.IsValid)
+    // Rate Limiting - Ochrona przed abuse
+    builder.Services.AddRateLimiter(options =>
     {
-        logger.LogCritical("❌ BŁĄD LICENCJI: {Error}", validationResult.ErrorMessage);
-        logger.LogCritical("Aplikacja nie może zostać uruchomiona bez ważnej licencji.");
-        logger.LogCritical("Skontaktuj się z dostawcą w celu uzyskania licencji dla KSeF Printer.");
+        // Policy globalny
+        options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        {
+            // Partycjonuj po IP address lub Host
+            var identifier = context.Connection.RemoteIpAddress?.ToString() ??
+                           context.Request.Headers.Host.ToString();
 
-        // Zatrzymaj aplikację
+            return RateLimitPartition.GetFixedWindowLimiter(identifier, _ =>
+                new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = builder.Configuration.GetValue("RateLimiting:PermitLimit", 100),
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = builder.Configuration.GetValue("RateLimiting:QueueLimit", 10)
+                });
+        });
+
+        // Odpowiedź gdy limit przekroczony
+        options.OnRejected = async (context, cancellationToken) =>
+        {
+            context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+            context.HttpContext.Response.ContentType = "application/json";
+
+            await context.HttpContext.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(new
+            {
+                statusCode = 429,
+                message = "Too many requests. Please try again later.",
+                retryAfter = 60,
+                timestamp = DateTime.UtcNow,
+                path = context.HttpContext.Request.Path.ToString()
+            }), cancellationToken);
+        };
+    });
+
+    var app = builder.Build();
+
+    // === Walidacja licencji przy starcie ===
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    var licenseValidator = app.Services.GetRequiredService<ILicenseValidator>();
+
+    Log.Information("=== Sprawdzanie licencji ===");
+
+    try
+    {
+        var validationResult = await licenseValidator.ValidateLicenseAsync();
+
+        if (!validationResult.IsValid)
+        {
+            Log.Fatal("❌ BŁĄD LICENCJI: {Error}", validationResult.ErrorMessage);
+            Log.Fatal("Aplikacja nie może zostać uruchomiona bez ważnej licencji.");
+            Log.Fatal("Skontaktuj się z dostawcą w celu uzyskania licencji dla KSeF Printer.");
+
+            // Zatrzymaj aplikację
+            Environment.Exit(1);
+            return;
+        }
+
+        Log.Information("✅ Licencja ważna");
+        Log.Information("   Właściciel: {IssuedTo}", validationResult.License!.IssuedTo);
+        Log.Information("   Ważna do: {ExpiryDate:yyyy-MM-dd}", validationResult.License.ExpiryDate);
+        Log.Information("   Dozwolone NIP-y: {Count}", validationResult.License.AllowedNips.Count);
+    }
+    catch (Exception ex)
+    {
+        Log.Fatal(ex, "❌ BŁĄD podczas walidacji licencji");
+        Log.Fatal("Aplikacja nie może zostać uruchomiona bez ważnej licencji.");
         Environment.Exit(1);
         return;
     }
 
-    logger.LogInformation("✅ Licencja ważna");
-    logger.LogInformation("   Właściciel: {IssuedTo}", validationResult.License!.IssuedTo);
-    logger.LogInformation("   Ważna do: {ExpiryDate:yyyy-MM-dd}", validationResult.License.ExpiryDate);
-    logger.LogInformation("   Dozwolone NIP-y: {Count}", validationResult.License.AllowedNips.Count);
+    // === Wczytywanie certyfikatów z konfiguracji ===
+    var certificateService = app.Services.GetRequiredService<CertificateService>();
+    var certificatesConfig = app.Configuration.GetSection("Certificates").Get<KSeFPrinter.API.Models.CertificatesConfiguration>();
+
+    if (certificatesConfig != null)
+    {
+        try
+        {
+            await certificateService.LoadCertificatesFromConfigurationAsync(certificatesConfig);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "⚠️ Błąd wczytywania certyfikatów - aplikacja będzie działać bez certyfikatów");
+            Log.Warning("   KOD QR II nie będzie generowany (wymaga certyfikatu)");
+        }
+    }
+    else
+    {
+        Log.Information("Brak konfiguracji certyfikatów - aplikacja będzie działać bez certyfikatów");
+    }
+
+    // === Konfiguracja middleware ===
+
+    // Global Exception Handler - musi być PIERWSZY
+    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+    // Serilog HTTP Request Logging
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+        options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+        {
+            diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+            var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+            if (!string.IsNullOrEmpty(userAgent))
+            {
+                diagnosticContext.Set("UserAgent", userAgent);
+            }
+        };
+    });
+
+    // Swagger w development i production
+    if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:EnableInProduction"))
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "KSeF Printer API v1");
+            options.RoutePrefix = string.Empty; // Swagger UI jako główna strona
+        });
+    }
+
+    app.UseHttpsRedirection();
+
+    // CORS - Używaj bezpiecznej policy
+    app.UseCors("KSeFPrinterPolicy");
+
+    // Rate Limiting - Musi być PRZED UseAuthorization
+    app.UseRateLimiter();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    // Informacja startowa
+    Log.Information("=== KSeF Printer API ===");
+    Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
+
+    // Wyświetl skonfigurowane URL-e
+    var addresses = app.Urls;
+    if (addresses.Any())
+    {
+        foreach (var address in addresses)
+        {
+            Log.Information("Listening on: {Address}", address);
+            Log.Information("Swagger UI: {Url}", address);
+        }
+    }
+    else
+    {
+        Log.Information("Swagger UI: włączony w konfiguracji");
+    }
+
+    Log.Information("Aplikacja uruchomiona pomyślnie");
+
+    await app.RunAsync();
 }
 catch (Exception ex)
 {
-    logger.LogCritical(ex, "❌ BŁĄD podczas walidacji licencji");
-    logger.LogCritical("Aplikacja nie może zostać uruchomiona bez ważnej licencji.");
-    Environment.Exit(1);
-    return;
+    Log.Fatal(ex, "Aplikacja zatrzymana z powodu błędu");
 }
-
-// === Wczytywanie certyfikatów z konfiguracji ===
-var certificateService = app.Services.GetRequiredService<CertificateService>();
-var certificatesConfig = app.Configuration.GetSection("Certificates").Get<KSeFPrinter.API.Models.CertificatesConfiguration>();
-
-if (certificatesConfig != null)
+finally
 {
-    try
-    {
-        await certificateService.LoadCertificatesFromConfigurationAsync(certificatesConfig);
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "⚠️ Błąd wczytywania certyfikatów - aplikacja będzie działać bez certyfikatów");
-        logger.LogWarning("   KOD QR II nie będzie generowany (wymaga certyfikatu)");
-    }
+    Log.Information("Zamykanie aplikacji...");
+    await Log.CloseAndFlushAsync();
 }
-else
-{
-    logger.LogInformation("Brak konfiguracji certyfikatów - aplikacja będzie działać bez certyfikatów");
-}
-
-// === Konfiguracja middleware ===
-
-// Swagger w development i production
-if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:EnableInProduction"))
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "KSeF Printer API v1");
-        options.RoutePrefix = string.Empty; // Swagger UI jako główna strona
-    });
-}
-
-app.UseHttpsRedirection();
-
-// CORS
-app.UseCors("AllowAll");
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-// Informacja startowa
-logger.LogInformation("=== KSeF Printer API ===");
-logger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
-
-// Wyświetl skonfigurowane URL-e
-var addresses = app.Urls;
-if (addresses.Any())
-{
-    foreach (var address in addresses)
-    {
-        logger.LogInformation("Listening on: {Address}", address);
-        logger.LogInformation("Swagger UI: {Url}", address);
-    }
-}
-else
-{
-    logger.LogInformation("Swagger UI: włączony w konfiguracji");
-}
-
-app.Run();
 
 // Make Program class public for testing with WebApplicationFactory
 public partial class Program { }

@@ -28,9 +28,19 @@
                   Execute="immediate"
                   Return="ignore" />
 
+    <!-- ✅ CUSTOM ACTION - Wymuszenie zatrzymania i usunięcia usługi -->
+    <CustomAction Id="ForceStopAndRemoveService"
+                  Directory="INSTALLFOLDER"
+                  ExeCommand='cmd.exe /c "sc stop KSeFPrinterAPI &amp; sc delete KSeFPrinterAPI"'
+                  Execute="deferred"
+                  Impersonate="no"
+                  Return="ignore" />
+
     <InstallExecuteSequence>
       <!-- Zabij procesy PRZED próbą zatrzymania usług i usunięcia plików -->
       <Custom Action="KillKSeFPrinterProcesses" Before="StopServices" Condition="(NOT UPGRADINGPRODUCTCODE) AND (REMOVE=&quot;ALL&quot;)" />
+      <!-- Wymuś usunięcie usługi PRZED usuwaniem plików -->
+      <Custom Action="ForceStopAndRemoveService" After="StopServices" Condition="(NOT UPGRADINGPRODUCTCODE) AND (REMOVE=&quot;ALL&quot;)" />
     </InstallExecuteSequence>
 
     <!-- Dodaj standardowy UI WiX -->
