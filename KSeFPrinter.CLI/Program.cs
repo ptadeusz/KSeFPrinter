@@ -9,6 +9,20 @@ using KSeFPrinter.Services.Pdf;
 using KSeFPrinter.Services.QrCode;
 using KSeFPrinter.Validators;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
+
+// === Sprawdź --version przed innymi argumentami ===
+if (args.Length > 0 && args[0] == "--version")
+{
+    var assembly = Assembly.GetExecutingAssembly();
+    var version = assembly.GetName().Version?.ToString() ?? "unknown";
+    var informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? version;
+
+    Console.WriteLine($"ksef-pdf version {informationalVersion}");
+    Console.WriteLine($"Assembly version: {version}");
+    Console.WriteLine($".NET Runtime: {Environment.Version}");
+    return 0;
+}
 
 // === Konfiguracja komend CLI ===
 
@@ -490,6 +504,9 @@ static async Task RunWatchMode(
     bool ksefFromFilename,
     ILogger logger)
 {
+    // Load configuration
+    var config = KSeFPrinter.CLI.ConfigurationLoader.LoadConfiguration();
+
     // Określ katalogi do obserwowania
     var directories = initialFiles
         .Select(f => Path.GetDirectoryName(Path.GetFullPath(f)) ?? ".")
@@ -508,11 +525,30 @@ static async Task RunWatchMode(
         logger.LogInformation("  - {Directory}", Path.GetFullPath(dir));
     }
     logger.LogInformation("");
+    logger.LogInformation("Konfiguracja:");
+    logger.LogInformation("  File stability check: {Delay}ms", config.FileProcessing.StabilityCheckDelayMs);
+    logger.LogInformation("  Skip if PDF exists: {Skip}", config.FileProcessing.SkipIfPdfExists);
+    logger.LogInformation("  Move after processing: {Move}", config.FileProcessing.MoveAfterProcessing);
+    logger.LogInformation("");
     logger.LogInformation("Oczekiwanie na nowe pliki XML... (Ctrl+C aby zakończyć)");
     logger.LogInformation("");
 
-    // Przetworz istniejące pliki najpierw
-    await ProcessBatch(initialFiles, service, options, validate, ksefNumber, ksefFromFilename, logger);
+    // Przetworz istniejące pliki najpierw (jeśli nie mają PDF)
+    var filesToProcess = initialFiles.Where(f =>
+    {
+        var pdfPath = Path.ChangeExtension(f, ".pdf");
+        if (config.FileProcessing.SkipIfPdfExists && File.Exists(pdfPath))
+        {
+            logger.LogInformation("⏭️  Pominięto (PDF istnieje): {FileName}", Path.GetFileName(f));
+            return false;
+        }
+        return true;
+    }).ToList();
+
+    if (filesToProcess.Any())
+    {
+        await ProcessBatch(filesToProcess, service, options, validate, ksefNumber, ksefFromFilename, logger);
+    }
 
     // Przechowuj przetworzone pliki
     var processedFiles = new HashSet<string>(initialFiles.Select(f => Path.GetFullPath(f)));
@@ -541,22 +577,41 @@ static async Task RunWatchMode(
                 processedFiles.Add(fullPath);
             }
 
-            // Czekaj chwilę aby plik był w pełni zapisany
-            await Task.Delay(500);
-
             logger.LogInformation("Wykryto nowy plik: {FileName}", Path.GetFileName(e.FullPath));
-
-            var pdfPath = Path.ChangeExtension(e.FullPath, ".pdf");
-
-            // Parsuj numer KSeF z nazwy pliku jeśli włączona opcja
-            var effectiveKsefNumber = ksefNumber;
-            if (ksefFromFilename && string.IsNullOrEmpty(ksefNumber))
-            {
-                effectiveKsefNumber = ParseKSeFFromFileName(e.FullPath, logger);
-            }
 
             try
             {
+                // Initial delay from config
+                await Task.Delay(config.FileProcessing.WatcherDelayMs);
+
+                // File stability check
+                if (!await KSeFPrinter.CLI.FileProcessingHelpers.IsFileStableAsync(
+                    e.FullPath,
+                    config.FileProcessing.StabilityCheckDelayMs,
+                    logger))
+                {
+                    logger.LogWarning("  ⏭️  Plik nie gotowy, spróbuj ponownie później");
+                    lock (processedFiles) { processedFiles.Remove(fullPath); }
+                    return;
+                }
+
+                var pdfPath = Path.ChangeExtension(e.FullPath, ".pdf");
+
+                // Skip if PDF exists
+                if (config.FileProcessing.SkipIfPdfExists && File.Exists(pdfPath))
+                {
+                    logger.LogInformation("  ⏭️  PDF już istnieje, pomijam");
+                    return;
+                }
+
+                // Parsuj numer KSeF z nazwy pliku jeśli włączona opcja
+                var effectiveKsefNumber = ksefNumber;
+                if (ksefFromFilename && string.IsNullOrEmpty(ksefNumber))
+                {
+                    effectiveKsefNumber = ParseKSeFFromFileName(e.FullPath, logger);
+                }
+
+                // Generate PDF
                 await service.GeneratePdfFromFileAsync(
                     xmlFilePath: e.FullPath,
                     pdfOutputPath: pdfPath,
@@ -566,11 +621,31 @@ static async Task RunWatchMode(
                 );
 
                 var fileInfo = new FileInfo(pdfPath);
-                logger.LogInformation("  ✓ {PdfFile} ({Size:N0} bajtów)", Path.GetFileName(pdfPath), fileInfo.Length);
+                logger.LogInformation("  ✓ PDF utworzony: {PdfFile} ({Size:N0} bajtów)",
+                    Path.GetFileName(pdfPath), fileInfo.Length);
+
+                // Move files to target folder if configured
+                if (config.FileProcessing.MoveAfterProcessing)
+                {
+                    var targetFolder = KSeFPrinter.CLI.FileProcessingHelpers.GetTargetFolder(e.FullPath, config);
+                    if (targetFolder != null)
+                    {
+                        KSeFPrinter.CLI.FileProcessingHelpers.MoveProcessedFiles(
+                            e.FullPath,
+                            pdfPath,
+                            targetFolder,
+                            logger);
+                    }
+                    else
+                    {
+                        logger.LogDebug("  ℹ️  Brak docelowego folderu, pliki pozostają na miejscu");
+                    }
+                }
             }
             catch (Exception ex)
             {
                 logger.LogError("  ✗ Błąd: {Message}", ex.Message);
+                lock (processedFiles) { processedFiles.Remove(fullPath); }
             }
         };
 

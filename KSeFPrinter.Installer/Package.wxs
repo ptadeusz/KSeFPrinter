@@ -13,22 +13,32 @@
            InstallerVersion="500"
            Scope="perMachine">
 
+    <!-- ✅ Windows Restart Manager - automatyczne zamykanie aplikacji trzymających pliki -->
+    <!-- MSIRMSHUTDOWN=1: pozwala Restart Manager zamknąć aplikacje bez pytania użytkownika -->
+    <Property Id="MSIRMSHUTDOWN" Value="1" />
+
     <SummaryInformation Description="Generator wydruków PDF dla faktur elektronicznych w formacie KSeF FA(3)" />
 
-    <!-- Pozwól na upgrade przy reinstalacji -->
-    <MajorUpgrade DowngradeErrorMessage="Nowsza wersja KSeF Printer jest już zainstalowana."
-                  AllowSameVersionUpgrades="yes" />
+    <!-- ✅ Major Upgrade - obsługa aktualizacji i reinstalacji -->
+    <MajorUpgrade DowngradeErrorMessage="Nowsza wersja KSeF Printer jest już zainstalowana. Odinstaluj najpierw obecną wersję."
+                  AllowSameVersionUpgrades="yes"
+                  Schedule="afterInstallExecute"
+                  AllowDowngrades="no" />
 
     <MediaTemplate EmbedCab="yes" />
 
-    <!-- ✅ CUSTOM ACTION - Forsowne zakończenie procesów przed deinstalacją -->
+    <!-- ✅ CUSTOM ACTION - Wymuszenie zakończenia procesów -->
+    <!-- Uruchamiane: podczas upgrade'u PRZED instalacją plików, oraz podczas deinstalacji -->
+    <!-- Zabija procesy KSeFPrinter.API.exe i ksef-pdf.exe jeśli są uruchomione -->
     <CustomAction Id="KillKSeFPrinterProcesses"
                   Directory="INSTALLFOLDER"
                   ExeCommand='cmd.exe /c "taskkill /F /IM KSeFPrinter.API.exe 2>nul &amp; taskkill /F /IM ksef-pdf.exe 2>nul"'
                   Execute="immediate"
                   Return="ignore" />
 
-    <!-- ✅ CUSTOM ACTION - Wymuszenie zatrzymania i usunięcia usługi -->
+    <!-- ✅ CUSTOM ACTION - Wymuszenie usunięcia usługi -->
+    <!-- Uruchamiane: TYLKO podczas pełnej deinstalacji (NIE podczas upgrade'u) -->
+    <!-- Podczas upgrade'u, ServiceControl sam obsługuje aktualizację usługi -->
     <CustomAction Id="ForceStopAndRemoveService"
                   Directory="INSTALLFOLDER"
                   ExeCommand='cmd.exe /c "sc stop KSeFPrinterAPI &amp; sc delete KSeFPrinterAPI"'
@@ -37,9 +47,10 @@
                   Return="ignore" />
 
     <InstallExecuteSequence>
-      <!-- Zabij procesy PRZED próbą zatrzymania usług i usunięcia plików -->
-      <Custom Action="KillKSeFPrinterProcesses" Before="StopServices" Condition="(NOT UPGRADINGPRODUCTCODE) AND (REMOVE=&quot;ALL&quot;)" />
-      <!-- Wymuś usunięcie usługi PRZED usuwaniem plików -->
+      <!-- ✅ UPGRADE: Zabij procesy przed instalacją nowych plików -->
+      <Custom Action="KillKSeFPrinterProcesses" Before="InstallFiles" Condition="UPGRADINGPRODUCTCODE OR (REMOVE=&quot;ALL&quot;)" />
+
+      <!-- ✅ DEINSTALACJA: Wymuś usunięcie usługi tylko podczas pełnej deinstalacji (nie upgrade) -->
       <Custom Action="ForceStopAndRemoveService" After="StopServices" Condition="(NOT UPGRADINGPRODUCTCODE) AND (REMOVE=&quot;ALL&quot;)" />
     </InstallExecuteSequence>
 
@@ -248,6 +259,9 @@
         <File Id="ReadmeFile" Source="..\README.md" KeyPath="yes" />
       </Component>
     </Feature>
+
+    <!-- ✅ Warunek uruchomienia: Sprawdź uprawnienia administratora -->
+    <Launch Condition="Privileged" Message="Ta aplikacja wymaga uprawnień administratora. Uruchom instalator prawym przyciskiem myszy i wybierz 'Uruchom jako administrator'." />
 
   </Package>
 </Wix>

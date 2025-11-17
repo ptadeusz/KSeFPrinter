@@ -7,6 +7,7 @@ using KSeFPrinter.Services.QrCode;
 using KSeFPrinter.Validators;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Reflection;
 
 namespace KSeFPrinter.API.Controllers;
 
@@ -322,6 +323,100 @@ public class InvoiceController : ControllerBase
     }
 
     /// <summary>
+    /// Generuje PDF offline dla faktury z błędem (zapisuje obok pliku XML)
+    /// </summary>
+    /// <param name="request">Request z ścieżką do pliku XML</param>
+    /// <returns>Ścieżka do wygenerowanego PDF</returns>
+    [HttpPost("generate-pdf-offline")]
+    [ProducesResponseType(typeof(GeneratePdfOfflineResponse), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> GeneratePdfOffline([FromBody] GeneratePdfOfflineRequest request)
+    {
+        try
+        {
+            // Sprawdź czy plik istnieje
+            if (!System.IO.File.Exists(request.XmlFilePath))
+            {
+                _logger.LogWarning("Plik XML nie znaleziony: {FilePath}", request.XmlFilePath);
+                return NotFound(new { error = "Plik XML nie znaleziony", path = request.XmlFilePath });
+            }
+
+            // Odczytaj XML
+            var xmlContent = await System.IO.File.ReadAllTextAsync(request.XmlFilePath);
+
+            // Parsuj fakturę aby uzyskać NIP-y
+            var context = await _printerService.ParseInvoiceFromXmlAsync(xmlContent, ksefNumber: null);
+
+            // === WALIDACJA NIP ===
+            var allowedNips = _licenseValidator.GetAllowedNips();
+            var nipSprzedawcy = context.Faktura.Podmiot1?.DaneIdentyfikacyjne?.NIP;
+            var nipNabywcy = context.Faktura.Podmiot2?.DaneIdentyfikacyjne?.NIP;
+
+            bool anyNipAllowed = false;
+            if (!string.IsNullOrEmpty(nipSprzedawcy) && allowedNips.Contains(nipSprzedawcy))
+                anyNipAllowed = true;
+            if (!string.IsNullOrEmpty(nipNabywcy) && allowedNips.Contains(nipNabywcy))
+                anyNipAllowed = true;
+
+            if (!anyNipAllowed)
+            {
+                _logger.LogWarning("Brak uprawnień dla NIP-ów w fakturze: {NipSprzedawcy}, {NipNabywcy}",
+                    nipSprzedawcy, nipNabywcy);
+                return StatusCode(403, new
+                {
+                    error = "Licencja nie obejmuje NIP-ów z tej faktury",
+                    sellerNip = nipSprzedawcy,
+                    buyerNip = nipNabywcy
+                });
+            }
+
+            // Tryb OFFLINE - bez certyfikatu, bez KSeF number
+            var options = new PdfGenerationOptions
+            {
+                Certificate = null, // OFFLINE mode
+                UseProduction = request.UseProduction,
+                IncludeQrCode1 = false, // Brak QR code bez KSeF number
+                IncludeQrCode2 = false
+            };
+
+            // Określ ścieżkę PDF
+            var pdfPath = request.OutputPdfPath ??
+                          Path.Combine(
+                              Path.GetDirectoryName(request.XmlFilePath)!,
+                              Path.GetFileNameWithoutExtension(request.XmlFilePath) + ".pdf");
+
+            // Generuj PDF
+            await _printerService.GeneratePdfFromXmlAsync(
+                xmlContent: xmlContent,
+                pdfOutputPath: pdfPath,
+                options: options,
+                numerKSeF: null, // OFFLINE - brak numeru KSeF
+                validateInvoice: request.ValidateInvoice);
+
+            var fileInfo = new FileInfo(pdfPath);
+
+            _logger.LogInformation("PDF offline utworzony: {PdfPath} ({Size} bajtów)",
+                pdfPath, fileInfo.Length);
+
+            return Ok(new GeneratePdfOfflineResponse
+            {
+                Success = true,
+                PdfPath = pdfPath,
+                FileSizeBytes = fileInfo.Length,
+                InvoiceNumber = context.Faktura.Fa.P_2,
+                Mode = "Offline"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Błąd podczas generowania PDF offline");
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Generuje kod QR dla numeru KSeF (do osadzania w zewnętrznych systemach)
     /// </summary>
     /// <param name="request">Request z numerem KSeF i opcjami</param>
@@ -398,11 +493,16 @@ public class InvoiceController : ControllerBase
     [ProducesResponseType(200)]
     public IActionResult Health()
     {
+        var assembly = Assembly.GetExecutingAssembly();
+        var version = assembly.GetName().Version?.ToString() ?? "unknown";
+        var informationalVersion = assembly.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? version;
+
         return Ok(new
         {
             status = "healthy",
             service = "KSeF Printer API",
-            version = "1.0.0",
+            version = informationalVersion,
+            assemblyVersion = version,
             timestamp = DateTime.UtcNow
         });
     }

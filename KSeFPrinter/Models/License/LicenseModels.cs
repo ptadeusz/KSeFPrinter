@@ -57,6 +57,13 @@ public class LicenseFeatures
     [JsonPropertyName("ksefPrinter")]
     public bool? KSeFPrinter { get; set; }
 
+    /// <summary>
+    /// Licencja na KSeF Converter
+    /// null = BRAK POLA (stara licencja) → interpretowane jako FALSE (nowy produkt)
+    /// </summary>
+    [JsonPropertyName("ksefConverter")]
+    public bool? KSeFConverter { get; set; }
+
     // === FUNKCJE KSEF CONNECTOR ===
 
     [JsonPropertyName("batchMode")]

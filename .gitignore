@@ -5,6 +5,10 @@ ksef-client-csharp/
 ksef-docs/
 examples/
 nul
+.manual tests/
+
+# Test/custom output folders
+test-output/
 
 # .NET
 bin/

@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Threading.RateLimiting;
 using FluentValidation;
 using KSeFPrinter;
@@ -19,7 +20,25 @@ using Serilog.Events;
 // === Serilog Configuration (early initialization) ===
 var baseDirectory = AppContext.BaseDirectory;
 
-Log.Logger = new LoggerConfiguration()
+// Logi w folderze instalacji (gdzie usługa Windows ma pełne uprawnienia)
+// Dla usługi Windows: C:\Program Files\KSeF Printer\API\logs\
+var logsDirectory = Path.Combine(baseDirectory, "logs");
+
+// Upewnij się że folder istnieje
+try
+{
+    Directory.CreateDirectory(logsDirectory);
+}
+catch (Exception ex)
+{
+    // Fallback: jeśli nie można utworzyć folderu, logi będą tylko w Console i EventLog
+    Console.WriteLine($"⚠️ OSTRZEŻENIE: Nie można utworzyć folderu logów: {logsDirectory}");
+    Console.WriteLine($"   Błąd: {ex.Message}");
+    Console.WriteLine($"   Logi będą zapisywane tylko do konsoli i Windows Event Log");
+    logsDirectory = null; // Wyłącz file logging
+}
+
+var loggerConfig = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
@@ -28,19 +47,42 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithMachineName()
     .Enrich.WithThreadId()
     .WriteTo.Console(
-        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .WriteTo.File(
-        path: Path.Combine(baseDirectory, "logs", "ksef-printer-.log"),
+        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+
+// Dodaj file sink tylko jeśli udało się utworzyć folder logów
+if (logsDirectory != null)
+{
+    loggerConfig.WriteTo.File(
+        path: Path.Combine(logsDirectory, "ksef-printer-.log"),
         rollingInterval: RollingInterval.Day,
         retainedFileCountLimit: 30,
-        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .WriteTo.EventLog(
+        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+}
+
+// Event Log - zawsze włączony (wymaga uprawnień administratora przy pierwszym uruchomieniu)
+try
+{
+    loggerConfig.WriteTo.EventLog(
         source: "KSeF Printer API",
         logName: "Application",
-        restrictedToMinimumLevel: LogEventLevel.Warning)
-    .CreateLogger();
+        restrictedToMinimumLevel: LogEventLevel.Warning);
+}
+catch
+{
+    // Ignoruj błędy Event Log (może nie być uprawnień)
+    Console.WriteLine("⚠️ OSTRZEŻENIE: Nie można utworzyć źródła Event Log (wymaga uprawnień administratora)");
+}
+
+Log.Logger = loggerConfig.CreateLogger();
+
+// Odczytaj wersję aplikacji
+var assembly = Assembly.GetExecutingAssembly();
+var version = assembly.GetName().Version?.ToString() ?? "unknown";
+var informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? version;
 
 Log.Information("=== Uruchamianie KSeF Printer API ===");
+Log.Information("Wersja: {Version} (Assembly: {AssemblyVersion})", informationalVersion, version);
+Log.Information(".NET Runtime: {Runtime}", Environment.Version);
 
 try
 {

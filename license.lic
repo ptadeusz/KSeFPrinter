@@ -1,0 +1,20 @@
+{
+  "licenseKey": "KSEF-20251104-8F8283B3",
+  "issuedTo": "Twoja Firma Sp. z o.o.",
+  "expiryDate": "2040-12-30T23:00:00Z",
+  "allowedNips": [
+    "7201309064",
+    "1187654321",
+    "7309436499"
+  ],
+  "maxNips": 5,
+  "features": {
+    "ksefConnector": true,
+    "ksefPrinter": true,
+    "ksefConverter": true,
+    "batchMode": true,
+    "autoTokenGeneration": true,
+    "azureKeyVault": true
+  },
+  "signature": "lohuC2pwCAxNsMzNVi4jDd7poDWGURl9DT4cN8ERUcgdyBgZpwJmnvvfmBYXhHONRraNh5yhihIYsDiIRQ8jCVxPrlo4vi8oLhpVwJSBubbxy4zp17dhkecCnLELzZdM+Qhd17nPIY75bOO+M/SPmhQsSaWR5HCkuwFyB4ZaKPryGgdiYsetimHmFkPAqDUbk8+3Qk4QwMExjj5WQpkRF7pnEAt7JVgeRlgOb4tACBmNYwuKQLDwTQtvfQNzYh3CFTYbXz38MCc52R0fB76vhH0qmBfJBIu8rX6fXsILxBh1w5hdBiliC41OfPJfF54Dx+nP20eIu5vPhoAkm5mhJw=="
+}

@@ -19,12 +19,13 @@
           Start="demand"
           Account="LocalSystem"
           ErrorControl="normal"
+          Vital="no"
           Interactive="no">
           <ServiceDependency Id="HTTP" />
         </ServiceInstall>
 
         <ServiceControl
-          Id="StartKSeFPrinterAPIService"
+          Id="StopKSeFPrinterAPIService"
           Name="KSeFPrinterAPI"
           Start="none"
           Stop="both"
