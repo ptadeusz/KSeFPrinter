@@ -334,7 +334,7 @@ rootCommand.SetHandler(async (InvocationContext context) =>
         // Zbierz pliki do przetworzenia
         var xmlFiles = CollectXmlFiles(input);
 
-        if (xmlFiles.Count == 0)
+        if (xmlFiles.Count == 0 && !watch)
         {
             logger.LogError("Nie znaleziono żadnych plików XML do przetworzenia");
             Environment.Exit(1);
@@ -344,7 +344,7 @@ rootCommand.SetHandler(async (InvocationContext context) =>
         if (watch)
         {
             // === TRYB WATCH ===
-            await RunWatchMode(xmlFiles, service, options, !noValidate, ksefNumber, ksefFromFilename, logger);
+            await RunWatchMode(input, xmlFiles, service, options, !noValidate, ksefNumber, ksefFromFilename, logger);
         }
         else if (xmlFiles.Count == 1 && !string.IsNullOrEmpty(output))
         {
@@ -376,8 +376,8 @@ static List<string> CollectXmlFiles(string[] input)
     {
         if (Directory.Exists(item))
         {
-            // Katalog - znajdź wszystkie XMLe
-            files.AddRange(Directory.GetFiles(item, "*.xml", SearchOption.TopDirectoryOnly));
+            // Katalog - znajdź wszystkie XMLe (włącznie z podkatalogami NIP)
+            files.AddRange(Directory.GetFiles(item, "*.xml", SearchOption.AllDirectories));
         }
         else if (item.Contains('*') || item.Contains('?'))
         {
@@ -392,6 +392,9 @@ static List<string> CollectXmlFiles(string[] input)
             files.Add(item);
         }
     }
+
+    // Wyklucz pliki UPO (mają inny namespace XML i będą przenoszone razem z fakturami)
+    files = files.Where(f => !f.EndsWith("_UPO.xml", StringComparison.OrdinalIgnoreCase)).ToList();
 
     return files.Distinct().OrderBy(f => f).ToList();
 }
@@ -446,6 +449,9 @@ static async Task ProcessBatch(
     bool ksefFromFilename,
     ILogger logger)
 {
+    // Load configuration for file moving
+    var config = KSeFPrinter.CLI.ConfigurationLoader.LoadConfiguration();
+
     logger.LogInformation("=== Przetwarzanie wsadowe ===");
     logger.LogInformation("Znaleziono {Count} plików XML", xmlFiles.Count);
 
@@ -463,6 +469,9 @@ static async Task ProcessBatch(
             effectiveKsefNumber = ParseKSeFFromFileName(xmlPath, logger);
         }
 
+        string? generatedPdfPath = null;
+        string? pdfErrorMessage = null;
+
         try
         {
             logger.LogInformation("Przetwarzanie: {FileName}...", Path.GetFileName(xmlPath));
@@ -477,12 +486,36 @@ static async Task ProcessBatch(
 
             var fileInfo = new FileInfo(pdfPath);
             logger.LogInformation("  ✓ {PdfFile} ({Size:N0} bajtów)", Path.GetFileName(pdfPath), fileInfo.Length);
+            generatedPdfPath = pdfPath;
             successCount++;
         }
         catch (Exception ex)
         {
             logger.LogError("  ✗ Błąd: {Message}", ex.Message);
+            pdfErrorMessage = ex.Message;
             errorCount++;
+        }
+
+        // Move files to target folder if configured (even if PDF generation failed)
+        if (config.FileProcessing.MoveAfterProcessing)
+        {
+            var targetFolder = KSeFPrinter.CLI.FileProcessingHelpers.GetTargetFolder(xmlPath, config);
+            if (targetFolder != null)
+            {
+                try
+                {
+                    KSeFPrinter.CLI.FileProcessingHelpers.MoveProcessedFiles(
+                        xmlPath,
+                        generatedPdfPath,
+                        targetFolder,
+                        logger,
+                        pdfErrorMessage);
+                }
+                catch (Exception moveEx)
+                {
+                    logger.LogError(moveEx, "  ✗ Błąd przenoszenia plików: {Message}", moveEx.Message);
+                }
+            }
         }
     }
 
@@ -496,6 +529,7 @@ static async Task ProcessBatch(
 }
 
 static async Task RunWatchMode(
+    string[] inputPaths,
     List<string> initialFiles,
     InvoicePrinterService service,
     PdfGenerationOptions options,
@@ -507,11 +541,24 @@ static async Task RunWatchMode(
     // Load configuration
     var config = KSeFPrinter.CLI.ConfigurationLoader.LoadConfiguration();
 
-    // Określ katalogi do obserwowania
-    var directories = initialFiles
-        .Select(f => Path.GetDirectoryName(Path.GetFullPath(f)) ?? ".")
-        .Distinct()
-        .ToList();
+    // Określ katalogi do obserwowania - z argumentów wejściowych (nie z plików!)
+    var directories = new List<string>();
+
+    foreach (var item in inputPaths)
+    {
+        if (Directory.Exists(item))
+        {
+            directories.Add(Path.GetFullPath(item));
+        }
+        else if (File.Exists(item))
+        {
+            var dir = Path.GetDirectoryName(Path.GetFullPath(item));
+            if (dir != null)
+                directories.Add(dir);
+        }
+    }
+
+    directories = directories.Distinct().ToList();
 
     if (directories.Count == 0)
     {
@@ -562,6 +609,7 @@ static async Task RunWatchMode(
         {
             Filter = "*.xml",
             NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime,
+            IncludeSubdirectories = true,  // Obserwuj podkatalogi NIP
             EnableRaisingEvents = true
         };
 
@@ -611,20 +659,34 @@ static async Task RunWatchMode(
                     effectiveKsefNumber = ParseKSeFFromFileName(e.FullPath, logger);
                 }
 
-                // Generate PDF
-                await service.GeneratePdfFromFileAsync(
-                    xmlFilePath: e.FullPath,
-                    pdfOutputPath: pdfPath,
-                    options: options,
-                    numerKSeF: effectiveKsefNumber,
-                    validateInvoice: validate
-                );
+                // Try to generate PDF
+                string? generatedPdfPath = null;
+                string? pdfErrorMessage = null;
 
-                var fileInfo = new FileInfo(pdfPath);
-                logger.LogInformation("  ✓ PDF utworzony: {PdfFile} ({Size:N0} bajtów)",
-                    Path.GetFileName(pdfPath), fileInfo.Length);
+                try
+                {
+                    await service.GeneratePdfFromFileAsync(
+                        xmlFilePath: e.FullPath,
+                        pdfOutputPath: pdfPath,
+                        options: options,
+                        numerKSeF: effectiveKsefNumber,
+                        validateInvoice: validate
+                    );
 
-                // Move files to target folder if configured
+                    var fileInfo = new FileInfo(pdfPath);
+                    logger.LogInformation("  ✓ PDF utworzony: {PdfFile} ({Size:N0} bajtów)",
+                        Path.GetFileName(pdfPath), fileInfo.Length);
+
+                    generatedPdfPath = pdfPath;
+                }
+                catch (Exception pdfEx)
+                {
+                    logger.LogError(pdfEx, "  ✗ Błąd generowania PDF dla: {FileName}", Path.GetFileName(e.FullPath));
+                    pdfErrorMessage = pdfEx.Message;
+                    // Continue - move files anyway (without PDF)
+                }
+
+                // Move files to target folder if configured (even if PDF generation failed)
                 if (config.FileProcessing.MoveAfterProcessing)
                 {
                     var targetFolder = KSeFPrinter.CLI.FileProcessingHelpers.GetTargetFolder(e.FullPath, config);
@@ -632,9 +694,10 @@ static async Task RunWatchMode(
                     {
                         KSeFPrinter.CLI.FileProcessingHelpers.MoveProcessedFiles(
                             e.FullPath,
-                            pdfPath,
+                            generatedPdfPath,
                             targetFolder,
-                            logger);
+                            logger,
+                            pdfErrorMessage);
                     }
                     else
                     {
@@ -644,7 +707,7 @@ static async Task RunWatchMode(
             }
             catch (Exception ex)
             {
-                logger.LogError("  ✗ Błąd: {Message}", ex.Message);
+                logger.LogError("  ✗ Błąd krytyczny: {Message}", ex.Message);
                 lock (processedFiles) { processedFiles.Remove(fullPath); }
             }
         };

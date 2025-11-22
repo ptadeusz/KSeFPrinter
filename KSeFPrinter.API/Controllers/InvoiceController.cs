@@ -347,7 +347,7 @@ public class InvoiceController : ControllerBase
             var xmlContent = await System.IO.File.ReadAllTextAsync(request.XmlFilePath);
 
             // Parsuj fakturę aby uzyskać NIP-y
-            var context = await _printerService.ParseInvoiceFromXmlAsync(xmlContent, ksefNumber: null);
+            var context = await _printerService.ParseInvoiceFromXmlAsync(xmlContent, numerKSeF: null);
 
             // === WALIDACJA NIP ===
             var allowedNips = _licenseValidator.GetAllowedNips();

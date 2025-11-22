@@ -52,9 +52,10 @@ public static class FileProcessingHelpers
     /// </summary>
     public static void MoveProcessedFiles(
         string xmlPath,
-        string pdfPath,
+        string? pdfPath,
         string targetFolder,
-        ILogger logger)
+        ILogger logger,
+        string? errorMessage = null)
     {
         try
         {
@@ -62,28 +63,40 @@ public static class FileProcessingHelpers
             Directory.CreateDirectory(targetFolder);
 
             var xmlFileName = Path.GetFileName(xmlPath);
-            var pdfFileName = Path.GetFileName(pdfPath);
-
+            var xmlBaseName = Path.GetFileNameWithoutExtension(xmlPath);
+            var xmlDir = Path.GetDirectoryName(xmlPath);
             var targetXmlPath = Path.Combine(targetFolder, xmlFileName);
-            var targetPdfPath = Path.Combine(targetFolder, pdfFileName);
 
-            // Move XML
+            // Move XML (always)
             if (File.Exists(xmlPath))
             {
                 File.Move(xmlPath, targetXmlPath, overwrite: true);
-                logger.LogDebug("  → Moved XML to: {TargetPath}", targetXmlPath);
+                logger.LogInformation("  → Moved XML to: {TargetPath}", targetXmlPath);
             }
 
-            // Move PDF
-            if (File.Exists(pdfPath))
+            // Move PDF (if exists)
+            if (!string.IsNullOrEmpty(pdfPath) && File.Exists(pdfPath))
             {
+                var pdfFileName = Path.GetFileName(pdfPath);
+                var targetPdfPath = Path.Combine(targetFolder, pdfFileName);
                 File.Move(pdfPath, targetPdfPath, overwrite: true);
-                logger.LogDebug("  → Moved PDF to: {TargetPath}", targetPdfPath);
+                logger.LogInformation("  → Moved PDF to: {TargetPath}", targetPdfPath);
+            }
+            else
+            {
+                logger.LogWarning("  ⚠ PDF not generated, moving XML without PDF");
+
+                // Create error marker file if error message provided
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    var errorMarkerPath = Path.Combine(targetFolder, $"{xmlBaseName}_PDF_ERROR.txt");
+                    File.WriteAllText(errorMarkerPath,
+                        $"PDF generation failed at {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC\n\nError:\n{errorMessage}");
+                    logger.LogInformation("  → Created error marker: {ErrorMarker}", Path.GetFileName(errorMarkerPath));
+                }
             }
 
             // Check for UPO file (same base name + _UPO.xml)
-            var xmlBaseName = Path.GetFileNameWithoutExtension(xmlPath);
-            var xmlDir = Path.GetDirectoryName(xmlPath);
             if (xmlDir != null)
             {
                 var upoPath = Path.Combine(xmlDir, $"{xmlBaseName}_UPO.xml");
@@ -91,7 +104,7 @@ public static class FileProcessingHelpers
                 {
                     var targetUpoPath = Path.Combine(targetFolder, Path.GetFileName(upoPath));
                     File.Move(upoPath, targetUpoPath, overwrite: true);
-                    logger.LogDebug("  → Moved UPO to: {TargetPath}", targetUpoPath);
+                    logger.LogInformation("  → Moved UPO to: {TargetPath}", targetUpoPath);
                 }
             }
 

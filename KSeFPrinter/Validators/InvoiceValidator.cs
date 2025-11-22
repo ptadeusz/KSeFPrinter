@@ -49,6 +49,12 @@ public class InvoiceValidator
             ValidateSumyKontrolne(faktura.Fa, result);
         }
 
+        // Ustaw IsValid na true jeśli nie ma błędów (domyślnie jest false)
+        if (result.Errors.Count == 0)
+        {
+            result.IsValid = true;
+        }
+
         if (result.IsValid)
         {
             _logger.LogInformation("Walidacja faktury zakończona sukcesem");
